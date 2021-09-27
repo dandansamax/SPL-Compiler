@@ -1,8 +1,8 @@
 # CS323-Project1
 
-- [] Lexical analysis
+- [ ] Lexical analysis
 
-- [] Parse analysis
+- [ ] Parse analysis
 
 Can't implement INT in lexical analysis,
 
