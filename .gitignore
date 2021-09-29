@@ -30,7 +30,7 @@
 
 # Executables
 *.exe
-*.out
+#*.out
 *.app
 *.i*86
 *.x86_64
@@ -50,3 +50,8 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+#generate code
+*.yy.c
+*.tab.c
+*.tab.h
