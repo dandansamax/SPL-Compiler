@@ -20,12 +20,7 @@ void link_nodes(struct node *, int, ...);
 
 void add_node_head(struct node *, struct node *);
 
-// void add_nodes_head(struct node *, int, ...);
-
 void add_nodes_tail(struct node *, int, ...);
-
-
-// void change_lineno(struct node *, int);
 
 void print_tree(struct node *root, int depth);
 

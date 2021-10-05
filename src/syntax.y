@@ -7,6 +7,9 @@
     #define YYSTYPE struct node *
 
     // int yydebug=1;
+    struct node *root;
+
+    int error_flag=0;
 %}
 %token INT CHAR FLOAT ID
 %token TYPE
@@ -30,7 +33,7 @@
 
 %%
 /* high-level definition */
-Program: ExtDefList {$$=new_node("Program","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1); print_tree($$,0);}
+Program: ExtDefList {$$=new_node("Program","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1); root=$$;}
     ;
 ExtDefList: ExtDef ExtDefList {$$=new_node("ExtDefList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("ExtDefList","",-1,NONTERMINAL);}
@@ -57,6 +60,7 @@ VarDec: ID {$$=new_node("VarDec","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1)
     ;
 FunDec: ID LP VarList RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
     | ID LP RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
+    | ID LP error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
     ;
 VarList: ParamDec COMMA VarList {$$=new_node("VarList","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | ParamDec {$$=new_node("VarList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
@@ -116,14 +120,19 @@ Exp: Exp ASSIGN Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$
     | INT {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | FLOAT {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | CHAR {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
+    | ID LP error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
     ;
 Args: Exp COMMA Args {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
 
 %%
 void yyerror(const char *s) {
-    fprintf(stderr, "%s\n", s);
+    // fprintf(stderr, "%s\n", s);
+    error_flag=1;
 }
 int main() {
-    yyparse();
+    int val=yyparse();
+    if (error_flag==0) {
+        print_tree(root,0);
+    }
 }
