@@ -5,6 +5,7 @@
     void yyerror(const char*);
 
     #define YYSTYPE struct node *
+
     // int yydebug=1;
 %}
 %token INT CHAR FLOAT ID
@@ -31,7 +32,7 @@
 /* high-level definition */
 Program: ExtDefList {$$=new_node("Program","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1); print_tree($$,0);}
     ;
-ExtDefList: ExtDef ExtDefList {$$=$2; $$->lineno=$1->lineno; add_node_head($$,$1);}
+ExtDefList: ExtDef ExtDefList {$$=new_node("ExtDefList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("ExtDefList","",-1,NONTERMINAL);}
     ;
 ExtDef: Specifier ExtDecList SEMI {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
@@ -39,7 +40,7 @@ ExtDef: Specifier ExtDecList SEMI {$$=new_node("ExtDef","",$1->lineno,NONTERMINA
     | Specifier FunDec CompSt {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     ;
 ExtDecList: VarDec {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
-    | VarDec COMMA ExtDecList {$$=$3; $$->lineno=$1->lineno; add_node_head($$,$2); add_node_head($$,$1);}
+    | VarDec COMMA ExtDecList {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     ;
 
 /* specifier */
@@ -52,7 +53,7 @@ StructSpecifier: STRUCT ID LC DefList RC {$$=new_node("StructSpecifier","",$1->l
 
 /* declarator */
 VarDec: ID {$$=new_node("VarDec","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
-    | VarDec LB INT RB {$$=$1; add_nodes_tail($$,3,$2,$3,$4);}
+    | VarDec LB INT RB {$$=new_node("VarDec","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
     ;
 FunDec: ID LP VarList RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
     | ID LP RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
@@ -66,7 +67,7 @@ ParamDec: Specifier VarDec {$$=new_node("ParamDec","",$1->lineno,NONTERMINAL); l
 /* statement */
 CompSt: LC DefList StmtList RC {$$=new_node("CompSt","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
     ;
-StmtList: Stmt StmtList {$$=$2; $$->lineno=$1->lineno; add_node_head($$,$1);}
+StmtList: Stmt StmtList {$$=new_node("StmtList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("StmtList","",-1,NONTERMINAL);}
     ;
 Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
@@ -78,13 +79,13 @@ Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$
     ;
 
 /* local definition */
-DefList: Def DefList {$$=$2; $$->lineno=$1->lineno; add_node_head($$,$1);}
+DefList: Def DefList {$$=new_node("DefList","",2,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("DefList","",-1,NONTERMINAL);}
     ;
 Def: Specifier DecList SEMI {$$=new_node("Def","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     ;
 DecList: Dec {$$=new_node("DecList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
-    | Dec COMMA DecList {$$=$3; $$->lineno=$1->lineno; add_node_head($$,$2); add_node_head($$,$1);}
+    | Dec COMMA DecList {$$=new_node("DecList","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     ;
 Dec: VarDec {$$=new_node("Dec","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | VarDec ASSIGN Exp {$$=new_node("Dec","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
@@ -116,7 +117,7 @@ Exp: Exp ASSIGN Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$
     | FLOAT {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | CHAR {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     ;
-Args: Exp COMMA Args {$$=$1; add_nodes_tail($$,2,$2,$3);}
+Args: Exp COMMA Args {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
 
 %%
