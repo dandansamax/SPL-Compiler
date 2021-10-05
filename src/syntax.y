@@ -131,7 +131,7 @@ Args: Exp COMMA Args {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($
     ;
 %%
 void yyerror(const char *s) {
-    // fprintf(stderr, "%s\n", s);
+    fprintf(stderr, "%s\n", s);
     error_flag=1;
 }
 int main() {
