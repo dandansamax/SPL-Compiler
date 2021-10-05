@@ -1,0 +1,10 @@
+int test_1_o01()
+{
+    char _right_hex_char = '\xa0';
+    char _wrong_hex_char_2 = '\x910';
+    int _wrong_hex_int_1 = 0x77G;
+    int _wrong_hex_int_2 = 0xCS;
+    int _right_hex_int = 0xdeadbeef;
+  
+}
+

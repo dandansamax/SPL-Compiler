@@ -123,11 +123,12 @@ Exp: Exp ASSIGN Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$
     | INT {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | FLOAT {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | CHAR {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
+    | LP Exp error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
     | ID LP error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
     ;
 Args: Exp COMMA Args {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
-
+    ;
 %%
 void yyerror(const char *s) {
     // fprintf(stderr, "%s\n", s);

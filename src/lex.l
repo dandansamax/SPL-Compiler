@@ -18,9 +18,11 @@
 letter [a-zA-Z]
 letter_ {letter}|_
 digit [0-9]
-hex_digit [0-9a-f]
+hex_digit [0-9a-fA-F]
+non_hex_digit[^0-9a-fA-F]
 number [1-9]{digit}*|0
-hex_number 0[xX]([1-9a-f]{hex_digit}*|0)
+hex_number 0[xX]([1-9a-fA-F]{hex_digit}*|0)
+
 
 %%
 
@@ -60,6 +62,7 @@ char {yylval=new_node("TYPE",strdup("char"), yylineno, TYPE_TOKEN); return TYPE;
 {letter_}({letter_}|{digit})* {yylval = new_node("ID", strdup(yytext), yylineno, ID_TOKEN); return ID;} //ID
 
 \'[[:print:]]?\' {yylval = new_node("CHAR", strdup(yytext), yylineno, INT_FLOAT_CHAR_TOKEN); return CHAR;} //CHAR
+\'\\[xX]{hex_digit}{hex_digit}\' {yylval = new_node("CHAR", strdup(yytext), yylineno, INT_FLOAT_CHAR_TOKEN); return CHAR;} //CHAR
 
 {number}\.{digit}+ {yylval = new_node("FLOAT", strdup(yytext), yylineno, INT_FLOAT_CHAR_TOKEN); return FLOAT;} //FLOAT
 
@@ -74,7 +77,10 @@ char {yylval=new_node("TYPE",strdup("char"), yylineno, TYPE_TOKEN); return TYPE;
 {number} { yylval = new_node("INT", strdup(yytext), yylineno, INT_FLOAT_CHAR_TOKEN); return INT; } //INT
 
 [\n\t\r ]+ { /* does nothing when seeing white spaces except new line */ }
-. {printf("Line %d: ERROR character %s\n",yylineno,yytext);return ERRORA;}
+
+{digit}({letter_}|{digit})* {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext);}
+\'\\[xX]({digit}|{letter_})*\' {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext);}
+. {printf("Error type A at Line %d: ERROR character %s\n",yylineno,yytext);}
 
 %%
 /* int main(int argc, char **argv){
