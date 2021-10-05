@@ -74,7 +74,7 @@ char {yylval=new_node("TYPE",strdup("char"), yylineno, TYPE_TOKEN); return TYPE;
 {number} { yylval = new_node("INT", strdup(yytext), yylineno, INT_FLOAT_CHAR_TOKEN); return INT; } //INT
 
 [\n\t\r ]+ { /* does nothing when seeing white spaces except new line */ }
-. {printf("Line %d: ERROR character %s\n",yylineno,yytext);}
+. {printf("Line %d: ERROR character %s\n",yylineno,yytext);return ERRORA;}
 
 %%
 /* int main(int argc, char **argv){

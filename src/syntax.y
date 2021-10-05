@@ -16,7 +16,7 @@
 %token STRUCT IF WHILE RETURN
 %token SEMI COMMA 
 %token LC RC
-
+%token ERRORA
 
 %precedence LOWER_IF
 %precedence ELSE
@@ -75,8 +75,10 @@ StmtList: Stmt StmtList {$$=new_node("StmtList","",$1->lineno,NONTERMINAL); link
     | %empty {$$=new_node("StmtList","",-1,NONTERMINAL);}
     ;
 Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
+    | Exp error {printf("Error type B at Line %d: Missing semicolon ';'\n",$1->lineno);}
     | CompSt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | RETURN Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
+    | RETURN Exp error {printf("Error type B at Line %d: Missing semicolon ';'\n",$2->lineno);}
     | IF LP Exp RP Stmt %prec LOWER_IF {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     | IF LP Exp RP Stmt ELSE Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,7,$1,$2,$3,$4,$5,$6,$7);}
     | WHILE LP Exp RP Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
@@ -87,6 +89,7 @@ DefList: Def DefList {$$=new_node("DefList","",2,NONTERMINAL); link_nodes($$,2,$
     | %empty {$$=new_node("DefList","",-1,NONTERMINAL);}
     ;
 Def: Specifier DecList SEMI {$$=new_node("Def","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
+    |Specifier DecList error {printf("Error type B at Line %d: Missing semicolon ';'\n",$2->lineno);}
     ;
 DecList: Dec {$$=new_node("DecList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | Dec COMMA DecList {$$=new_node("DecList","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}

@@ -12,10 +12,10 @@ BISON=bison
 	$(BISON) -t -d -v -o src/syntax.tab.c src/syntax.y --debug
 
 splc: .lex .syntax
-	$(CC) src/syntax.tab.c src/tokentree.c -lfl -ly -o bin/splc
+	$(CC) src/syntax.tab.c src/tokentree.c -lfl -o bin/splc
 
 debug: .lex .syntax_debug
-	$(CC) src/syntax.tab.c src/tokentree.c -lfl -ly -o bin/splc.debug
+	$(CC) src/syntax.tab.c src/tokentree.c -lfl -o bin/splc.debug
 
 # splc:
 # 	@mkdir bin
