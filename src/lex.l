@@ -7,6 +7,8 @@
 
     #define YYSTYPE struct node *
 
+    int error_flag=0;
+
     #include "syntax.tab.h"
 
     static char tmpstr[12];
@@ -18,17 +20,54 @@
 letter [a-zA-Z]
 letter_ {letter}|_
 digit [0-9]
-hex_digit [0-9a-f]
+hex_digit [0-9a-fA-F]
+non_hex_digit[^0-9a-fA-F]
 number [1-9]{digit}*|0
-hex_number 0[xX]([1-9a-f]{hex_digit}*|0)
+hex_number 0[xX]([1-9a-fA-F]{hex_digit}*|0)
+
 
 %%
+  //comment
+"//" { char c; while((c=input()) != '\n'); }
+"/*" { char c=input(); int state=0; char test;
+    while(1){
+        if (c==0){
+            printf("Error type A at Line %d: cannot find \"*/\"\n",yylineno);
+            break;
+        }
+        switch (state){
+        case 0:
+            if (c=='*') state=1;
+            else if (c=='/') state=2;
+            break;
+        case 1:
+            if (c=='/') state=3;
+            else if (c=='*') state=1;
+            else state=0;
+            break;
+        case 2:
+            if (c=='*') state=4;
+            else if (c=='/') state=2;
+            else state=0;
+            break;
+        }
+        if (state==3){
+            break;
+        }
+        else if (state==4){
+            printf("Error type A at Line %d: multi-line comments cannot be nested\n",yylineno);
+            error_flag=1;
+            break;
+        }
+        c=input();
+    }
+}
 
-struct {yylval=new_node("STRUCT","", yylineno, OTHER_TOKEN); return STRUCT;}
-if {yylval=new_node("IF","", yylineno, OTHER_TOKEN); return IF;}
-else {yylval=new_node("ELSE","", yylineno, OTHER_TOKEN); return ELSE;}
-while {yylval=new_node("WHILE","", yylineno, OTHER_TOKEN); return WHILE;}
-return {yylval=new_node("RETURN","", yylineno, OTHER_TOKEN); return RETURN;}
+"struct" {yylval=new_node("STRUCT","", yylineno, OTHER_TOKEN); return STRUCT;}
+"if" {yylval=new_node("IF","", yylineno, OTHER_TOKEN); return IF;}
+"else" {yylval=new_node("ELSE","", yylineno, OTHER_TOKEN); return ELSE;}
+"while" {yylval=new_node("WHILE","", yylineno, OTHER_TOKEN); return WHILE;}
+"return" {yylval=new_node("RETURN","", yylineno, OTHER_TOKEN); return RETURN;}
 \. {yylval=new_node("DOT","", yylineno, OTHER_TOKEN); return DOT;}
 ; {yylval=new_node("SEMI","", yylineno, OTHER_TOKEN); return SEMI;}
 , {yylval=new_node("COMMA","", yylineno, OTHER_TOKEN); return COMMA;}
@@ -53,13 +92,14 @@ return {yylval=new_node("RETURN","", yylineno, OTHER_TOKEN); return RETURN;}
 \{ {yylval=new_node("LC","", yylineno, OTHER_TOKEN); return LC;}
 \} {yylval=new_node("RC","", yylineno, OTHER_TOKEN); return RC;}
 
-int {yylval=new_node("TYPE",strdup("int"), yylineno, TYPE_TOKEN); return TYPE;}
-float {yylval=new_node("TYPE",strdup("float"), yylineno, TYPE_TOKEN); return TYPE;}
-char {yylval=new_node("TYPE",strdup("char"), yylineno, TYPE_TOKEN); return TYPE;}
+"int" {yylval=new_node("TYPE",strdup("int"), yylineno, TYPE_TOKEN); return TYPE;}
+"float" {yylval=new_node("TYPE",strdup("float"), yylineno, TYPE_TOKEN); return TYPE;}
+"char" {yylval=new_node("TYPE",strdup("char"), yylineno, TYPE_TOKEN); return TYPE;}
 
 {letter_}({letter_}|{digit})* {yylval = new_node("ID", strdup(yytext), yylineno, ID_TOKEN); return ID;} //ID
 
 \'[[:print:]]?\' {yylval = new_node("CHAR", strdup(yytext), yylineno, INT_FLOAT_CHAR_TOKEN); return CHAR;} //CHAR
+\'\\[xX]{hex_digit}{hex_digit}\' {yylval = new_node("CHAR", strdup(yytext), yylineno, INT_FLOAT_CHAR_TOKEN); return CHAR;} //CHAR
 
 {number}\.{digit}+ {yylval = new_node("FLOAT", strdup(yytext), yylineno, INT_FLOAT_CHAR_TOKEN); return FLOAT;} //FLOAT
 
@@ -74,7 +114,11 @@ char {yylval=new_node("TYPE",strdup("char"), yylineno, TYPE_TOKEN); return TYPE;
 {number} { yylval = new_node("INT", strdup(yytext), yylineno, INT_FLOAT_CHAR_TOKEN); return INT; } //INT
 
 [\n\t\r ]+ { /* does nothing when seeing white spaces except new line */ }
-. {printf("Line %d: ERROR character %s\n",yylineno,yytext);}
+
+    /* Error handler */
+{digit}({letter_}|{digit})* {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return ID;} //Error id
+\'\\[xX]({digit}|{letter_})*\' {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return CHAR;} //Error char
+. {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return UNKNOWN;}
 
 %%
 /* int main(int argc, char **argv){

@@ -5,14 +5,17 @@
     void yyerror(const char*);
 
     #define YYSTYPE struct node *
+
     // int yydebug=1;
+    struct node *root;
 %}
+%define parse.error verbose
+
 %token INT CHAR FLOAT ID
 %token TYPE
 %token STRUCT IF WHILE RETURN
 %token SEMI COMMA 
 %token LC RC
-
 
 %precedence LOWER_IF
 %precedence ELSE
@@ -27,11 +30,13 @@
 %right UMINUS NOT
 %left DOT LP RP LB RB
 
+%left UNKNOWN
+
 %%
 /* high-level definition */
-Program: ExtDefList {$$=new_node("Program","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1); print_tree($$,0);}
+Program: ExtDefList {$$=new_node("Program","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1); root=$$;}
     ;
-ExtDefList: ExtDef ExtDefList {$$=$2; $$->lineno=$1->lineno; add_node_head($$,$1);}
+ExtDefList: ExtDef ExtDefList {$$=new_node("ExtDefList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("ExtDefList","",-1,NONTERMINAL);}
     ;
 ExtDef: Specifier ExtDecList SEMI {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
@@ -39,7 +44,7 @@ ExtDef: Specifier ExtDecList SEMI {$$=new_node("ExtDef","",$1->lineno,NONTERMINA
     | Specifier FunDec CompSt {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     ;
 ExtDecList: VarDec {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
-    | VarDec COMMA ExtDecList {$$=$3; $$->lineno=$1->lineno; add_node_head($$,$2); add_node_head($$,$1);}
+    | VarDec COMMA ExtDecList {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     ;
 
 /* specifier */
@@ -52,10 +57,11 @@ StructSpecifier: STRUCT ID LC DefList RC {$$=new_node("StructSpecifier","",$1->l
 
 /* declarator */
 VarDec: ID {$$=new_node("VarDec","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
-    | VarDec LB INT RB {$$=$1; add_nodes_tail($$,3,$2,$3,$4);}
+    | VarDec LB INT RB {$$=new_node("VarDec","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
     ;
 FunDec: ID LP VarList RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
     | ID LP RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
+    | ID LP error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
     ;
 VarList: ParamDec COMMA VarList {$$=new_node("VarList","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | ParamDec {$$=new_node("VarList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
@@ -66,25 +72,30 @@ ParamDec: Specifier VarDec {$$=new_node("ParamDec","",$1->lineno,NONTERMINAL); l
 /* statement */
 CompSt: LC DefList StmtList RC {$$=new_node("CompSt","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
     ;
-StmtList: Stmt StmtList {$$=$2; $$->lineno=$1->lineno; add_node_head($$,$1);}
+StmtList: Stmt StmtList {$$=new_node("StmtList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("StmtList","",-1,NONTERMINAL);}
+    | Stmt Def StmtList error {printf("Error type B at Line %d: Misplaced defination\n",$2->lineno);}
     ;
 Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
+    | Exp error {printf("Error type B at Line %d: Missing semicolon ';'\n",$1->lineno);}
     | CompSt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | RETURN Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
+    | RETURN Exp error {printf("Error type B at Line %d: Missing semicolon ';'\n",$2->lineno);}
     | IF LP Exp RP Stmt %prec LOWER_IF {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     | IF LP Exp RP Stmt ELSE Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,7,$1,$2,$3,$4,$5,$6,$7);}
     | WHILE LP Exp RP Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     ;
 
 /* local definition */
-DefList: Def DefList {$$=$2; $$->lineno=$1->lineno; add_node_head($$,$1);}
+DefList: Def DefList {$$=new_node("DefList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("DefList","",-1,NONTERMINAL);}
+    // | Stmt DefList error {printf("Error type B at Line %d:  Missing specifier\n",$1->lineno);}
     ;
 Def: Specifier DecList SEMI {$$=new_node("Def","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
+    |Specifier DecList error {printf("Error type B at Line %d: Missing semicolon ';'\n",$2->lineno);}
     ;
 DecList: Dec {$$=new_node("DecList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
-    | Dec COMMA DecList {$$=$3; $$->lineno=$1->lineno; add_node_head($$,$2); add_node_head($$,$1);}
+    | Dec COMMA DecList {$$=new_node("DecList","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     ;
 Dec: VarDec {$$=new_node("Dec","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | VarDec ASSIGN Exp {$$=new_node("Dec","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
@@ -115,14 +126,22 @@ Exp: Exp ASSIGN Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$
     | INT {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | FLOAT {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | CHAR {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
+    | LP Exp error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
+    | ID LP error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
+    | Exp UNKNOWN Exp {}
+    | UNKNOWN {}
     ;
-Args: Exp COMMA Args {$$=$1; add_nodes_tail($$,2,$2,$3);}
+Args: Exp COMMA Args {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
-
+    ;
 %%
 void yyerror(const char *s) {
-    fprintf(stderr, "%s\n", s);
+    // fprintf(stderr, "%s ---%d\n", s, yylineno);
+    error_flag=1;
 }
 int main() {
-    yyparse();
+    int val=yyparse();
+    if (error_flag==0) {
+        print_tree(root,0);
+    }
 }

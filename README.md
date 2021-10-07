@@ -8,18 +8,20 @@ Add basic lexical tokens and syntax analysis.
 
 ### Basic requirements
 
-- [ ] syntax tree Constructing and results print
+- [x] syntax tree Constructing and results print
 
 ### Error check
 
-- [ ] Error check in lexical analysis
-- [ ] Error check in syntax analysis
+- [x] Error check in lexical analysis (official)
+- [x] Error check in syntax analysis (official)
+- [ ] Error check in syntax analysis (self)
+- [ ] Error check in syntax analysis (self)
 
 Instructions in reference folder will help
 
 ### Bonus
 
-- [ ]  single- and multi-line comment
+- [x]  single- and multi-line comment
 - [ ]  macro preprocessor
 - [ ]  file inclusion
 - [ ]  for statements

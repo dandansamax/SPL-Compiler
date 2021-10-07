@@ -57,3 +57,7 @@ dkms.conf
 *.tab.h
 
 .vscode/
+bin/splc
+how_to_use.txt
+Makefile
+*.output
