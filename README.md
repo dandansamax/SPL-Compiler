@@ -12,8 +12,10 @@ Add basic lexical tokens and syntax analysis.
 
 ### Error check
 
-- [ ] Error check in lexical analysis
-- [ ] Error check in syntax analysis
+- [x] Error check in lexical analysis (official)
+- [x] Error check in syntax analysis (official)
+- [ ] Error check in syntax analysis (self)
+- [ ] Error check in syntax analysis (self)
 
 Instructions in reference folder will help
 
