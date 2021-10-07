@@ -118,7 +118,7 @@ hex_number 0[xX]([1-9a-fA-F]{hex_digit}*|0)
     /* Error handler */
 {digit}({letter_}|{digit})* {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return ID;} //Error id
 \'\\[xX]({digit}|{letter_})*\' {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return CHAR;} //Error char
-. {printf("Error type A at Line %d: ERROR character %s\n",yylineno,yytext); error_flag=1;}
+. {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return UNKNOWN;}
 
 %%
 /* int main(int argc, char **argv){

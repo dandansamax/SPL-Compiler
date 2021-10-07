@@ -16,7 +16,6 @@
 %token STRUCT IF WHILE RETURN
 %token SEMI COMMA 
 %token LC RC
-%token ERRORA
 
 %precedence LOWER_IF
 %precedence ELSE
@@ -30,6 +29,8 @@
 %left MUL DIV
 %right UMINUS NOT
 %left DOT LP RP LB RB
+
+%left UNKNOWN
 
 %%
 /* high-level definition */
@@ -73,6 +74,7 @@ CompSt: LC DefList StmtList RC {$$=new_node("CompSt","",$1->lineno,NONTERMINAL);
     ;
 StmtList: Stmt StmtList {$$=new_node("StmtList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("StmtList","",-1,NONTERMINAL);}
+    | Stmt Def StmtList error {printf("Error type B at Line %d: Misplaced defination\n",$2->lineno);}
     ;
 Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | Exp error {printf("Error type B at Line %d: Missing semicolon ';'\n",$1->lineno);}
@@ -85,8 +87,9 @@ Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$
     ;
 
 /* local definition */
-DefList: Def DefList {$$=new_node("DefList","",2,NONTERMINAL); link_nodes($$,2,$1,$2);}
+DefList: Def DefList {$$=new_node("DefList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("DefList","",-1,NONTERMINAL);}
+    // | Stmt DefList error {printf("Error type B at Line %d:  Missing specifier\n",$1->lineno);}
     ;
 Def: Specifier DecList SEMI {$$=new_node("Def","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     |Specifier DecList error {printf("Error type B at Line %d: Missing semicolon ';'\n",$2->lineno);}
@@ -125,13 +128,15 @@ Exp: Exp ASSIGN Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$
     | CHAR {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | LP Exp error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
     | ID LP error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
+    | Exp UNKNOWN Exp {}
+    | UNKNOWN {}
     ;
 Args: Exp COMMA Args {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     ;
 %%
 void yyerror(const char *s) {
-    fprintf(stderr, "%s\n", s);
+    // fprintf(stderr, "%s ---%d\n", s, yylineno);
     error_flag=1;
 }
 int main() {
