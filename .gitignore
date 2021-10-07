@@ -60,3 +60,4 @@ dkms.conf
 bin/splc
 how_to_use.txt
 Makefile
+*.output

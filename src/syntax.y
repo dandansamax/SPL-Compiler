@@ -8,9 +8,9 @@
 
     // int yydebug=1;
     struct node *root;
-
-    int error_flag=0;
 %}
+%define parse.error verbose
+
 %token INT CHAR FLOAT ID
 %token TYPE
 %token STRUCT IF WHILE RETURN
