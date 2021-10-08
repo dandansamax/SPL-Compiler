@@ -1,5 +1,0 @@
-#include "syntax.y"
-
-int process(int a) {
-    return a + 1;
-}

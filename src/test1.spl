@@ -1,4 +1,0 @@
-#include "test2.spl"
-int main(){
-    int i = 1;
-}

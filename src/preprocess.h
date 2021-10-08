@@ -40,14 +40,13 @@ typedef struct MacroNode
   int end_line;
 } MacroNode;
 
-typedef struct IncludeNode
+typedef struct IncludedNode
 {
-  struct IncludeNode *next, *pre;
-  char *file_name;
-  int line_number;
-} IncludeNode;
+  struct IncludedNode *next, *pre;
+  const char *filename;
+} IncludedNode;
 
-void link_include(const char *input_file, const char *output_file);
+void link_include(IncludedNode *included_list, const char *included_file, FILE *fd);
 
 void expand();
 
@@ -57,14 +56,20 @@ int def_new_macro(MacroNode *head, int is_object, char *value, char *sub, int st
 
 int undef_macro(MacroNode *head, char *value, int end_line);
 
-int add_include(IncludeNode *head, char *filename, int line_number);
+int is_included(IncludedNode *head, const char *filename);
+
+void add_included(IncludedNode *head, const char *filename);
+
+char *get_rel_path(const char *file_path);
+
+char *get_filename(const char *file_path);
 
 int parse_define(MacroNode *head, char *def_line, int line_number);
 
 int parse_undefine(MacroNode *head, char *def_line, int line_number);
 
-int parse_include(IncludeNode *head, char *def_line, int line_number);
-
 void append_token(Token *head, char *value, int line_number, TokenType type);
 
 void print_token(Token *head);
+
+void print_include(IncludedNode *head);

@@ -2,38 +2,44 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
 #include "preprocess.h"
 
-void link_include(const char *input_file, const char *output_file)
+void link_include(IncludedNode *included_list, const char *included_file_path, FILE *fd)
 {
-  int line_number = 0;
-  char buf[1024];
-  FILE *fp = fopen(input_file, "r");
-  if (fp == NULL)
+  const char *included_filename = get_filename(included_file_path);
+  if (is_included(included_list, included_filename))
   {
-    perror("open file");
-    exit(0);
+    printf("Duplicate include file: %s, ignored\n", included_filename);
+    return;
   }
-  FILE *fd = fopen(output_file, "a+");
-  if (fd == NULL)
+  add_included(included_list, included_filename);
+  char buf[2048];
+  FILE *fp = fopen(included_file_path, "r");
+  if (fp == NULL)
   {
     perror("open file");
     exit(0);
   }
   while (fgets(buf, sizeof(buf), fp) != NULL)
   {
-    line_number++;
     if (!strncmp(buf, "#include", 8))
     {
       strtok(buf, "\"");
       char *inc_file = strtok(NULL, "\"");
-      link_include(inc_file, output_file);
+      char inc_file_path[2048];
+      char *rel_path = get_rel_path(included_file_path);
+      sprintf(inc_file_path, "%s%s", rel_path, inc_file);
+      if (rel_path != NULL)
+      {
+        free(rel_path);
+      }
+      link_include(included_list, inc_file_path, fd);
       continue;
     }
     fputs(buf, fd);
   }
   fputs("\n", fd);
-  fclose(fd);
   fclose(fp);
 }
 
@@ -77,108 +83,66 @@ int undef_macro(MacroNode *head, char *value, int end_line)
   return 0;
 }
 
-int add_include(IncludeNode *head, char *filename, int line_number)
+int is_included(IncludedNode *head, const char *filename)
 {
-  IncludeNode *cur_node = head;
+  IncludedNode *cur_node = head;
   while (cur_node->next != head)
   {
     cur_node = cur_node->next;
-    if (!strcmp(cur_node->file_name, filename))
+    if (!strcmp(cur_node->filename, filename))
     {
-      return 0;
+      return 1;
     }
   }
-  IncludeNode *new_node = (IncludeNode *)malloc(sizeof(IncludeNode));
-  new_node->file_name = filename;
-  new_node->line_number = line_number;
+  return 0;
+}
+
+void add_included(IncludedNode *head, const char *filename)
+{
+  IncludedNode *new_node = (IncludedNode *)malloc(sizeof(IncludedNode));
+  new_node->filename = filename;
   new_node->pre = head->pre;
   new_node->next = head;
   head->pre->next = new_node;
   head->pre = new_node;
-  return 1;
 }
 
-int parse_define(MacroNode *head, char *def_line, int line_number)
+char *get_rel_path(const char *file_path)
 {
-  // char name[1000];
-  // char arg_name[100];
-  // ArgNode *arg_head = (ArgNode *)malloc(sizeof(ArgNode));
-  // arg_head->pre = arg_head->next = arg_head;
-  // arg_head->arg_name = NULL;
-  // int index = 0;
-  // int inside = 0;
-  // int ready_for_arg = 0;
-  // int arg_count = 0;
-  // char c;
-  // while ((c = input()) == ' ')
-  // {
-  // };
-  // do
-  // {
-  //   if (c == '\n')
-  //   {
-  //     printf("Macro error at line %d", line_number);
-  //     return 0;
-  //   }
-  //   else if (c == '(')
-  //   {
-  //     if (inside)
-  //     {
-  //       printf("Macro error at line %d", line_number);
-  //       return 0;
-  //     }
-  //     else
-  //     {
-
-  //       inside = 1;
-  //       ready_for_arg = 1;
-  //     }
-  //   }
-  //   else if (c == ')')
-  //   {
-  //     if (!inside)
-  //     {
-  //       printf("Macro error at line %d", line_number);
-  //       return 0;
-  //     }
-  //     else
-  //     {
-  //       inside = 0;
-  //     }
-  //   }
-  //   else if (c == ',' && inside)
-  //   {
-  //     if (ready_for_arg)
-  //     {
-  //       printf("Macro error at line %d", line_number);
-  //       return 0;
-  //     }
-  //     else
-  //     {
-  //       ready_for_arg = 1;
-  //     }
-  //   }
-  //   else if (c == '')
-  //     buffer[index++] = c;
-  // } while ((c = input()) != ' ' || inside);
-
-  // while ((c = input()) == ' ')
-  //   ;
-  // do
-  // {
-  //   buffer[index++] = c;
-  // } while ((c = input()) != '\n');
-  // return 1;
+  int idx = 0;
+  int after_last_idx = 0;
+  char c = file_path[idx++];
+  while (c != '\0')
+  {
+    if (c == '/')
+    {
+      after_last_idx = idx;
+    }
+    c = file_path[idx++];
+  }
+  char *rel_pwd;
+  rel_pwd = (char *)malloc(sizeof(char) * (after_last_idx + 1));
+  strcpy(rel_pwd, file_path);
+  rel_pwd[after_last_idx] = '\0';
+  return rel_pwd;
 }
 
-int parse_undefine(MacroNode *head, char *def_line, int line_number)
+char *get_filename(const char *file_path)
 {
-  return 1;
-}
-
-int parse_include(IncludeNode *head, char *def_line, int line_number)
-{
-  return 1;
+  int idx = 0;
+  int after_last_idx = 0;
+  char c = file_path[idx++];
+  while (c != '\0')
+  {
+    if (c == '/')
+    {
+      after_last_idx = idx;
+    }
+    c = file_path[idx++];
+  }
+  char *filename = (char *)malloc(sizeof(char) * idx);
+  strcpy(filename, file_path + after_last_idx);
+  return filename;
 }
 
 void append_token(Token *head, char *value, int line_number, TokenType type)
@@ -206,7 +170,20 @@ void print_token(Token *head)
   }
 }
 
-int main()
+void print_include(IncludedNode *head)
 {
-  link_include("./test1.spl", "./test1.lnk");
+  IncludedNode *cur_node = head;
+  while (cur_node->next != head)
+  {
+    cur_node = cur_node->next;
+    printf("%s\n", cur_node->filename);
+  }
 }
+
+// int main()
+// {
+//   IncludedNode *head = (IncludedNode *)malloc(sizeof(IncludedNode));
+//   head->filename = NULL;
+//   head->pre = head->next = head;
+//   link_include(head, "test_1_r01.spl", "test1.lnk");
+// }

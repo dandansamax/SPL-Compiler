@@ -2,7 +2,7 @@
     #include "preprocess.h"
 
     struct MacroNode *macro_set;
-    struct IncludeNode *include_set;
+    struct IncludedNode *include_set;
     struct Token *token_sequence;
 
 %}
@@ -61,9 +61,17 @@ int main(int argc, char **argv){
         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
         return 0;
     } else if(argc == 2){
-        file_path = argv[1];
-        if(!(yyin = fopen(file_path, "r"))){
-            perror(argv[1]);
+        char lnk[5] = ".lnk";
+        char imd_file[1024];
+        sprintf(imd_file, "%s%s", argv[1], lnk);
+        FILE *fp = fopen(imd_file, "w");
+        IncludedNode *head = (IncludedNode *)malloc(sizeof(IncludedNode));
+        head->filename = NULL;
+        head->pre = head->next = head;
+        link_include(head, argv[1], fp);
+        fclose(fp);
+        if(!(yyin = fopen(imd_file, "r"))){
+            perror(imd_file);
             return 0;
         }
         yylex();
