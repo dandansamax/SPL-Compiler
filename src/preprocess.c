@@ -4,8 +4,9 @@
 #include <ctype.h>
 #include "preprocess.h"
 
- void link_include(const char *input_file, const char *output_file)
+void link_include(const char *input_file, const char *output_file)
 {
+  int line_number = 0;
   char buf[1024];
   FILE *fp = fopen(input_file, "r");
   if (fp == NULL)
@@ -13,7 +14,7 @@
     perror("open file");
     exit(0);
   }
-  FILE *fd = fopen(output_file, "w");
+  FILE *fd = fopen(output_file, "a+");
   if (fd == NULL)
   {
     perror("open file");
@@ -21,16 +22,19 @@
   }
   while (fgets(buf, sizeof(buf), fp) != NULL)
   {
-    if(strncmp(buf, "#include", 8)){
-      
+    line_number++;
+    if (!strncmp(buf, "#include", 8))
+    {
+      strtok(buf, "\"");
+      char *inc_file = strtok(NULL, "\"");
+      link_include(inc_file, output_file);
+      continue;
     }
     fputs(buf, fd);
-    printf("%s", buf);
   }
-
+  fputs("\n", fd);
   fclose(fd);
   fclose(fp);
-  return 0;
 }
 
 int def_new_macro(MacroNode *head, int is_object, char *value, char *sub, int start_line)
@@ -96,75 +100,75 @@ int add_include(IncludeNode *head, char *filename, int line_number)
 
 int parse_define(MacroNode *head, char *def_line, int line_number)
 {
-  char name[1000];
-  char arg_name[100];
-  ArgNode *arg_head = (ArgNode *)malloc(sizeof(ArgNode));
-  arg_head->pre = arg_head->next = arg_head;
-  arg_head->arg_name = NULL;
-  int index = 0;
-  int inside = 0;
-  int ready_for_arg = 0;
-  int arg_count = 0;
-  char c;
-  while ((c = input()) == ' ')
-  {
-  };
-  do
-  {
-    if (c == '\n')
-    {
-      printf("Macro error at line %d", line_number);
-      return 0;
-    }
-    else if (c == '(')
-    {
-      if (inside)
-      {
-        printf("Macro error at line %d", line_number);
-        return 0;
-      }
-      else
-      {
+  // char name[1000];
+  // char arg_name[100];
+  // ArgNode *arg_head = (ArgNode *)malloc(sizeof(ArgNode));
+  // arg_head->pre = arg_head->next = arg_head;
+  // arg_head->arg_name = NULL;
+  // int index = 0;
+  // int inside = 0;
+  // int ready_for_arg = 0;
+  // int arg_count = 0;
+  // char c;
+  // while ((c = input()) == ' ')
+  // {
+  // };
+  // do
+  // {
+  //   if (c == '\n')
+  //   {
+  //     printf("Macro error at line %d", line_number);
+  //     return 0;
+  //   }
+  //   else if (c == '(')
+  //   {
+  //     if (inside)
+  //     {
+  //       printf("Macro error at line %d", line_number);
+  //       return 0;
+  //     }
+  //     else
+  //     {
 
-        inside = 1;
-        ready_for_arg = 1;
-      }
-    }
-    else if (c == ')')
-    {
-      if (!inside)
-      {
-        printf("Macro error at line %d", line_number);
-        return 0;
-      }
-      else
-      {
-        inside = 0;
-      }
-    }
-    else if (c == ',' && inside)
-    {
-      if (ready_for_arg)
-      {
-        printf("Macro error at line %d", line_number);
-        return 0;
-      }
-      else
-      {
-        ready_for_arg = 1;
-      }
-    }
-    else if (c == '')
-      buffer[index++] = c;
-  } while ((c = input()) != ' ' || inside);
+  //       inside = 1;
+  //       ready_for_arg = 1;
+  //     }
+  //   }
+  //   else if (c == ')')
+  //   {
+  //     if (!inside)
+  //     {
+  //       printf("Macro error at line %d", line_number);
+  //       return 0;
+  //     }
+  //     else
+  //     {
+  //       inside = 0;
+  //     }
+  //   }
+  //   else if (c == ',' && inside)
+  //   {
+  //     if (ready_for_arg)
+  //     {
+  //       printf("Macro error at line %d", line_number);
+  //       return 0;
+  //     }
+  //     else
+  //     {
+  //       ready_for_arg = 1;
+  //     }
+  //   }
+  //   else if (c == '')
+  //     buffer[index++] = c;
+  // } while ((c = input()) != ' ' || inside);
 
-  while ((c = input()) == ' ')
-    ;
-  do
-  {
-    buffer[index++] = c;
-  } while ((c = input()) != '\n');
-  return 1;
+  // while ((c = input()) == ' ')
+  //   ;
+  // do
+  // {
+  //   buffer[index++] = c;
+  // } while ((c = input()) != '\n');
+  // return 1;
 }
 
 int parse_undefine(MacroNode *head, char *def_line, int line_number)
@@ -200,4 +204,9 @@ void print_token(Token *head)
     cur_node = cur_node->next;
     printf("%s", cur_node->value);
   }
+}
+
+int main()
+{
+  link_include("./test1.spl", "./test1.lnk");
 }
