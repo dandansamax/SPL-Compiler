@@ -1,3 +1,13 @@
+typedef enum TokenType
+{
+  ID,
+  DEF,
+  UNDEF,
+  INC,
+  CHAR,
+  NL
+} TokenType;
+
 typedef struct HideNode
 {
   struct HideNode *next, *pre;
@@ -8,6 +18,7 @@ typedef struct Token
 {
   struct Token *next, *pre;
   HideNode *hide_set;
+  TokenType type;
   char *value;
   int line_number;
 } Token;
@@ -36,7 +47,7 @@ typedef struct IncludeNode
   int line_number;
 } IncludeNode;
 
-
+void link_include(const char *input_file, const char *output_file);
 
 void expand();
 
@@ -54,6 +65,6 @@ int parse_undefine(MacroNode *head, char *def_line, int line_number);
 
 int parse_include(IncludeNode *head, char *def_line, int line_number);
 
-void append_token(Token *head, char *value, int line_number);
+void append_token(Token *head, char *value, int line_number, TokenType type);
 
 void print_token(Token *head);

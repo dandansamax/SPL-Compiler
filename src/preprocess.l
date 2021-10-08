@@ -19,69 +19,35 @@ id {letter_}({letter_}|{digit})*
 
 %%
 
-{include}\s+ { parse_include(include_set, yytext, yylineno); }
-{define}\s+ {
-    char buff[100];
-    int macro_len = 0;
-    int state = 0;
-    end = 0;
-    char c;
-    while (!end) {
-        switch (state) {
-            case 0:
-                c = input();
-                if (isalpha(c) || c == '_')
-                {
-                    buff[macro_len++] = c;
-                    state = 1;
-                }
-                else {
-                    printf("Error Macro at line %d", yylineno);
-                    return;
-                }
-                break;
-            case 1:
-                c = input();
-                if (isalnum(c) || c == '_')
-                {
-                    buff[macro_len++] = c;
-                    state = 1;
-                } else if (c == '\n')
-                {
-                    printf("Error Macro at line %d", yylineno);
-                    return;
-                } else {
-                    end = 1;
-                }
-        }
-    }
-    switch (state) {
-        case 0:
-
-    if(isalpha(c) || c == '_'){
-
-    }
-            break;
-    }
-    if(isalpha(c) || c == '_'){
-
-    }
-    parse_define(macro_set, yytext, yylineno); }
-{undefine}\s+ { parse_undefine(macro_set, yytext, yylineno); }
+{include} {
+    char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
+    strcpy(buf, yytext);
+    append_token(token_sequence, buf, yylineno, INC);
+}
+{define} {
+    char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
+    strcpy(buf, yytext);
+    append_token(token_sequence, buf, yylineno, DEF);
+}
+{undefine} {
+    char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
+    strcpy(buf, yytext);
+    append_token(token_sequence, buf, yylineno, UNDEF);
+}
 {id} { 
     char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
     strcpy(buf, yytext);
-    append_token(token_sequence, buf, yylineno); 
+    append_token(token_sequence, buf, yylineno, ID);
 }
 . { 
     char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
     strcpy(buf, yytext);
-    append_token(token_sequence, buf, yylineno); 
+    append_token(token_sequence, buf, yylineno, CHAR);
 }
 \n { 
     char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
     strcpy(buf, yytext);
-    append_token(token_sequence, buf, yylineno); 
+    append_token(token_sequence, buf, yylineno, NL); 
 }
 
 %%

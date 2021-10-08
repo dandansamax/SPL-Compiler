@@ -4,6 +4,35 @@
 #include <ctype.h>
 #include "preprocess.h"
 
+ void link_include(const char *input_file, const char *output_file)
+{
+  char buf[1024];
+  FILE *fp = fopen(input_file, "r");
+  if (fp == NULL)
+  {
+    perror("open file");
+    exit(0);
+  }
+  FILE *fd = fopen(output_file, "w");
+  if (fd == NULL)
+  {
+    perror("open file");
+    exit(0);
+  }
+  while (fgets(buf, sizeof(buf), fp) != NULL)
+  {
+    if(strncmp(buf, "#include", 8)){
+      
+    }
+    fputs(buf, fd);
+    printf("%s", buf);
+  }
+
+  fclose(fd);
+  fclose(fp);
+  return 0;
+}
+
 int def_new_macro(MacroNode *head, int is_object, char *value, char *sub, int start_line)
 {
   MacroNode *cur_node = head;
@@ -96,7 +125,7 @@ int parse_define(MacroNode *head, char *def_line, int line_number)
       }
       else
       {
-      
+
         inside = 1;
         ready_for_arg = 1;
       }
@@ -148,7 +177,7 @@ int parse_include(IncludeNode *head, char *def_line, int line_number)
   return 1;
 }
 
-void append_token(Token *head, char *value, int line_number)
+void append_token(Token *head, char *value, int line_number, TokenType type)
 {
   Token *new_node = (Token *)malloc(sizeof(Token));
   HideNode *new_hide_node = (HideNode *)malloc(sizeof(HideNode));
