@@ -21,7 +21,7 @@ typedef struct ArgNode
 typedef struct MacroNode
 {
   struct MacroNode *next, *pre;
-  int is_object;
+  int arg_count;
   ArgNode *arg_list;
   char *value;
   char *sub;
