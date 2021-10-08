@@ -8,6 +8,11 @@
 
     // int yydebug=1;
     struct node *root;
+
+    #define MISSING_RP(loc) printf("Error type B at Line %d: Missing closing parenthesis ')'\n",loc->lineno);
+    #define MISSING_EXP(loc,c) printf("Error type B at Line %d: Missing expresion after '"#c"'\n",loc->lineno);
+    #define MISSING_SEMI(loc) printf("Error type B at Line %d: Missing semicolon ';'\n",loc->lineno);
+    #define MISPLACE_DEF(loc) printf("Error type B at Line %d: Misplaced defination\n",loc->lineno);
 %}
 %define parse.error verbose
 
@@ -61,7 +66,7 @@ VarDec: ID {$$=new_node("VarDec","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1)
     ;
 FunDec: ID LP VarList RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
     | ID LP RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
-    | ID LP error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
+    | ID LP error {MISSING_RP($2)}
     ;
 VarList: ParamDec COMMA VarList {$$=new_node("VarList","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | ParamDec {$$=new_node("VarList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
@@ -74,13 +79,13 @@ CompSt: LC DefList StmtList RC {$$=new_node("CompSt","",$1->lineno,NONTERMINAL);
     ;
 StmtList: Stmt StmtList {$$=new_node("StmtList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("StmtList","",-1,NONTERMINAL);}
-    | Stmt Def StmtList error {printf("Error type B at Line %d: Misplaced defination\n",$2->lineno);}
+    | Stmt Def StmtList error {MISPLACE_DEF($2)}
     ;
 Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
-    | Exp error {printf("Error type B at Line %d: Missing semicolon ';'\n",$1->lineno);}
+    | Exp error {MISSING_SEMI($1)}
     | CompSt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | RETURN Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
-    | RETURN Exp error {printf("Error type B at Line %d: Missing semicolon ';'\n",$2->lineno);}
+    | RETURN Exp error {MISSING_SEMI($2)}
     | IF LP Exp RP Stmt %prec LOWER_IF {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     | IF LP Exp RP Stmt ELSE Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,7,$1,$2,$3,$4,$5,$6,$7);}
     | WHILE LP Exp RP Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
@@ -89,10 +94,9 @@ Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$
 /* local definition */
 DefList: Def DefList {$$=new_node("DefList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("DefList","",-1,NONTERMINAL);}
-    // | Stmt DefList error {printf("Error type B at Line %d:  Missing specifier\n",$1->lineno);}
     ;
 Def: Specifier DecList SEMI {$$=new_node("Def","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
-    |Specifier DecList error {printf("Error type B at Line %d: Missing semicolon ';'\n",$2->lineno);}
+    |Specifier DecList error {MISSING_SEMI($2)}
     ;
 DecList: Dec {$$=new_node("DecList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | Dec COMMA DecList {$$=new_node("DecList","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
@@ -115,6 +119,19 @@ Exp: Exp ASSIGN Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$
     | Exp MINUS Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | Exp MUL Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | Exp DIV Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
+    | Exp ASSIGN error {MISSING_EXP($2,=)}
+    | Exp AND error {MISSING_EXP($2,&&)}
+    | Exp OR error {MISSING_EXP($2,||)}
+    | Exp LT error {MISSING_EXP($2,<)}
+    | Exp LE error {MISSING_EXP($2,<=)}
+    | Exp GT error {MISSING_EXP($2,>)}
+    | Exp GE error {MISSING_EXP($2,>=)}
+    | Exp NE error {MISSING_EXP($2,!=)}
+    | Exp EQ error {MISSING_EXP($2,==)}
+    | Exp PLUS error {MISSING_EXP($2,+)}
+    | Exp MINUS error {MISSING_EXP($2,-)}
+    | Exp MUL error {MISSING_EXP($2,*)}
+    | Exp DIV error {MISSING_EXP($2,/)}
     | LP Exp RP {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | MINUS Exp %prec UMINUS {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | NOT Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
@@ -126,8 +143,8 @@ Exp: Exp ASSIGN Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$
     | INT {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | FLOAT {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | CHAR {$$=new_node("Exp","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
-    | LP Exp error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
-    | ID LP error {printf("Error type B at Line %d: Missing closing parenthesis ')'\n",$2->lineno);}
+    | LP Exp error {MISSING_RP($2)}
+    | ID LP error {MISSING_RP($2)}
     | Exp UNKNOWN Exp {}
     | UNKNOWN {}
     ;
