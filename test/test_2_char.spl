@@ -1,5 +1,0 @@
-int test_1_r06()
-{
-    char right_id_1, _right_id_2;
-    right_id_1='0x32';
-}
