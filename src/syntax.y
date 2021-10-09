@@ -11,10 +11,13 @@
 
     #define MISSING_RP(loc) printf("Error type B at Line %d: Missing closing parenthesis ')'\n",loc->lineno);
     #define MISSING_LP(loc) printf("Error type B at Line %d: Missing closing parenthesis '('\n",loc->lineno);
+    #define MISSING_LP_RP(loc) printf("Error type B at Line %d: Missing closing parenthesis '(' and ')'\n",loc->lineno);
     #define MISSING_LB(loc) printf("Error type B at Line %d: Missing closing parenthesis '['\n",loc->lineno);
     #define MISSING_RB(loc) printf("Error type B at Line %d: Missing closing parenthesis ']'\n",loc->lineno);
+    #define MISSING_LB_RB(loc) printf("Error type B at Line %d: Missing closing parenthesis '[' and ']'\n",loc->lineno);
     #define MISSING_LC(loc) printf("Error type B at Line %d: Missing closing parenthesis '{'\n",loc->lineno);
     #define MISSING_RC(loc) printf("Error type B at Line %d: Missing closing parenthesis '}'\n",loc->lineno);
+    #define MISSING_LC_RC(loc) printf("Error type B at Line %d: Missing closing parenthesis '{' and '}'\n",loc->lineno);
     #define REDUNDANT_SEMI(loc) printf("Error type B at Line %d: Redundant semicolon\n",loc->lineno);
     #define REDUNDANT_TYPE(loc) printf("Error type B at Line %d: Redundant type\n",loc->lineno);
     #define MISSING_DECLARATION_CONTENT(loc) printf("Error type B at Line %d: Missing declaration content\n",loc->lineno);
@@ -81,8 +84,12 @@ VarDec: ID {$$=new_node("VarDec","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1)
     | VarDec LB INT error {MISSING_RB($3)}
     ;
 FunDec: ID LP VarList RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
+    | ID VarList RP {MISSING_LP($2)}
     | ID LP RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | ID LP error {MISSING_RP($2)}
+    | ID error RP {MISSING_LP($2)}
+    | ID VarList error{MISSING_LP_RP($1)}
+    | ID error{MISSING_LP_RP($1)}
     ;
 VarList: ParamDec COMMA VarList {$$=new_node("VarList","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     | ParamDec {$$=new_node("VarList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
@@ -107,7 +114,13 @@ Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$
     | RETURN Exp error {MISSING_SEMI($2)}
     | IF LP Exp RP Stmt %prec LOWER_IF {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     | IF LP Exp RP Stmt ELSE Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,7,$1,$2,$3,$4,$5,$6,$7);}
+    | IF error Exp RP Stmt %prec LOWER_IF {MISSING_LP($1)}
+    | IF error Exp RP Stmt ELSE Stmt {MISSING_LP($1)}
+    | IF error Exp error Stmt %prec LOWER_IF {MISSING_LP_RP($1)}
+    | IF error Exp error Stmt ELSE Stmt {MISSING_LP_RP($1)}
     | WHILE LP Exp RP Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
+    | WHILE error Exp RP Stmt {MISSING_LP($1)}
+    | WHILE error Exp error Stmt {MISSING_LP_RP($1)}
     ;
 
 /* local definition */
