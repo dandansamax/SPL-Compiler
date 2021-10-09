@@ -1,4 +1,4 @@
-int test_1_r01(int a, int b
+int test_1_r01(int a, int b)
 {
   if a > b)
   {
@@ -23,7 +23,7 @@ int test_3 int a,int b{
     if a>b{
 
     }else if b>a{
-        
+
     }
 }
 

@@ -24,6 +24,7 @@
     #define MISSING_EXP(loc,c) printf("Error type B at Line %d: Missing expresion after '"#c"'\n",loc->lineno);
     #define MISSING_SEMI(loc) printf("Error type B at Line %d: Missing semicolon ';'\n",loc->lineno);
     #define MISPLACE_DEF(loc) printf("Error type B at Line %d: Misplaced defination\n",loc->lineno);
+    #define MISPLACE_ARR(loc) printf("Error type B at Line %d: You cannot declare an array like that\n",loc->lineno);
 %}
 %define parse.error verbose
 
@@ -68,11 +69,15 @@ ExtDecList: VarDec {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL); link_no
 /* specifier */
 Specifier: 
     TYPE TYPE error {REDUNDANT_TYPE($1)}
+    |TYPE LB INT RB error{MISPLACE_ARR($1)}
+    |TYPE LB RB error{MISPLACE_ARR($1)}
     |TYPE {$$=new_node("Specifier","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | StructSpecifier {$$=new_node("Specifier","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     ;
 StructSpecifier: STRUCT ID LC DefList RC {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
-    | STRUCT ID LC DefList error {MISSING_RC($1)}
+    | STRUCT ID LC DefList error {MISSING_RC($4)}
+    | STRUCT ID error DefList RC {MISSING_LC($2)}
+    | STRUCT ID error DefList error {MISSING_LC_RC($2)}
     | STRUCT ID {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | STRUCT STRUCT ID LC DefList RC error {REDUNDANT_TYPE($1)}
     | STRUCT STRUCT ID{REDUNDANT_TYPE($1)}
@@ -82,6 +87,9 @@ StructSpecifier: STRUCT ID LC DefList RC {$$=new_node("StructSpecifier","",$1->l
 VarDec: ID {$$=new_node("VarDec","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | VarDec LB INT RB {$$=new_node("VarDec","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
     | VarDec LB INT error {MISSING_RB($3)}
+    | VarDec INT RB error {MISSING_LB($3)}
+    | VarDec INT error {MISSING_LB_RB($3)}
+
     ;
 FunDec: ID LP VarList RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
     | ID VarList RP {MISSING_LP($2)}

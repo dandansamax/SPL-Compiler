@@ -1,0 +1,17 @@
+
+struct a{
+    int a0=1;
+;
+
+struct a
+    int a0=1;
+};
+
+struct a
+    int a0=1;
+;
+
+int test_1_r01(int a, int b)
+{
+
+}

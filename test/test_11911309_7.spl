@@ -1,0 +1,6 @@
+int test_1_r01(int a, int b)
+{
+    int[] e;
+    int[5] d;
+    int c 4;
+}
