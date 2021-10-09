@@ -4,7 +4,6 @@
 #include <ctype.h>
 #include <unistd.h>
 #include "preprocess.h"
-Token *token_sequence;
 
 void link_include(IncludedNode *included_list, const char *included_file_path, FILE *fd)
 {
@@ -12,7 +11,7 @@ void link_include(IncludedNode *included_list, const char *included_file_path, F
   const char *included_filename = get_filename(included_file_path);
   if (is_included(included_list, included_filename))
   {
-    printf("[Ignored] Duplicate included file: %s\n", included_filename);
+    fprintf(stderr, "[Ignored] Duplicate included file: %s\n", included_filename);
     return;
   }
   add_included(included_list, included_filename);
@@ -40,7 +39,7 @@ void link_include(IncludedNode *included_list, const char *included_file_path, F
       }
       if (cnt != 2)
       {
-        printf("[Ignored] Include error at file \"%s\" line %d: %s\n", included_file_path, line_cnt, buf);
+        fprintf(stderr, "[Ignored] Include error at file \"%s\" line %d: %s\n", included_file_path, line_cnt, buf);
         continue;
       }
       strtok(buf, "\"");
@@ -151,7 +150,7 @@ Token *parse_define(const Token *head, Token *cur_token, MacroNode *macro_set)
   cur_token = remove_token(cur_token);
   if (cur_token->type != SPC)
   {
-    printf("[Ignored] Macro error at line %d: invalid macro definition\n", line_number);
+    fprintf(stderr, "[Ignored] Macro error at line %d: invalid macro definition\n", line_number);
     // remove the remaining characters in this line
     while (cur_token != head && cur_token->type != NL)
     {
@@ -166,7 +165,7 @@ Token *parse_define(const Token *head, Token *cur_token, MacroNode *macro_set)
   cur_token = remove_token(cur_token);
   if (cur_token->type != ID)
   {
-    printf("[Ignored] Macro error at line %d: invalid macro definition\n", line_number);
+    fprintf(stderr, "[Ignored] Macro error at line %d: invalid macro definition\n", line_number);
     // remove the remaining characters in this line
     while (cur_token != head && cur_token->type != NL)
     {
@@ -182,7 +181,7 @@ Token *parse_define(const Token *head, Token *cur_token, MacroNode *macro_set)
   cur_token = remove_token(cur_token);
   if (cur_token->type != SPC)
   {
-    printf("[Ignored] Macro error at line %d: invalid macro definition\n", line_number);
+    fprintf(stderr, "[Ignored] Macro error at line %d: invalid macro definition\n", line_number);
     // remove the remaining characters in this line
     while (cur_token != head && cur_token->type != NL)
     {
@@ -220,7 +219,7 @@ Token *parse_undefine(const Token *head, Token *cur_token, MacroNode *macro_set)
   cur_token = remove_token(cur_token);
   if (cur_token->type != SPC)
   {
-    printf("[Ignored] Macro error at line %d: invalid macro undef\n", line_number);
+    fprintf(stderr, "[Ignored] Macro error at line %d: invalid macro undef\n", line_number);
     // remove the remaining characters in this line
     while (cur_token != head && cur_token->type != NL)
     {
@@ -235,7 +234,7 @@ Token *parse_undefine(const Token *head, Token *cur_token, MacroNode *macro_set)
   cur_token = remove_token(cur_token);
   if (cur_token->type != ID)
   {
-    printf("[Ignored] Macro error at line %d: invalid macro undef\n", line_number);
+    fprintf(stderr, "[Ignored] Macro error at line %d: invalid macro undef\n", line_number);
     // remove the remaining characters in this line
     while (cur_token != head && cur_token->type != NL)
     {
@@ -251,7 +250,7 @@ Token *parse_undefine(const Token *head, Token *cur_token, MacroNode *macro_set)
   cur_token = remove_token(cur_token);
   if (cur_token->type != SPC && cur_token->type != NL && cur_token != head)
   {
-    printf("[Ignored] Macro error at line %d: invalid macro undef\n", line_number);
+    fprintf(stderr, "[Ignored] Macro error at line %d: invalid macro undef\n", line_number);
     // remove the remaining characters in this line
     while (cur_token != head && cur_token->type != NL)
     {
@@ -292,7 +291,7 @@ void def_new_macro(MacroNode *head, const char *macro, Token *sub, int line_numb
 {
   if (is_defined(head, macro))
   {
-    printf("[Ignored] Macro error at line %d: %s can not be defined twice\n", line_number, macro);
+    fprintf(stderr, "[Ignored] Macro error at line %d: %s can not be defined twice\n", line_number, macro);
     return;
   }
   MacroNode *new_node = (MacroNode *)malloc(sizeof(MacroNode));
@@ -318,7 +317,7 @@ void undef_macro(MacroNode *head, const char *macro, int line_number)
       return;
     }
   }
-  printf("[Ignored] Macro error at line %d: %s can not be undefined because it's not defined\n", line_number, macro);
+  fprintf(stderr, "[Ignored] Macro error at line %d: %s can not be undefined because it's not defined\n", line_number, macro);
 }
 
 int is_defined(MacroNode *head, const char *macro)
