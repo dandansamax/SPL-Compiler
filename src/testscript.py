@@ -14,7 +14,7 @@ if __name__=="__main__":
     data = DATA
     recovered, total = 0, 0
     # print(data.glob('test_1*.spl'))
-    for spl_file in data.glob('test_1*.spl'):
+    for spl_file in data.glob('test_1_r*.spl'):
         print("checking:",spl_file)
         program_out = parser_output(spl_file)
         with open(spl_file.with_suffix('.out'),'r') as output:
