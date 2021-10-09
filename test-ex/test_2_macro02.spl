@@ -1,0 +1,16 @@
+#define INCOMPLETE_MACRO
+#define (INVALID_MACRO) 123
+
+int test_1_r10()
+{
+  (INVALID_MACRO) a, b = 1;
+  a = 10;
+  INCOMPLETE_MACRO i = 0;
+  while (i < a)
+  {
+    b = b + i;
+    i = i + 1;
+  }
+}
+
+#undef (INVALID_MACRO)

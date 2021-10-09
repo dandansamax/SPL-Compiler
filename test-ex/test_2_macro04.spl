@@ -1,0 +1,25 @@
+// this is used to test indirect macro
+
+#define TEST int
+#define TEST_P TEST
+
+TEST_P func_1(TEST_P a)
+{
+  return 3 * a;
+}
+int func_2(TEST_P x, TEST_P y)
+{
+  return x + y;
+}
+
+int test_1_r04(
+{
+  int a, b, c;
+#undef TEST
+#define TEST return
+  c = func_2(func_1(func_1(a+b*func_1(b)), 1.7);
+  TEST_P c;
+}
+
+#undef TEST
+#undef TEST_P
