@@ -68,6 +68,7 @@ hex_number 0[xX]([1-9a-fA-F]{hex_digit}*|0)
 "else" {yylval=new_node("ELSE","", yylineno, OTHER_TOKEN); return ELSE;}
 "while" {yylval=new_node("WHILE","", yylineno, OTHER_TOKEN); return WHILE;}
 "return" {yylval=new_node("RETURN","", yylineno, OTHER_TOKEN); return RETURN;}
+"for" {yylval=new_node("FOR","", yylineno, OTHER_TOKEN); return FOR;}
 \. {yylval=new_node("DOT","", yylineno, OTHER_TOKEN); return DOT;}
 ; {yylval=new_node("SEMI","", yylineno, OTHER_TOKEN); return SEMI;}
 , {yylval=new_node("COMMA","", yylineno, OTHER_TOKEN); return COMMA;}
