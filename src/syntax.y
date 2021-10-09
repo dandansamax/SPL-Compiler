@@ -57,9 +57,9 @@ ExtDefList: ExtDef ExtDefList {$$=new_node("ExtDefList","",$1->lineno,NONTERMINA
     | %empty {$$=new_node("ExtDefList","",-1,NONTERMINAL);}
     ;
 ExtDef: Specifier ExtDecList SEMI {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
-    | Specifier ExtDecList SEMI SEMI{REDUNDANT_SEMI($2)}
+    | Specifier ExtDecList SEMI SEMI{REDUNDANT_SEMI($3)}
     | Specifier SEMI {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
-    | Specifier SEMI SEMI {REDUNDANT_SEMI($1)}
+    | Specifier SEMI SEMI {REDUNDANT_SEMI($2)}
     | Specifier FunDec CompSt {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     ;
 ExtDecList: VarDec {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
@@ -75,7 +75,7 @@ Specifier:
     | StructSpecifier {$$=new_node("Specifier","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     ;
 StructSpecifier: STRUCT ID LC DefList RC {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
-    | STRUCT ID LC DefList error {MISSING_RC($4)}
+    | STRUCT ID LC DefList error {MISSING_RC($3)}
     | STRUCT ID error DefList RC {MISSING_LC($2)}
     | STRUCT ID error DefList error {MISSING_LC_RC($2)}
     | STRUCT ID {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
@@ -114,11 +114,11 @@ StmtList: Stmt StmtList {$$=new_node("StmtList","",$1->lineno,NONTERMINAL); link
     | Stmt Def StmtList error {MISPLACE_DEF($2)}
     ;
 Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
-    | Exp SEMI SEMI error {REDUNDANT_SEMI($1)}
+    | Exp SEMI SEMI error {REDUNDANT_SEMI($2)}
     | Exp error {MISSING_SEMI($1)}
     | CompSt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | RETURN Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
-    | RETURN Exp SEMI SEMI error {REDUNDANT_SEMI($2)}
+    | RETURN Exp SEMI SEMI error {REDUNDANT_SEMI($3)}
     | RETURN Exp error {MISSING_SEMI($2)}
     | IF LP Exp RP Stmt %prec LOWER_IF {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     | IF LP Exp RP Stmt ELSE Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,7,$1,$2,$3,$4,$5,$6,$7);}
@@ -136,7 +136,7 @@ DefList: Def DefList {$$=new_node("DefList","",$1->lineno,NONTERMINAL); link_nod
     | %empty {$$=new_node("DefList","",-1,NONTERMINAL);}
     ;
 Def: Specifier DecList SEMI {$$=new_node("Def","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
-    |Specifier DecList SEMI SEMI {REDUNDANT_SEMI($2)}
+    |Specifier DecList SEMI SEMI {REDUNDANT_SEMI($3)}
     |Specifier DecList error {MISSING_SEMI($2)}
     |Specifier SEMI error{MISSING_DECLARATION_CONTENT($1)}
     ;
