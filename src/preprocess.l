@@ -94,18 +94,20 @@ int main(int argc, char **argv){
     char *file_path;
     if(argc < 2){
         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
-        return 0;
+        return 1;
     } else if(argc == 2)
     {
         char imm[5] = ".imm";
         char imd_file[1024];
         sprintf(imd_file, "%s%s", argv[1], imm);
-        FILE *fp = fopen(imd_file, "w");
 
-        // link the included files
+        // create the intermediate file
+        FILE *fp = fopen(imd_file, "w");
         IncludedNode *included_set = (IncludedNode *)malloc(sizeof(IncludedNode));
         included_set->filename = NULL;
         included_set->pre = included_set->next = included_set;
+
+        // link the source code with the included files
         link_include(included_set, argv[1], fp);
         fclose(fp);
         clear_included(included_set);
@@ -124,18 +126,24 @@ int main(int argc, char **argv){
         macro_set->next = macro_set->pre = macro_set;
         macro_set->macro = NULL;
         macro_set->sub = NULL;
+
+        // break the source code into pieces
         yylex();
 
         // expand the macros
         expand(token_sequence, macro_set);
         clear_macro_set(macro_set);
         macro_set = NULL;
+
+        // print the source codes
         print_token(token_sequence);
+
+        // delete the intermediate file
         remove(imd_file);
-        return 1;
+        return 0;
     } else
     {
         fputs("Too many arguments! Expected: 2.\n", stderr);
-        return 0;
+        return 1;
     }
 }
