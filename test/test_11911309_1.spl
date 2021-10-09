@@ -1,6 +1,8 @@
 int test_1_r01(int a, int b)
 {
-    int c=2;
+   char int c=2;
+   struct struct balaba;{int a =1;
+   };
   if (a > b)
   {
     return a;

@@ -63,11 +63,15 @@ ExtDecList: VarDec {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL); link_no
     ;
 
 /* specifier */
-Specifier: TYPE {$$=new_node("Specifier","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
+Specifier: 
+    TYPE TYPE error {REDUNDANT_TYPE($1)}
+    |TYPE {$$=new_node("Specifier","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | StructSpecifier {$$=new_node("Specifier","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     ;
 StructSpecifier: STRUCT ID LC DefList RC {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     | STRUCT ID {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
+    | STRUCT STRUCT ID LC DefList RC error {REDUNDANT_TYPE($1)}
+    | STRUCT STRUCT ID{REDUNDANT_TYPE($1)}
     ;
 
 /* declarator */
