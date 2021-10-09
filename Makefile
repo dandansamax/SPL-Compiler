@@ -12,17 +12,13 @@ BISON=bison
 	$(BISON) -t -d -v -o src/syntax.tab.c src/syntax.y --debug
 
 splc: .lex .syntax
-	mkdir bin
 	$(CC) src/syntax.tab.c src/tokentree.c -lfl -o bin/splc
-
-debug: .lex .syntax_debug
-	$(CC) src/syntax.tab.c src/tokentree.c -lfl -o bin/splc.debug
 
 .lex_preprocess: src/preprocess.l
 	$(FLEX) -o src/preprocess.yy.c src/preprocess.l
 
 preprocess: .lex_preprocess
-	$(CC) -lfl -o src/preprocess src/preprocess.yy.c src/preprocess.c
+	$(CC) -lfl -o bin/preprocess src/preprocess.yy.c src/preprocess.c
 
 
 # splc:
