@@ -69,6 +69,7 @@ Specifier:
     | StructSpecifier {$$=new_node("Specifier","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     ;
 StructSpecifier: STRUCT ID LC DefList RC {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
+    | STRUCT ID LC DefList error {MISSING_RC($1)}
     | STRUCT ID {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | STRUCT STRUCT ID LC DefList RC error {REDUNDANT_TYPE($1)}
     | STRUCT STRUCT ID{REDUNDANT_TYPE($1)}
@@ -91,6 +92,7 @@ ParamDec: Specifier VarDec {$$=new_node("ParamDec","",$1->lineno,NONTERMINAL); l
 
 /* statement */
 CompSt: LC DefList StmtList RC {$$=new_node("CompSt","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
+    | LC DefList StmtList error{MISSING_RC($3)}
     ;
 StmtList: Stmt StmtList {$$=new_node("StmtList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("StmtList","",-1,NONTERMINAL);}
