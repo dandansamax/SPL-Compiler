@@ -1,17 +1,19 @@
 typedef enum TokenType
 {
-  ID,
-  DEF,
-  UNDEF,
-  INC,
-  CHAR,
-  NL
+  DEF = 1,
+  UNDEF = 2,
+  ID = 3,
+  CHAR = 4,
+  NL = 5,
+  STR = 6,
+  SPC = 7,
+  SUB = 8
 } TokenType;
 
 typedef struct HideNode
 {
   struct HideNode *next, *pre;
-  char *value;
+  const char *macro;
 } HideNode;
 
 typedef struct Token
@@ -19,25 +21,15 @@ typedef struct Token
   struct Token *next, *pre;
   HideNode *hide_set;
   TokenType type;
-  char *value;
+  const char *value;
   int line_number;
 } Token;
-
-typedef struct ArgNode
-{
-  struct ArgNode *next, *pre;
-  char *arg_name;
-} ArgNode;
 
 typedef struct MacroNode
 {
   struct MacroNode *next, *pre;
-  int arg_count;
-  ArgNode *arg_list;
-  char *value;
-  char *sub;
-  int start_line;
-  int end_line;
+  const char *macro;
+  Token *sub;
 } MacroNode;
 
 typedef struct IncludedNode
@@ -48,28 +40,44 @@ typedef struct IncludedNode
 
 void link_include(IncludedNode *included_list, const char *included_file, FILE *fd);
 
-void expand();
+void expand(Token *token_sequence, MacroNode *macro_set);
 
-int in_set();
+Token *remove_token(Token *token);
 
-int def_new_macro(MacroNode *head, int is_object, char *value, char *sub, int start_line);
+Token *get_sub(MacroNode *head, const char *macro);
 
-int undef_macro(MacroNode *head, char *value, int end_line);
+Token *generate_sub_sequence(const Token *head, const HideNode *hide_set);
+
+Token *parse_define(const Token *head, Token *cur_token, MacroNode *macro_set);
+
+Token *parse_undefine(const Token *head, Token *cur_token, MacroNode *macro_set);
+
+Token *substitute(Token *cur_token, MacroNode *macro_set);
+
+void def_new_macro(MacroNode *head, const char *macro, Token *sub, int line_number);
+
+void undef_macro(MacroNode *head, const char *macro, int line_number);
+
+int is_defined(MacroNode *head, const char *macro);
+
+void clear_macro_set(MacroNode *head);
+
+void add_hide_node(HideNode *head, const char *macro);
+
+int is_hidden(HideNode *head, const char *macro);
+
+HideNode *copy_hide_set(const HideNode *head);
+
+void add_included(IncludedNode *head, const char *filename);
 
 int is_included(IncludedNode *head, const char *filename);
 
-void add_included(IncludedNode *head, const char *filename);
+void clear_included(IncludedNode *head);
 
 char *get_rel_path(const char *file_path);
 
 char *get_filename(const char *file_path);
 
-int parse_define(MacroNode *head, char *def_line, int line_number);
-
-int parse_undefine(MacroNode *head, char *def_line, int line_number);
-
-void append_token(Token *head, char *value, int line_number, TokenType type);
+void append_token(Token *head, const char *value, int line_number, TokenType type);
 
 void print_token(Token *head);
-
-void print_include(IncludedNode *head);
