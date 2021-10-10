@@ -55,8 +55,12 @@ void link_include(IncludedNode *included_list, const char *included_file_path, F
   fclose(fp);
 }
 
-void expand(Token *token_sequence, MacroNode *macro_set)
+void expand(Token *token_sequence)
 {
+  MacroNode *macro_set = (MacroNode *)malloc(sizeof(MacroNode));
+  macro_set->next = macro_set->pre = macro_set;
+  macro_set->macro = NULL;
+  macro_set->sub = NULL;
   Token *cur_node = token_sequence->next;
   while (cur_node != token_sequence)
   {
@@ -81,6 +85,7 @@ void expand(Token *token_sequence, MacroNode *macro_set)
       cur_node = cur_node->next;
     }
   }
+  clear_macro_set(macro_set);
 }
 
 Token *remove_token(Token *token)
@@ -473,13 +478,13 @@ void append_token(Token *head, const char *value, int line_number, TokenType typ
 
 char *print_token(Token *head)
 {
-  char* rnt=malloc(MAX_SIZE);
-  strcpy(rnt,"");
+  char *rnt = malloc(MAX_SIZE);
+  strcpy(rnt, "");
   Token *cur_node = head;
   while (cur_node->next != head)
   {
     cur_node = cur_node->next;
-    strcat(rnt,cur_node->value);
+    strcat(rnt, cur_node->value);
   }
   return rnt;
 }

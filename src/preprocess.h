@@ -48,7 +48,7 @@ typedef struct IncludedNode
 
 void link_include(IncludedNode *included_list, const char *included_file, FILE *fd);
 
-void expand(Token *token_sequence, MacroNode *macro_set);
+void expand(Token *token_sequence);
 
 Token *remove_token(Token *token);
 

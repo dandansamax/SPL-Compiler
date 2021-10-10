@@ -174,18 +174,12 @@ char* preprocess(char *file_path){
         token_sequence->hide_set = NULL;
         token_sequence->type = SUB;
         token_sequence->value = NULL;
-        MacroNode *macro_set = (MacroNode *)malloc(sizeof(MacroNode));
-        macro_set->next = macro_set->pre = macro_set;
-        macro_set->macro = NULL;
-        macro_set->sub = NULL;
 
         // break the source code into pieces
         yylex();
 
         // expand the macros
-        expand(token_sequence, macro_set);
-        clear_macro_set(macro_set);
-        macro_set = NULL;
+        expand(token_sequence);
 
         // delete the intermediate file
         remove(imd_file);
