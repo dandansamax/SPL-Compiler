@@ -11,23 +11,25 @@
     // int yydebug=1;
     struct node *root;
 
-    #define MISSING_RP(loc) printf("Error type B at Line %d: Missing closing parenthesis ')'\n",loc->lineno);
-    #define MISSING_LP(loc) printf("Error type B at Line %d: Missing closing parenthesis '('\n",loc->lineno);
-    #define MISSING_LP_RP(loc) printf("Error type B at Line %d: Missing closing parenthesis '(' and ')'\n",loc->lineno);
-    #define MISSING_LB(loc) printf("Error type B at Line %d: Missing closing parenthesis '['\n",loc->lineno);
-    #define MISSING_RB(loc) printf("Error type B at Line %d: Missing closing parenthesis ']'\n",loc->lineno);
-    #define MISSING_LB_RB(loc) printf("Error type B at Line %d: Missing closing parenthesis '[' and ']'\n",loc->lineno);
-    #define MISSING_LC(loc) printf("Error type B at Line %d: Missing closing parenthesis '{'\n",loc->lineno);
-    #define MISSING_RC(loc) printf("Error type B at Line %d: Missing closing parenthesis '}'\n",loc->lineno);
-    #define MISSING_LC_RC(loc) printf("Error type B at Line %d: Missing closing parenthesis '{' and '}'\n",loc->lineno);
-    #define REDUNDANT_SEMI(loc) printf("Error type B at Line %d: Redundant semicolon\n",loc->lineno);
-    #define REDUNDANT_TYPE(loc) printf("Error type B at Line %d: Redundant type\n",loc->lineno);
-    #define MISSING_DECLARATION_CONTENT(loc) printf("Error type B at Line %d: Missing declaration content\n",loc->lineno);
-    #define MISSING_EXP(loc,c) printf("Error type B at Line %d: Missing expresion after '"#c"'\n",loc->lineno);
-    #define MISSING_SEMI(loc) printf("Error type B at Line %d: Missing semicolon ';'\n",loc->lineno);
-    #define MISPLACE_DEF(loc) printf("Error type B at Line %d: Misplaced defination\n",loc->lineno);
-    #define MISPLACE_ARR(loc) printf("Error type B at Line %d: Invalid array declaration\n",loc->lineno);
-    #define INVALID_FOR(loc) printf("Error type B at Line %d: Invalid 'for' statement \n",loc->lineno);
+    FILE *output_file;
+
+    #define MISSING_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis ')'\n",loc->lineno);
+    #define MISSING_LP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '('\n",loc->lineno);
+    #define MISSING_LP_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '(' and ')'\n",loc->lineno);
+    #define MISSING_LB(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '['\n",loc->lineno);
+    #define MISSING_RB(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis ']'\n",loc->lineno);
+    #define MISSING_LB_RB(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '[' and ']'\n",loc->lineno);
+    #define MISSING_LC(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '{'\n",loc->lineno);
+    #define MISSING_RC(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '}'\n",loc->lineno);
+    #define MISSING_LC_RC(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '{' and '}'\n",loc->lineno);
+    #define REDUNDANT_SEMI(loc) fprintf(output_file,"Error type B at Line %d: Redundant semicolon\n",loc->lineno);
+    #define REDUNDANT_TYPE(loc) fprintf(output_file,"Error type B at Line %d: Redundant type\n",loc->lineno);
+    #define MISSING_DECLARATION_CONTENT(loc) fprintf(output_file,"Error type B at Line %d: Missing declaration content\n",loc->lineno);
+    #define MISSING_EXP(loc,c) fprintf(output_file,"Error type B at Line %d: Missing expresion after '"#c"'\n",loc->lineno);
+    #define MISSING_SEMI(loc) fprintf(output_file,"Error type B at Line %d: Missing semicolon ';'\n",loc->lineno);
+    #define MISPLACE_DEF(loc) fprintf(output_file,"Error type B at Line %d: Misplaced defination\n",loc->lineno);
+    #define MISPLACE_ARR(loc) fprintf(output_file,"Error type B at Line %d: Invalid array declaration\n",loc->lineno);
+    #define INVALID_FOR(loc) fprintf(output_file,"Error type B at Line %d: Invalid 'for' statement \n",loc->lineno);
 %}
 %define parse.error verbose
 
@@ -220,7 +222,7 @@ int main(int argc, char **argv){
     // -o output file
     // -i intermdeia file
 
-    char intermdedia[32]={},output[32]={},c;
+    char intermdedia[128]={},output[128]={},c;
 
     while ((c=getopt(argc,argv,"i:o:"))!=-1){
         switch (c){
@@ -232,12 +234,14 @@ int main(int argc, char **argv){
                 break;
         }
     }
-
-    FILE *output_file=stdout;
-    if (output[0]!=0){
-        output_file=fopen(output,"w");
-        // printf("output %s file is load\n",output);
+    char input[128];
+    strcpy(input,argv[optind]);
+    
+    if (output[0]==0){
+        strcpy(output,strcat(strtok(input,"."),".out"));
     }
+
+    output_file=fopen(output,"w");
 
     int remain_arg = argc-optind;
 
@@ -281,10 +285,8 @@ int main(int argc, char **argv){
             print_tree(root,0,output_file);
         }
 
-        if (output[0]!=0){
-            fclose(output_file);
-        }
-
+        fclose(output_file);
+        
         yy_delete_buffer(bp);
 	    yylex_destroy();
         return EXIT_OK;
