@@ -1,5 +1,7 @@
 %{
     #include "tokentree.h"
+    #include "preprocess.h"
+    #include <unistd.h>
 
     #include "lex.yy.c"
     void yyerror(const char*);
@@ -9,28 +11,31 @@
     // int yydebug=1;
     struct node *root;
 
-    #define MISSING_RP(loc) printf("Error type B at Line %d: Missing closing parenthesis ')'\n",loc->lineno);
-    #define MISSING_LP(loc) printf("Error type B at Line %d: Missing closing parenthesis '('\n",loc->lineno);
-    #define MISSING_LP_RP(loc) printf("Error type B at Line %d: Missing closing parenthesis '(' and ')'\n",loc->lineno);
-    #define MISSING_LB(loc) printf("Error type B at Line %d: Missing closing parenthesis '['\n",loc->lineno);
-    #define MISSING_RB(loc) printf("Error type B at Line %d: Missing closing parenthesis ']'\n",loc->lineno);
-    #define MISSING_LB_RB(loc) printf("Error type B at Line %d: Missing closing parenthesis '[' and ']'\n",loc->lineno);
-    #define MISSING_LC(loc) printf("Error type B at Line %d: Missing closing parenthesis '{'\n",loc->lineno);
-    #define MISSING_RC(loc) printf("Error type B at Line %d: Missing closing parenthesis '}'\n",loc->lineno);
-    #define MISSING_LC_RC(loc) printf("Error type B at Line %d: Missing closing parenthesis '{' and '}'\n",loc->lineno);
-    #define REDUNDANT_SEMI(loc) printf("Error type B at Line %d: Redundant semicolon\n",loc->lineno);
-    #define REDUNDANT_TYPE(loc) printf("Error type B at Line %d: Redundant type\n",loc->lineno);
-    #define MISSING_DECLARATION_CONTENT(loc) printf("Error type B at Line %d: Missing declaration content\n",loc->lineno);
-    #define MISSING_EXP(loc,c) printf("Error type B at Line %d: Missing expresion after '"#c"'\n",loc->lineno);
-    #define MISSING_SEMI(loc) printf("Error type B at Line %d: Missing semicolon ';'\n",loc->lineno);
-    #define MISPLACE_DEF(loc) printf("Error type B at Line %d: Misplaced defination\n",loc->lineno);
-    #define MISPLACE_ARR(loc) printf("Error type B at Line %d: You cannot declare an array like that\n",loc->lineno);
+    FILE *output_file;
+
+    #define MISSING_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis ')'\n",loc->lineno);
+    #define MISSING_LP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '('\n",loc->lineno);
+    #define MISSING_LP_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '(' and ')'\n",loc->lineno);
+    #define MISSING_LB(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '['\n",loc->lineno);
+    #define MISSING_RB(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis ']'\n",loc->lineno);
+    #define MISSING_LB_RB(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '[' and ']'\n",loc->lineno);
+    #define MISSING_LC(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '{'\n",loc->lineno);
+    #define MISSING_RC(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '}'\n",loc->lineno);
+    #define MISSING_LC_RC(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '{' and '}'\n",loc->lineno);
+    #define REDUNDANT_SEMI(loc) fprintf(output_file,"Error type B at Line %d: Redundant semicolon\n",loc->lineno);
+    #define REDUNDANT_TYPE(loc) fprintf(output_file,"Error type B at Line %d: Redundant type\n",loc->lineno);
+    #define MISSING_DECLARATION_CONTENT(loc) fprintf(output_file,"Error type B at Line %d: Missing declaration content\n",loc->lineno);
+    #define MISSING_EXP(loc,c) fprintf(output_file,"Error type B at Line %d: Missing expresion after '"#c"'\n",loc->lineno);
+    #define MISSING_SEMI(loc) fprintf(output_file,"Error type B at Line %d: Missing semicolon ';'\n",loc->lineno);
+    #define MISPLACE_DEF(loc) fprintf(output_file,"Error type B at Line %d: Misplaced defination\n",loc->lineno);
+    #define MISPLACE_ARR(loc) fprintf(output_file,"Error type B at Line %d: Invalid array declaration\n",loc->lineno);
+    #define INVALID_FOR(loc) fprintf(output_file,"Error type B at Line %d: Invalid 'for' statement \n",loc->lineno);
 %}
 %define parse.error verbose
 
 %token INT CHAR FLOAT ID
 %token TYPE
-%token STRUCT IF WHILE RETURN
+%token STRUCT IF WHILE RETURN FOR
 %token SEMI COMMA 
 %token LC RC
 
@@ -57,9 +62,9 @@ ExtDefList: ExtDef ExtDefList {$$=new_node("ExtDefList","",$1->lineno,NONTERMINA
     | %empty {$$=new_node("ExtDefList","",-1,NONTERMINAL);}
     ;
 ExtDef: Specifier ExtDecList SEMI {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
-    | Specifier ExtDecList SEMI SEMI{REDUNDANT_SEMI($2)}
+    | Specifier ExtDecList SEMI SEMI{REDUNDANT_SEMI($3)}
     | Specifier SEMI {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
-    | Specifier SEMI SEMI {REDUNDANT_SEMI($1)}
+    | Specifier SEMI SEMI {REDUNDANT_SEMI($2)}
     | Specifier FunDec CompSt {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
     ;
 ExtDecList: VarDec {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
@@ -69,13 +74,13 @@ ExtDecList: VarDec {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL); link_no
 /* specifier */
 Specifier: 
     TYPE TYPE error {REDUNDANT_TYPE($1)}
-    |TYPE LB INT RB error{MISPLACE_ARR($1)}
-    |TYPE LB RB error{MISPLACE_ARR($1)}
-    |TYPE {$$=new_node("Specifier","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
+    | TYPE LB INT RB error{MISPLACE_ARR($1)}
+    | TYPE LB RB error{MISPLACE_ARR($1)}
+    | TYPE {$$=new_node("Specifier","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | StructSpecifier {$$=new_node("Specifier","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     ;
 StructSpecifier: STRUCT ID LC DefList RC {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
-    | STRUCT ID LC DefList error {MISSING_RC($4)}
+    | STRUCT ID LC DefList error {MISSING_RC($3)}
     | STRUCT ID error DefList RC {MISSING_LC($2)}
     | STRUCT ID error DefList error {MISSING_LC_RC($2)}
     | STRUCT ID {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
@@ -114,11 +119,11 @@ StmtList: Stmt StmtList {$$=new_node("StmtList","",$1->lineno,NONTERMINAL); link
     | Stmt Def StmtList error {MISPLACE_DEF($2)}
     ;
 Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
-    | Exp SEMI SEMI error {REDUNDANT_SEMI($1)}
+    | Exp SEMI SEMI error {REDUNDANT_SEMI($2)}
     | Exp error {MISSING_SEMI($1)}
     | CompSt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,1,$1);}
     | RETURN Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
-    | RETURN Exp SEMI SEMI error {REDUNDANT_SEMI($2)}
+    | RETURN Exp SEMI SEMI error {REDUNDANT_SEMI($3)}
     | RETURN Exp error {MISSING_SEMI($2)}
     | IF LP Exp RP Stmt %prec LOWER_IF {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     | IF LP Exp RP Stmt ELSE Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,7,$1,$2,$3,$4,$5,$6,$7);}
@@ -129,14 +134,27 @@ Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$
     | WHILE LP Exp RP Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     | WHILE error Exp RP Stmt {MISSING_LP($1)}
     | WHILE error Exp error Stmt {MISSING_LP_RP($1)}
+    | FOR LP ForArgs RP Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
+    | FOR LP error RP Stmt {INVALID_FOR($2)}
+    | FOR error ForArgs RP Stmt {MISSING_LP($1)}
+    | FOR LP ForArgs error Stmt {MISSING_RP($2)}
     ;
+
+ForArgs: Exp SEMI Exp SEMI Exp {$$=new_node("ForArgs","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
+    | SEMI Exp SEMI Exp {$$=new_node("ForArgs","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
+    | Exp SEMI SEMI Exp {$$=new_node("ForArgs","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
+    | Exp SEMI Exp SEMI {$$=new_node("ForArgs","",$1->lineno,NONTERMINAL); link_nodes($$,4,$1,$2,$3,$4);}
+    | SEMI SEMI Exp {$$=new_node("ForArgs","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
+    | SEMI Exp SEMI {$$=new_node("ForArgs","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
+    | Exp SEMI SEMI {$$=new_node("ForArgs","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
+    | SEMI SEMI {$$=new_node("ForArgs","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
 
 /* local definition */
 DefList: Def DefList {$$=new_node("DefList","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | %empty {$$=new_node("DefList","",-1,NONTERMINAL);}
     ;
 Def: Specifier DecList SEMI {$$=new_node("Def","",$1->lineno,NONTERMINAL); link_nodes($$,3,$1,$2,$3);}
-    |Specifier DecList SEMI SEMI {REDUNDANT_SEMI($2)}
+    |Specifier DecList SEMI SEMI {REDUNDANT_SEMI($3)}
     |Specifier DecList error {MISSING_SEMI($2)}
     |Specifier SEMI error{MISSING_DECLARATION_CONTENT($1)}
     ;
@@ -199,9 +217,81 @@ void yyerror(const char *s) {
     // fprintf(stderr, "%s ---%d\n", s, yylineno);
     error_flag=1;
 }
-int main() {
-    int val=yyparse();
-    if (error_flag==0) {
-        print_tree(root,0);
+int main(int argc, char **argv){
+    char *file_path;
+    // -o output file
+    // -i intermdeia file
+
+    char intermdedia[128]={},output[128]={},c;
+
+    while ((c=getopt(argc,argv,"i:o:"))!=-1){
+        switch (c){
+            case 'i':
+                strcpy(intermdedia,optarg);
+                break;
+            case 'o':
+                strcpy(output,optarg);
+                break;
+        }
+    }
+    char input[128];
+    strcpy(input,argv[optind]);
+    
+    if (output[0]==0){
+        strcpy(output,strcat(strtok(input,"."),".out"));
+    }
+
+    output_file=fopen(output,"w");
+
+    int remain_arg = argc-optind;
+
+    if(remain_arg < 1){
+        fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
+        return EXIT_FAIL;
+    } else if(remain_arg == 1){
+
+
+        file_path = argv[optind];
+        if(!(yyin = fopen(file_path, "r"))){
+            perror(argv[optind]);
+            return EXIT_FAIL;
+        }
+
+        char *processed=preprocess(file_path);
+
+        if (processed==NULL){
+            fprintf(stderr,"error on preprocess\n");
+	    	return EXIT_FAIL;
+        }
+
+        if (intermdedia[0]!=0){
+            FILE *f=fopen(intermdedia,"w");
+            fputs(processed,f);
+            fclose(f);
+        }
+
+        YY_BUFFER_STATE bp = yy_scan_string(processed);
+    
+        //分配失败
+        if (bp == NULL) {
+	    	fprintf(stderr,"error on creating YY_BUFFER_STATE\n");
+	    	return EXIT_FAIL;
+	    }
+	    //将输入源转为指定内存
+	    yy_switch_to_buffer(bp);
+
+        int val=yyparse();
+        if (error_flag==0) {
+            print_tree(root,0,output_file);
+        }
+
+        fclose(output_file);
+        
+        yy_delete_buffer(bp);
+	    yylex_destroy();
+        return EXIT_OK;
+    } else{
+        fputs("Too many arguments! Expected: 1.\n", stderr);
+        return EXIT_FAIL;
     }
 }

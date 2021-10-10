@@ -1,8 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-
 #include "tokentree.h"
 
 struct node *new_node(char *token_name, char *attribute_value, int lineno, int print_type)
@@ -60,36 +55,36 @@ void add_nodes_tail(struct node *root, int num, ...)
     }
 }
 
-void print_tree(struct node *root, int depth)
+void print_tree(struct node *root, int depth, FILE *f)
 {
     if (root->lineno==-1) return;
     for (int i = 0; i < depth; i++)
     {
-        printf("  ");
+        fprintf(f,"  ");
     }
     switch (root->print_type)
     {
     case NONTERMINAL:
-        printf("%s (%d)\n", root->token_name, root->lineno);
+        fprintf(f,"%s (%d)\n", root->token_name, root->lineno);
         break;
 
     case INT_FLOAT_CHAR_TOKEN:
     case ID_TOKEN:
     case TYPE_TOKEN:
-        printf("%s: %s\n", root->token_name, root->attribute_value);
+        fprintf(f,"%s: %s\n", root->token_name, root->attribute_value);
         break;
 
     case OTHER_TOKEN:
-        printf("%s\n", root->token_name);
+        fprintf(f,"%s\n", root->token_name);
     }
     if (root->first_son)
     {
         struct node *cur = root->first_son;
-        print_tree(cur, depth + 1);
+        print_tree(cur, depth + 1, f);
         while (cur->next)
         {
             cur = cur->next;
-            print_tree(cur, depth + 1);
+            print_tree(cur, depth + 1, f);
         }
     }
 }

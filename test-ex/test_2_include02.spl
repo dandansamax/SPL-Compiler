@@ -1,3 +1,6 @@
+// this is used to test loop include detection
+#include "test_2_include01.spl"
+
 int test_1_o01()
 {
   int _wrong_hex_int_1 = 0x77G;
