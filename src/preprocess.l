@@ -20,7 +20,8 @@ id {letter_}({letter_}|{digit})*
 "/*" { char c=input(); int state=0; char test;
     while(1){
         if (c==0){
-            fprintf(stderr,"Error type A at Line %d: cannot find \"*/\"\n",yylineno);
+            fprintf(stderr,"[FATAL] Comment error at line %d: cannot find \"*/\"\n",yylineno);
+            exit(1);
             break;
         }
         switch (state){
@@ -43,7 +44,8 @@ id {letter_}({letter_}|{digit})*
             break;
         }
         else if (state==4){
-            fprintf(stderr,"Error type A at Line %d: multi-line comments cannot be nested\n",yylineno);
+            fprintf(stderr,"[FATAL] Comment error at line %d: multi-line comments cannot be nested\n",yylineno);
+            exit(1);
             break;
         }
         c=input();

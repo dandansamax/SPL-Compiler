@@ -220,7 +220,7 @@ int main(int argc, char **argv){
     // -o output file
     // -i intermdeia file
 
-    char intermdedia[128]={},output[128]={},c;
+    char intermdedia[128]={},output[128]={},input[128]={},c;
 
     while ((c=getopt(argc,argv,"i:o:"))!=-1){
         switch (c){
@@ -232,14 +232,13 @@ int main(int argc, char **argv){
                 break;
         }
     }
-    char input[128];
     strcpy(input,argv[optind]);
     
     if (output[0]==0){
-        strcpy(output,strcat(strtok(input,"."),".out"));
+        char* dot=strrchr(input,'.');
+        strcpy(dot,".out");
+        strcpy(output,input);
     }
-
-    output_file=fopen(output,"w");
 
     int remain_arg = argc-optind;
 
@@ -277,6 +276,8 @@ int main(int argc, char **argv){
 	    }
 	    //将输入源转为指定内存
 	    yy_switch_to_buffer(bp);
+
+        output_file=fopen(output,"w");
 
         int val=yyparse();
         if (error_flag==0) {
