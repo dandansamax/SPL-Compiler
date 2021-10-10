@@ -5,7 +5,7 @@ char test_11912921_5(){
         
     }
     else{
-        return c[1];
+        return c[1]; 
 
     }
 }
