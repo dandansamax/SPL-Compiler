@@ -1,0 +1,23 @@
+/*
+This test case is used to test incomplete and invalid macro.
+*/
+
+// no substitute string
+#define INCOMPLETE_MACRO
+// illegal macro name
+#define (INVALID_MACRO) 123
+
+int test_4()
+{
+  (INVALID_MACRO) a, b = 1;
+  a = 10;
+  INCOMPLETE_MACRO i = 0;
+  while (i < a)
+  {
+    b = b + i;
+    i = i + 1;
+  }
+}
+
+// illegal macro name
+#undef (INVALID_MACRO)

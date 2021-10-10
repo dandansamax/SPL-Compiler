@@ -1,0 +1,22 @@
+/*
+This test case is used to test indirect macro.
+*/
+
+#define TEST int
+#define TEST_P TEST
+
+TEST_P test_6()
+{
+  TEST_P dec_int = 323;
+  TEST_P hex_int = 0xFFF;
+  char ch = '\xC0';
+
+#undef TEST
+// The final expansion result of TEST_P will always be equal to the current expansion result of TEST
+#define TEST return
+
+  TEST_P hex_int - dec_int;
+}
+
+#undef TEST
+#undef TEST_P
