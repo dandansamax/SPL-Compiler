@@ -17,8 +17,6 @@ BISON=bison
 splc: .lex .syntax .lex_preprocess
 	$(CC) src/syntax.tab.c src/tokentree.c src/preprocess.yy.c src/preprocess.c -o bin/splc
 
-
-
 preprocess: .lex_preprocess
 	$(CC) -o bin/preprocess src/preprocess.yy.c src/preprocess.c
 

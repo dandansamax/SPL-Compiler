@@ -59,6 +59,7 @@ dkms.conf
 .vscode/
 bin/splc
 bin/preprocess
+bin/preprocess_pure
 how_to_use.txt
 Makefile
 *.output
