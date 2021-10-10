@@ -1,0 +1,14 @@
+int test_11911413_1(int a, int b)
+{
+    int c = 2;
+
+    if (a > b)
+    {
+        return a;
+    }
+    else
+    {
+        return b;
+        ;
+    
+}

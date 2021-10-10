@@ -1,15 +1,9 @@
-int test_1_r01(int a, int b)
+int test_11911309_4(int a, int b)
 {
     
-    int c[5;
-
-    c[1 = 2;
-    c[4+5] =1;
-    int;
-    c[1+2 =3;
   if (a > b)
   {
-    return a;;
+    return @
   }
   else
   {

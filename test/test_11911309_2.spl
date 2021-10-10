@@ -1,13 +1,10 @@
-int test_1_r01(int a, int b)
+int test_11911309_2(int a, int b)
 {
-    int c=2;;
-    int d,e,f;;
+    int c=2;
+    int d,e,f;
   if (a > b)
   {
-    return a;
+    return 0_alyx;
   }
-  else
-  {
-    return b;;
-  }
+
 }

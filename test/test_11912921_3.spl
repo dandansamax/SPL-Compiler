@@ -1,0 +1,5 @@
+char test_11912921_3(){
+    char c1='\xa0';
+    char c2='a';
+    char c3='\xfg';
+}

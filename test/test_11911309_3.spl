@@ -1,13 +1,6 @@
-int test_1_r01(int a, int b)
+int test_11911309_3(int a, int b)
 {
-    int ;
-    int d,e,f;
-  if (a > b)
-  {
-    return a;
-  }
-  else
-  {
-    return b;;
-  }
+    int a;
+    int d,e,f
+
 }

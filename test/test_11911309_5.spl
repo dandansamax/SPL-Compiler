@@ -1,14 +1,4 @@
-int test_1_r01(int a, int b)
+int test_11911309_5(int a, int b)
 {
-  if (a > b)
-  {
-    return a;;
-  }
-  struct str{
-
-  
-  else
-  {
-    return b;
-  }
+  return 0;
 }

@@ -1,0 +1,11 @@
+char test_11912921_5(){
+    int c[5];
+    if(c[1]>=2){
+        return c[0];
+        
+    }
+    else{
+        return c[1];
+
+    }
+}

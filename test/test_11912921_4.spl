@@ -1,9 +1,4 @@
-
-struct action{
-    
-}
-
-int main(int args{
+char test_11912921_4(){
     int arrs[5;
     if(args);
     else;
@@ -11,3 +6,4 @@ int main(int args{
 
     }
 }
+
