@@ -1,5 +1,6 @@
 %{
     #include "tokentree.h"
+    #include "preprocess.h"
 
     #include "lex.yy.c"
     void yyerror(const char*);
@@ -219,15 +220,38 @@ int main(int argc, char **argv){
         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
         return EXIT_FAIL;
     } else if(argc == 2){
+
+
         file_path = argv[1];
         if(!(yyin = fopen(file_path, "r"))){
             perror(argv[1]);
             return EXIT_FAIL;
         }
+
+        char *processed=preprocess(file_path);
+
+        if (processed==NULL){
+            fprintf(stderr,"error on preprocess\n");
+	    	return EXIT_FAIL;
+        }
+
+        YY_BUFFER_STATE bp = yy_scan_string(processed);
+    
+        //分配失败
+        if (bp == NULL) {
+	    	fprintf(stderr,"error on creating YY_BUFFER_STATE\n");
+	    	return EXIT_FAIL;
+	    }
+	    //将输入源转为指定内存
+	    yy_switch_to_buffer(bp);
+
         int val=yyparse();
         if (error_flag==0) {
             print_tree(root,0);
         }
+
+        yy_delete_buffer(bp);
+	    yylex_destroy();
         return EXIT_OK;
     } else{
         fputs("Too many arguments! Expected: 2.\n", stderr);

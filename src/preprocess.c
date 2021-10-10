@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
 #include "preprocess.h"
 
 void link_include(IncludedNode *included_list, const char *included_file_path, FILE *fd)
@@ -73,11 +68,11 @@ void expand(Token *token_sequence, MacroNode *macro_set)
     {
       cur_node = parse_undefine(token_sequence, cur_node, macro_set);
     }
-    else if (cur_node->type == ID && is_hidden(cur_node->hide_set, cur_node->value))
+    else if (cur_node->type == PREPROCESS_ID && is_hidden(cur_node->hide_set, cur_node->value))
     {
       cur_node = cur_node->next;
     }
-    else if (cur_node->type == ID && is_defined(macro_set, cur_node->value))
+    else if (cur_node->type == PREPROCESS_ID && is_defined(macro_set, cur_node->value))
     {
       cur_node = substitute(cur_node, macro_set);
     }
@@ -163,7 +158,7 @@ Token *parse_define(const Token *head, Token *cur_token, MacroNode *macro_set)
     return cur_token;
   }
   cur_token = remove_token(cur_token);
-  if (cur_token->type != ID)
+  if (cur_token->type != PREPROCESS_ID)
   {
     fprintf(stderr, "[Ignored] Macro error at line %d: invalid macro definition\n", line_number);
     // remove the remaining characters in this line
@@ -232,7 +227,7 @@ Token *parse_undefine(const Token *head, Token *cur_token, MacroNode *macro_set)
     return cur_token;
   }
   cur_token = remove_token(cur_token);
-  if (cur_token->type != ID)
+  if (cur_token->type != PREPROCESS_ID)
   {
     fprintf(stderr, "[Ignored] Macro error at line %d: invalid macro undef\n", line_number);
     // remove the remaining characters in this line
@@ -476,13 +471,15 @@ void append_token(Token *head, const char *value, int line_number, TokenType typ
   head->pre = new_node;
 }
 
-void print_token(Token *head)
+char *print_token(Token *head)
 {
+  char* rnt=malloc(MAX_SIZE);
+  strcpy(rnt,"");
   Token *cur_node = head;
   while (cur_node->next != head)
   {
     cur_node = cur_node->next;
-    printf("%s", cur_node->value);
+    strcat(rnt,cur_node->value);
   }
-  printf("\n");
+  return rnt;
 }

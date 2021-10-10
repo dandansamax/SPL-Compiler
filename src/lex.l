@@ -16,6 +16,7 @@
 %}
 
 %option yylineno
+%option noyywrap
 
 letter [a-zA-Z]
 letter_ {letter}|_

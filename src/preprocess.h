@@ -1,9 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <unistd.h>
+
+#define MAX_SIZE 4*1024*1024
+
 typedef enum TokenType
 {
   DEF = 1,
   UNDEF = 2,
-  ID = 3,
-  CHAR = 4,
+  PREPROCESS_ID = 3,
+  PREPROCESS_CHAR = 4,
   NL = 5,
   STR = 6,
   SPC = 7,
@@ -80,4 +88,6 @@ char *get_filename(const char *file_path);
 
 void append_token(Token *head, const char *value, int line_number, TokenType type);
 
-void print_token(Token *head);
+char *print_token(Token *head);
+
+char* preprocess(char*);
