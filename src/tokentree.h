@@ -1,3 +1,7 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
 #ifndef TOKEN_TREE
 #define TOKEN_TREE
 
@@ -22,6 +26,6 @@ void add_node_head(struct node *, struct node *);
 
 void add_nodes_tail(struct node *, int, ...);
 
-void print_tree(struct node *root, int depth);
+void print_tree(struct node *, int, FILE *);
 
 #endif

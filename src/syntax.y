@@ -1,6 +1,7 @@
 %{
     #include "tokentree.h"
     #include "preprocess.h"
+    #include <unistd.h>
 
     #include "lex.yy.c"
     void yyerror(const char*);
@@ -216,15 +217,39 @@ void yyerror(const char *s) {
 }
 int main(int argc, char **argv){
     char *file_path;
-    if(argc < 2){
+    // -o output file
+    // -i intermdeia file
+
+    char intermdedia[32]={},output[32]={},c;
+
+    while ((c=getopt(argc,argv,"i:o:"))!=-1){
+        switch (c){
+            case 'i':
+                strcpy(intermdedia,optarg);
+                break;
+            case 'o':
+                strcpy(output,optarg);
+                break;
+        }
+    }
+
+    FILE *output_file=stdout;
+    if (output[0]!=0){
+        output_file=fopen(output,"w");
+        // printf("output %s file is load\n",output);
+    }
+
+    int remain_arg = argc-optind;
+
+    if(remain_arg < 1){
         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
         return EXIT_FAIL;
-    } else if(argc == 2){
+    } else if(remain_arg == 1){
 
 
-        file_path = argv[1];
+        file_path = argv[optind];
         if(!(yyin = fopen(file_path, "r"))){
-            perror(argv[1]);
+            perror(argv[optind]);
             return EXIT_FAIL;
         }
 
@@ -233,6 +258,12 @@ int main(int argc, char **argv){
         if (processed==NULL){
             fprintf(stderr,"error on preprocess\n");
 	    	return EXIT_FAIL;
+        }
+
+        if (intermdedia[0]!=0){
+            FILE *f=fopen(intermdedia,"w");
+            fputs(processed,f);
+            fclose(f);
         }
 
         YY_BUFFER_STATE bp = yy_scan_string(processed);
@@ -247,14 +278,18 @@ int main(int argc, char **argv){
 
         int val=yyparse();
         if (error_flag==0) {
-            print_tree(root,0);
+            print_tree(root,0,output_file);
+        }
+
+        if (output[0]!=0){
+            fclose(output_file);
         }
 
         yy_delete_buffer(bp);
 	    yylex_destroy();
         return EXIT_OK;
     } else{
-        fputs("Too many arguments! Expected: 2.\n", stderr);
+        fputs("Too many arguments! Expected: 1.\n", stderr);
         return EXIT_FAIL;
     }
 }
