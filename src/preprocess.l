@@ -99,11 +99,11 @@ id {letter_}({letter_}|{digit})*
 //     } else if(argc == 2)
 //     {
 //         char imm[5] = ".imm";
-//         char imd_file[1024];
-//         sprintf(imd_file, "%s%s", argv[1], imm);
+//         char lnk_file[1024];
+//         sprintf(lnk_file, "%s%s", argv[1], imm);
 
 //         // create the intermediate file
-//         FILE *fp = fopen(imd_file, "w");
+//         FILE *fp = fopen(lnk_file, "w");
 //         IncludedNode *included_set = (IncludedNode *)malloc(sizeof(IncludedNode));
 //         included_set->filename = NULL;
 //         included_set->pre = included_set->next = included_set;
@@ -113,8 +113,8 @@ id {letter_}({letter_}|{digit})*
 //         fclose(fp);
 //         clear_included(included_set);
 //         included_set = NULL;
-//         if(!(yyin = fopen(imd_file, "r"))){
-//             perror(imd_file);
+//         if(!(yyin = fopen(lnk_file, "r"))){
+//             perror(lnk_file);
 //             return 0;
 //         }
 //         token_sequence = (Token *)malloc(sizeof(Token));
@@ -140,7 +140,7 @@ id {letter_}({letter_}|{digit})*
 //         print_token(token_sequence);
 
 //         // delete the intermediate file
-//         remove(imd_file);
+//         remove(lnk_file);
 //         return 0;
 //     } else
 //     {
@@ -149,12 +149,12 @@ id {letter_}({letter_}|{digit})*
 //     }
 // }
 char* preprocess(char *file_path){
-        char imm[5] = ".imm";
-        char imd_file[1024];
-        sprintf(imd_file, "%s%s", file_path, imm);
+        char lnk[5] = ".lnk";
+        char lnk_file[1024];
+        sprintf(lnk_file, "%s%s", file_path, lnk);
         
         // create the intermediate file
-        FILE *fp = fopen(imd_file, "w");
+        FILE *fp = fopen(lnk_file, "w");
         IncludedNode *included_set = (IncludedNode *)malloc(sizeof(IncludedNode));
         included_set->filename = NULL;
         included_set->pre = included_set->next = included_set;
@@ -164,8 +164,8 @@ char* preprocess(char *file_path){
         fclose(fp);
         clear_included(included_set);
         included_set = NULL;
-        if(!(yyin = fopen(imd_file, "r"))){
-            perror(imd_file);
+        if(!(yyin = fopen(lnk_file, "r"))){
+            perror(lnk_file);
             return NULL;
         }
         token_sequence = (Token *)malloc(sizeof(Token));
@@ -182,7 +182,7 @@ char* preprocess(char *file_path){
         expand(token_sequence);
 
         // delete the intermediate file
-        remove(imd_file);
+        remove(lnk_file);
 
         // print the source codes
         return print_token(token_sequence);
