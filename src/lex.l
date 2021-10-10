@@ -8,6 +8,7 @@
     #define YYSTYPE struct node *
 
     int error_flag=0;
+    FILE *output_file;
 
     #include "syntax.tab.h"
 
@@ -28,41 +29,6 @@ hex_number 0[xX]([1-9a-fA-F]{hex_digit}*|0)
 
 
 %%
-  //comment
-"//" { char c; while((c=input()) != '\n'); }
-"/*" { char c=input(); int state=0; char test;
-    while(1){
-        if (c==0){
-            printf("Error type A at Line %d: cannot find \"*/\"\n",yylineno);
-            break;
-        }
-        switch (state){
-        case 0:
-            if (c=='*') state=1;
-            else if (c=='/') state=2;
-            break;
-        case 1:
-            if (c=='/') state=3;
-            else if (c=='*') state=1;
-            else state=0;
-            break;
-        case 2:
-            if (c=='*') state=4;
-            else if (c=='/') state=2;
-            else state=0;
-            break;
-        }
-        if (state==3){
-            break;
-        }
-        else if (state==4){
-            printf("Error type A at Line %d: multi-line comments cannot be nested\n",yylineno);
-            error_flag=1;
-            break;
-        }
-        c=input();
-    }
-}
 
 "struct" {yylval=new_node("STRUCT","", yylineno, OTHER_TOKEN); return STRUCT;}
 "if" {yylval=new_node("IF","", yylineno, OTHER_TOKEN); return IF;}
@@ -118,9 +84,9 @@ hex_number 0[xX]([1-9a-fA-F]{hex_digit}*|0)
 [\n\t\r ]+ { /* does nothing when seeing white spaces except new line */ }
 
     /* Error handler */
-{digit}({letter_}|{digit})* {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return ID;} //Error id
-\'\\[xX]({digit}|{letter_})*\' {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return CHAR;} //Error char
-. {printf("Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return UNKNOWN;}
+{digit}({letter_}|{digit})* {fprintf(output_file,"Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return ID;} //Error id
+\'\\[xX]({digit}|{letter_})*\' {fprintf(output_file,"Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return CHAR;} //Error char
+. {fprintf(output_file,"Error type A at Line %d: unknown lexeme %s\n",yylineno,yytext); error_flag=1; return UNKNOWN;}
 
 %%
 /* int main(int argc, char **argv){

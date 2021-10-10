@@ -11,8 +11,6 @@
     // int yydebug=1;
     struct node *root;
 
-    FILE *output_file;
-
     #define MISSING_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis ')'\n",loc->lineno);
     #define MISSING_LP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '('\n",loc->lineno);
     #define MISSING_LP_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '(' and ')'\n",loc->lineno);
