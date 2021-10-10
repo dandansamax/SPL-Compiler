@@ -435,8 +435,7 @@ char *get_rel_path(const char *file_path)
     }
     c = file_path[idx++];
   }
-  char *rel_pwd;
-  rel_pwd = (char *)malloc(sizeof(char) * idx);
+  char *rel_pwd = (char *)malloc(sizeof(char) * idx);
   strcpy(rel_pwd, file_path);
   rel_pwd[after_last_idx] = '\0';
   return rel_pwd;
