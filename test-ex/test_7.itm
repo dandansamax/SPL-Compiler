@@ -1,0 +1,11 @@
+
+
+
+int func_1(){
+    return TEST + 3;
+}
+
+int func_2(){
+    return LOOP + 3;
+}
+
