@@ -27,7 +27,8 @@
     #define MISSING_SEMI(loc) fprintf(output_file,"Error type B at Line %d: Missing semicolon ';'\n",loc->lineno);
     #define MISPLACE_DEF(loc) fprintf(output_file,"Error type B at Line %d: Misplaced definition\n",loc->lineno);
     #define MISPLACE_ARR(loc) fprintf(output_file,"Error type B at Line %d: Invalid array declaration\n",loc->lineno);
-    #define INVALID_FOR(loc) fprintf(output_file,"Error type B at Line %d: Invalid 'for' statement \n",loc->lineno);
+    #define INVALID_FOR(loc) fprintf(output_file,"Error type B at Line %d: Invalid 'for' statement\n",loc->lineno);
+    #define MISSING_STMT(loc) fprintf(output_file,"Error type B at Line %d: Missing statment\n",loc->lineno);
 %}
 %define parse.error verbose
 
@@ -129,13 +130,17 @@ Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,2,$
     | IF error Exp RP Stmt ELSE Stmt {MISSING_LP($1)}
     | IF error Exp error Stmt %prec LOWER_IF {MISSING_LP_RP($1)}
     | IF error Exp error Stmt ELSE Stmt {MISSING_LP_RP($1)}
+    | IF LP Exp RP error {MISSING_STMT($4)}
+    | IF LP Exp RP Stmt ELSE error {MISSING_STMT($6)}
     | WHILE LP Exp RP Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     | WHILE error Exp RP Stmt {MISSING_LP($1)}
     | WHILE error Exp error Stmt {MISSING_LP_RP($1)}
+    | WHILE LP Exp RP error{MISSING_STMT($4)}
     | FOR LP ForArgs RP Stmt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}
     | FOR LP error RP Stmt {INVALID_FOR($2)}
     | FOR error ForArgs RP Stmt {MISSING_LP($1)}
     | FOR LP ForArgs error Stmt {MISSING_RP($2)}
+    | FOR LP ForArgs RP error {MISSING_STMT($4)}
     ;
 
 ForArgs: Exp SEMI Exp SEMI Exp {$$=new_node("ForArgs","",$1->lineno,NONTERMINAL); link_nodes($$,5,$1,$2,$3,$4,$5);}

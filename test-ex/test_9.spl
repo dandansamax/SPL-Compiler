@@ -1,0 +1,12 @@
+int main(){
+    int a;
+
+    //Missing semicolon
+    for (a=0;a<10) {a=a+1;}
+
+    //Missing parenthesis
+    for (a=0;; {a=a+1;}
+
+    //Missing statement
+    for (a=0;a<10;a=a+1)
+}

@@ -93,63 +93,6 @@ id {letter_}({letter_}|{digit})*
 }
 
 %%
-// int main(int argc, char **argv){
-//     char *file_path;
-//     if(argc < 2){
-//         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
-//         return 1;
-//     } else if(argc == 2)
-//     {
-//         char imm[5] = ".imm";
-//         char lnk_file[1024];
-//         sprintf(lnk_file, "%s%s", argv[1], imm);
-
-//         // create the intermediate file
-//         FILE *fp = fopen(lnk_file, "w");
-//         IncludedNode *included_set = (IncludedNode *)malloc(sizeof(IncludedNode));
-//         included_set->filename = NULL;
-//         included_set->pre = included_set->next = included_set;
-
-//         // link the source code with the included files
-//         link_include(included_set, argv[1], fp);
-//         fclose(fp);
-//         clear_included(included_set);
-//         included_set = NULL;
-//         if(!(yyin = fopen(lnk_file, "r"))){
-//             perror(lnk_file);
-//             return 0;
-//         }
-//         token_sequence = (Token *)malloc(sizeof(Token));
-//         token_sequence->next = token_sequence->pre = token_sequence;
-//         token_sequence->line_number = -1;
-//         token_sequence->hide_set = NULL;
-//         token_sequence->type = SUB;
-//         token_sequence->value = NULL;
-//         MacroNode *macro_set = (MacroNode *)malloc(sizeof(MacroNode));
-//         macro_set->next = macro_set->pre = macro_set;
-//         macro_set->macro = NULL;
-//         macro_set->sub = NULL;
-
-//         // break the source code into pieces
-//         yylex();
-
-//         // expand the macros
-//         expand(token_sequence, macro_set);
-//         clear_macro_set(macro_set);
-//         macro_set = NULL;
-
-//         // print the source codes
-//         print_token(token_sequence);
-
-//         // delete the intermediate file
-//         remove(lnk_file);
-//         return 0;
-//     } else
-//     {
-//         fputs("Too many arguments! Expected: 2.\n", stderr);
-//         return 1;
-//     }
-// }
 char* preprocess(char *file_path){
         char lnk[5] = ".lnk";
         char lnk_file[1024];
