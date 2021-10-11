@@ -11,21 +11,21 @@
     // int yydebug=1;
     struct node *root;
 
-    #define MISSING_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis ')'\n",loc->lineno);
-    #define MISSING_LP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '('\n",loc->lineno);
-    #define MISSING_LP_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '(' and ')'\n",loc->lineno);
-    #define MISSING_LB(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '['\n",loc->lineno);
-    #define MISSING_RB(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis ']'\n",loc->lineno);
-    #define MISSING_LB_RB(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '[' and ']'\n",loc->lineno);
-    #define MISSING_LC(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '{'\n",loc->lineno);
-    #define MISSING_RC(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '}'\n",loc->lineno);
-    #define MISSING_LC_RC(loc) fprintf(output_file,"Error type B at Line %d: Missing closing parenthesis '{' and '}'\n",loc->lineno);
+    #define MISSING_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing ')'\n",loc->lineno);
+    #define MISSING_LP(loc) fprintf(output_file,"Error type B at Line %d: Missing '('\n",loc->lineno);
+    #define MISSING_LP_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing '(' and ')'\n",loc->lineno);
+    #define MISSING_LB(loc) fprintf(output_file,"Error type B at Line %d: Missing '['\n",loc->lineno);
+    #define MISSING_RB(loc) fprintf(output_file,"Error type B at Line %d: Missing ']'\n",loc->lineno);
+    #define MISSING_LB_RB(loc) fprintf(output_file,"Error type B at Line %d: Missing '[' and ']'\n",loc->lineno);
+    #define MISSING_LC(loc) fprintf(output_file,"Error type B at Line %d: Missing '{'\n",loc->lineno);
+    #define MISSING_RC(loc) fprintf(output_file,"Error type B at Line %d: Missing '}'\n",loc->lineno);
+    #define MISSING_LC_RC(loc) fprintf(output_file,"Error type B at Line %d: Missing '{' and '}'\n",loc->lineno);
     #define REDUNDANT_SEMI(loc) fprintf(output_file,"Error type B at Line %d: Redundant semicolon\n",loc->lineno);
     #define REDUNDANT_TYPE(loc) fprintf(output_file,"Error type B at Line %d: Redundant type\n",loc->lineno);
     #define MISSING_DECLARATION_CONTENT(loc) fprintf(output_file,"Error type B at Line %d: Missing declaration content\n",loc->lineno);
     #define MISSING_EXP(loc,c) fprintf(output_file,"Error type B at Line %d: Missing expresion after '"#c"'\n",loc->lineno);
     #define MISSING_SEMI(loc) fprintf(output_file,"Error type B at Line %d: Missing semicolon ';'\n",loc->lineno);
-    #define MISPLACE_DEF(loc) fprintf(output_file,"Error type B at Line %d: Misplaced defination\n",loc->lineno);
+    #define MISPLACE_DEF(loc) fprintf(output_file,"Error type B at Line %d: Misplaced definition\n",loc->lineno);
     #define MISPLACE_ARR(loc) fprintf(output_file,"Error type B at Line %d: Invalid array declaration\n",loc->lineno);
     #define INVALID_FOR(loc) fprintf(output_file,"Error type B at Line %d: Invalid 'for' statement \n",loc->lineno);
 %}
