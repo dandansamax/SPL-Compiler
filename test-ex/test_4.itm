@@ -1,0 +1,15 @@
+
+
+
+int test_4()
+{
+  (INVALID_MACRO) a, b = 1;
+  a = 10;
+  INCOMPLETE_MACRO i = 0;
+  while (i < a)
+  {
+    b = b + i;
+    i = i + 1;
+  }
+}
+
