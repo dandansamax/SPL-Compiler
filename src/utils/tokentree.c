@@ -1,9 +1,11 @@
 #include "tokentree.h"
 
-struct node *new_node(char *token_name, char *attribute_value, int lineno, int print_type)
+#include <stdarg.h>
+
+Node *new_node(char *token_name, char *attribute_value, int lineno, int print_type)
 {
 
-    struct node *nd = (struct node *)malloc(sizeof(struct node));
+    Node *nd = (Node *)malloc(sizeof(Node));
 
     nd->token_name = token_name;
     nd->attribute_value = attribute_value;
@@ -17,32 +19,32 @@ struct node *new_node(char *token_name, char *attribute_value, int lineno, int p
     return nd;
 }
 
-void link_nodes(struct node *root, int num, ...)
+void link_nodes(Node *root, int num, ...)
 {
     va_list valist;
     va_start(valist, num);
 
-    root->first_son = va_arg(valist, struct node *);
+    root->first_son = va_arg(valist, Node *);
 
-    struct node *last_node = root->first_son;
+    Node *last_node = root->first_son;
     for (int i = 1; i < num; i++)
     {
-        last_node->next = va_arg(valist, struct node *);
+        last_node->next = va_arg(valist, Node *);
         last_node = last_node->next;
     }
 }
 
-void add_node_head(struct node *root,struct node *leave){
+void add_node_head(Node *root,Node *leave){
     leave->next=root->first_son;
     root->first_son=leave;
 }
 
-void add_nodes_tail(struct node *root, int num, ...)
+void add_nodes_tail(Node *root, int num, ...)
 {
     va_list valist;
     va_start(valist, num);
 
-    struct node *last_node = root->first_son;
+    Node *last_node = root->first_son;
 
     while (last_node->next!=0){
         last_node=last_node->next;
@@ -50,12 +52,12 @@ void add_nodes_tail(struct node *root, int num, ...)
 
     for (int i = 0; i < num; i++)
     {
-        last_node->next = va_arg(valist, struct node *);
+        last_node->next = va_arg(valist, Node *);
         last_node = last_node->next;
     }
 }
 
-void print_tree(struct node *root, int depth, FILE *f)
+void print_tree(Node *root, int depth, FILE *f)
 {
     if (root->lineno==-1) return;
     for (int i = 0; i < depth; i++)
@@ -79,7 +81,7 @@ void print_tree(struct node *root, int depth, FILE *f)
     }
     if (root->first_son)
     {
-        struct node *cur = root->first_son;
+        Node *cur = root->first_son;
         print_tree(cur, depth + 1, f);
         while (cur->next)
         {

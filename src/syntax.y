@@ -1,15 +1,14 @@
 %{
-    #include "tokentree.h"
-    #include "preprocess.h"
+    #include "utils/tokentree.h"
+    #include "preprocess/preprocess.h"
     #include <unistd.h>
 
     #include "lex.yy.c"
     void yyerror(const char*);
 
-    #define YYSTYPE struct node *
 
     // int yydebug=1;
-    struct node *root;
+    Node *root;
 
     #define MISSING_RP(loc) fprintf(output_file,"Error type B at Line %d: Missing ')'\n",loc->lineno);
     #define MISSING_LP(loc) fprintf(output_file,"Error type B at Line %d: Missing '('\n",loc->lineno);
@@ -31,6 +30,7 @@
     #define MISSING_STMT(loc) fprintf(output_file,"Error type B at Line %d: Missing statment\n",loc->lineno);
 %}
 %define parse.error verbose
+
 
 %token INT CHAR FLOAT ID
 %token TYPE
@@ -279,6 +279,7 @@ int main(int argc, char **argv){
 	    	fprintf(stderr,"error on creating YY_BUFFER_STATE\n");
 	    	return EXIT_FAIL;
 	    }
+        
 	    //将输入源转为指定内存
 	    yy_switch_to_buffer(bp);
 

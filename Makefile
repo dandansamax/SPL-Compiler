@@ -11,14 +11,14 @@ BISON=bison
 .syntax_debug: src/syntax.y
 	$(BISON) -t -d -v -o src/syntax.tab.c src/syntax.y --debug
 
-.lex_preprocess: src/preprocess.l
-	$(FLEX) -o src/preprocess.yy.c -P PREPROCESS_ src/preprocess.l
+.lex_preprocess: src/preprocess/preprocess.l
+	$(FLEX) -o src/preprocess/preprocess.yy.c -P PREPROCESS_ src/preprocess/preprocess.l
 
 splc: .lex .syntax .lex_preprocess
-	$(CC) src/syntax.tab.c src/tokentree.c src/preprocess.yy.c src/preprocess.c -o bin/splc
+	$(CC) src/syntax.tab.c src/utils/tokentree.c src/preprocess/preprocess.yy.c src/preprocess/preprocess.c src/utils/symbol_table.c src/utils/type.c -o bin/splc
 
-preprocess: .lex_preprocess
-	$(CC) -o bin/preprocess src/preprocess.yy.c src/preprocess.c
+# preprocess: .lex_preprocess
+# 	$(CC) -o bin/preprocess src/preprocess.yy.c src/preprocess.c
 
 
 # splc:
@@ -27,6 +27,6 @@ preprocess: .lex_preprocess
 # 	@chmod +x bin/splc
 
 clean:
-	@rm -rf bin/* src/lex.yy.c src/syntax.tab.c src/syntax.tab.h src/syntax.output src/preprocess.yy.c
+	@rm -rf bin/* src/lex.yy.c src/syntax.tab.c src/syntax.tab.h src/syntax.output src/preprocess/preprocess.yy.c
 
 .PHONY: splc

@@ -3,9 +3,9 @@
     #define EXIT_FAIL 1
 
 
-    #include "tokentree.h"
+    #include "utils/tokentree.h"
 
-    #define YYSTYPE struct node *
+    #define YYSTYPE Node *
 
     int error_flag=0;
     FILE *output_file;
@@ -23,7 +23,6 @@ letter [a-zA-Z]
 letter_ {letter}|_
 digit [0-9]
 hex_digit [0-9a-fA-F]
-non_hex_digit[^0-9a-fA-F]
 number [1-9]{digit}*|0
 hex_number 0[xX]([1-9a-fA-F]{hex_digit}*|0)
 
