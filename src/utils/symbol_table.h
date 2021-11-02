@@ -14,12 +14,12 @@ void enter_scope();
 
 Type* find_symbol(char* symbol_name);
 
-void add_symbol(char* symbol_name, Type* type);
-
-int check_scope(char* symbol_name);
+int add_symbol(char* symbol_name, Type* type);
 
 void exit_scope();
 
-void add_function(char* function_name, int arg_num, ...);
+Function *new_function(char* function_name);
 
-Function* find_function(char* function_name);
+int add_function_member(Type* function_type, Type *arg_type);
+
+Function *find_function(char* function_name);

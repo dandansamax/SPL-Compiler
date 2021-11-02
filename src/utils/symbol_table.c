@@ -11,14 +11,22 @@ Type* find_symbol(char* symbol_name){
     //do somthing
 }
 
-void add_symbol(char* symbol_name, Type* type){
-    //do somthing
-}
-
-int check_scope(char* symbol_name){
+int add_symbol(char* symbol_name, Type* type){
     //do somthing
 }
 
 void exit_scope(){
     //do somthing
+}
+
+Function *new_function(char* function_name){
+
+}
+
+int add_function_member(Type* function_type, Type *arg_type){
+
+}
+
+Function *find_function(char* function_name){
+    
 }

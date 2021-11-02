@@ -1,6 +1,12 @@
+enum Primitive
+{
+    INT,
+    FLOAT,
+    CHAR
+};
+
 typedef struct Type
 {
-    char name[32];
     enum
     {
         PRIMITIVE,
@@ -9,12 +15,7 @@ typedef struct Type
     } category;
     union
     {
-        enum
-        {
-            INT,
-            FLOAT,
-            CHAR
-        } primitive;
+        enum Primitive primitive;
         struct Array *array;
         struct FieldList *structure;
     };
@@ -34,8 +35,14 @@ typedef struct FieldList
     struct FieldList *next;
 } FieldList;
 
+int compare_type(Type *a, Type *b);
 
+Type *get_struct_member(Type *struct_type, char *member_name);
 
-int compare_type(Type* a, Type* b);
+int *add_struct_member(Type *struct_type, char *member_name, Type *member_type);
 
-Type *get_struct_member(Type* struct_type, char* member_name);
+Type *new_struct();
+
+Type *make_array(Type *base_type, int size);
+
+Type *new_primitive(enum Primitive prim);
