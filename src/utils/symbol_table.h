@@ -2,6 +2,7 @@
 
 typedef struct Function{
     char name[32];
+    Type *return_type;
     struct Argument *arg;
 } Function;
 

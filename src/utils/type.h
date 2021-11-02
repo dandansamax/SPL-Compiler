@@ -1,8 +1,8 @@
 enum Primitive
 {
-    INT,
-    FLOAT,
-    CHAR
+    P_INT,
+    P_FLOAT,
+    P_CHAR
 };
 
 typedef struct Type

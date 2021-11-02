@@ -1,6 +1,7 @@
 %{
     #include "utils/tokentree.h"
     #include "preprocess/preprocess.h"
+    #include "semantic/semantic.h"
     #include <unistd.h>
 
     #include "lex.yy.c"
@@ -84,7 +85,7 @@ StructSpecifier: STRUCT ID LC DefList RC {$$=new_node("StructSpecifier","",$1->l
     | STRUCT ID error DefList error {MISSING_LC_RC($2)}
     | STRUCT ID {$$=new_node("StructSpecifier","",$1->lineno,NONTERMINAL); link_nodes($$,2,$1,$2);}
     | STRUCT STRUCT ID LC DefList RC error {REDUNDANT_TYPE($1)}
-    | STRUCT STRUCT ID{REDUNDANT_TYPE($1)}
+    | STRUCT STRUCT ID error {REDUNDANT_TYPE($1)}
     ;
 
 /* declarator */
@@ -287,7 +288,8 @@ int main(int argc, char **argv){
 
         int val=yyparse();
         if (error_flag==0) {
-            print_tree(root,0,output_file);
+            // print_tree(root,0,output_file);
+            semantic_analysis(root);
         }
 
         fclose(output_file);
