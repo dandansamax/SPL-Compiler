@@ -2,6 +2,7 @@
 
 typedef struct Function{
     char name[32];
+    Type return_type;
     struct Argument *arg;
 } Function;
 
@@ -23,3 +24,8 @@ Function *new_function(char* function_name);
 int add_function_member(Type* function_type, Type *arg_type);
 
 Function *find_function(char* function_name);
+
+
+Type *get_struct_prototype(char* struct_name);
+
+int *add_struct_prototype(Type *struct_type,char* struct_name);

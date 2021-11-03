@@ -46,3 +46,7 @@ Type *new_struct();
 Type *make_array(Type *base_type, int size);
 
 Type *new_primitive(enum Primitive prim);
+
+Type *get_struct_prototype(char* struct_name);
+
+int *add_struct_prototype(Type *struct_type,char* struct_name);
