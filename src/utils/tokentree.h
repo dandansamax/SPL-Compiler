@@ -15,16 +15,18 @@ typedef struct Node
 {
     struct Node *first_son, *next;
     char *token_name, *attribute_value;
-    int lineno,print_type;
+    int lineno,print_type,production_no;
 } Node;
 
-Node *new_node(char*, char*, int,int);
+Node *new_node(char*, char*, int, int, int production_no);
 
 void link_nodes(Node *, int, ...);
 
 void add_node_head(Node *, Node *);
 
 void add_nodes_tail(Node *, int, ...);
+
+Node *get_son(Node *node,int num);
 
 void print_tree(Node *, int, FILE *);
 

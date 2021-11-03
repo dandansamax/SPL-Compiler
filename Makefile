@@ -15,7 +15,7 @@ BISON=bison
 	$(FLEX) -o src/preprocess/preprocess.yy.c -P PREPROCESS_ src/preprocess/preprocess.l
 
 splc: .lex .syntax .lex_preprocess
-	$(CC) src/syntax.tab.c src/utils/tokentree.c src/preprocess/preprocess.yy.c src/preprocess/preprocess.c src/utils/symbol_table.c src/utils/type.c -o bin/splc
+	$(CC) src/syntax.tab.c src/utils/tokentree.c src/preprocess/preprocess.yy.c src/preprocess/preprocess.c src/semantic/semantic.c src/utils/symbol_table.c src/utils/type.c -o bin/splc
 
 # preprocess: .lex_preprocess
 # 	$(CC) -o bin/preprocess src/preprocess.yy.c src/preprocess.c

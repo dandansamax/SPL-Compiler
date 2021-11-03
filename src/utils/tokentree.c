@@ -2,13 +2,14 @@
 
 #include <stdarg.h>
 
-Node *new_node(char *token_name, char *attribute_value, int lineno, int print_type)
+Node *new_node(char *token_name, char *attribute_value, int lineno, int print_type,int production_no)
 {
 
     Node *nd = (Node *)malloc(sizeof(Node));
 
     nd->token_name = token_name;
     nd->attribute_value = attribute_value;
+    nd->production_no = production_no;
 
     nd->lineno = lineno;
     nd->print_type = print_type;
@@ -55,6 +56,12 @@ void add_nodes_tail(Node *root, int num, ...)
         last_node->next = va_arg(valist, Node *);
         last_node = last_node->next;
     }
+}
+
+Node *get_son(Node *node,int num){
+    Node* rnt=node->first_son;
+    for (int i=0;i<num;rnt=rnt->next){}
+    return rnt;
 }
 
 void print_tree(Node *root, int depth, FILE *f)
