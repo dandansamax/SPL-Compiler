@@ -99,7 +99,7 @@ VarDec: ID {$$=new_node("VarDec","",$1->lineno,NONTERMINAL,0); link_nodes($$,1,$
     ;
 FunDec: ID LP VarList RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL,0); link_nodes($$,4,$1,$2,$3,$4);}
     | ID LP RP {$$=new_node("FunDec","",$1->lineno,NONTERMINAL,1); link_nodes($$,3,$1,$2,$3);}
-    | ID VarList RP {MISSING_LP($2)}
+    | ID VarList RP error {MISSING_LP($2)}
     | ID LP error {MISSING_RP($2)}
     | ID error RP {MISSING_LP($2)}
     | ID VarList error{MISSING_LP_RP($1)}
@@ -290,8 +290,8 @@ int main(int argc, char **argv){
 
         int val=yyparse();
         if (error_flag==0) {
-            // print_tree(root,0,output_file);
-            semantic_analysis(root);
+            print_tree(root,0,output_file);
+            // semantic_analysis(root);
         }
 
         fclose(output_file);
