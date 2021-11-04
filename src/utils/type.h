@@ -50,3 +50,7 @@ Type *new_primitive(enum Primitive prim);
 Type *get_struct_prototype(char* struct_name);
 
 int *add_struct_prototype(Type *struct_type,char* struct_name);
+
+int* check_struct(Type* type);
+
+int* check_array(Type* type);
