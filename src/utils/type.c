@@ -1,5 +1,6 @@
+
+
 #include "type.h"
-#include <string.h>
 
 #define nullptr -1
 //if a and b is the same type, return 0
@@ -13,7 +14,7 @@ int compare_type(Type* a, Type* b){
     }else{
         if(a->category==ARRAY){
             //if compare type of array, only compare array.base, do not compare size
-            return compare_type(a->array->base,&b->array->base);
+            return compare_type(a->array->base,b->array->base);
         }else if(a->category==STRUCTURE){
             //递归判断两者type是否相同
             FieldList* fa=a->structure;
@@ -189,3 +190,4 @@ void free_type(Type* type){
         free(type);
     }
 }
+

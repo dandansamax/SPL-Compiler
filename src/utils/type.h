@@ -1,3 +1,8 @@
+
+
+#ifndef TYPE
+#define TYPE
+#include<stdlib.h>
 #define nullptr -1
 
 enum Primitive
@@ -86,3 +91,6 @@ Function* add_function_return(Function*,Type*);
 int add_function_member(Function*, Type *);
 
 Function *find_function(char* function_name);
+
+
+#endif

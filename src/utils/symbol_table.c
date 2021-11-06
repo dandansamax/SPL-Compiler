@@ -1,9 +1,10 @@
 #include <string.h>
-#include <stdarg.h>
-
 #include "symbol_table.h"
 
+
+ Scope* current_scope=nullptr;
 void enter_scope(){
+
     Scope* new_scope=malloc(sizeof(Scope));
     new_scope->scope_level;
     new_scope->symble_table=symtab_init();
@@ -34,9 +35,12 @@ Type* find_symbol(char* symbol_name){
     
 }
 
-// if symbol has existed, reuturn -1, if add successully, return0
+// if symbol has existed, reuturn -1, if add successully, return0，如果这里添加不上就自动销毁释放内存
 int add_symbol(char* symbol_name, Type* type){
-    if(symtab_lookup(current_scope->symble_table,symbol_name)!=-1)return -1;
+    if(symtab_lookup(current_scope->symble_table,symbol_name)!=-1){
+        free_type(type);
+        return -1;
+    }
 
     symtab_insert(current_scope->symble_table,symbol_name,type);
     return 0;

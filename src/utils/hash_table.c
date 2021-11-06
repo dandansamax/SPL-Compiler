@@ -1,5 +1,5 @@
+#include <string.h>
 #include "hash_table.h"
-#include "type.h"
 
 /*
  * symbol table type, hash table (separate chaining) impl
@@ -15,7 +15,6 @@
 // ************************************************************
 //    Your implementation goes here
 // ************************************************************
-
 unsigned long GetHash(const unsigned char *s)
 {
     unsigned long h = 0, high;
@@ -57,15 +56,15 @@ void symtab_free(symtab* tab){
     free(tab);
 }
 
-int symtab_insert(symtab *self, char *key, VAL_T value)
+int symtab_insert(symtab *self, char *key, Type* value)
 {
     long hash = GetHash(key);
-    printf("insert, hash: %ld, key: %s, value: %d\n", hash, key, value);
+    // printf("insert, hash: %ld, key: %s, value: %d\n", hash, key, value);
     if ((*self)[hash] == nullptr)
     {
         struct _node *node = malloc(sizeof(struct _node));
         entry en;
-        entry_init(&en, key, value);
+        entry_init1(&en, key, value);
         node->next = nullptr;
         node->entry = en;
         (*self)[hash] = node;
@@ -89,7 +88,7 @@ int symtab_insert(symtab *self, char *key, VAL_T value)
         }
         struct _node *node = malloc(sizeof(struct _node));
         entry en;
-        entry_init(&en, key, value);
+        entry_init1(&en, key, value);
         node->next = nullptr;
         node->entry = en;
         cur_node->next = node;
@@ -97,7 +96,7 @@ int symtab_insert(symtab *self, char *key, VAL_T value)
     return 1;
 }
 
-VAL_T symtab_lookup(symtab *self, char *key)
+Type* symtab_lookup(symtab *self, char *key)
 {
     long hash = GetHash(key);
     // printf("lookup, hash: %ld, key: %s\n", hash, key);
@@ -121,10 +120,10 @@ VAL_T symtab_lookup(symtab *self, char *key)
 int symtab_remove(symtab *self, char *key)
 {
     long hash = GetHash(key);
-    printf("remove, hash: %ld, key: %s\n", hash, key);
+    // printf("remove, hash: %ld, key: %s\n", hash, key);
     if ((*self)[hash] != nullptr)
     {
-        printf("start to remove, hash: %ld, key: %s\n", hash, key);
+        // printf("start to remove, hash: %ld, key: %s\n", hash, key);
         struct _node *cur_node = (*self)[hash];
         struct _node *last_node;
 
@@ -152,16 +151,22 @@ int symtab_remove(symtab *self, char *key)
             return 1;
         }
     }
-    printf("remove not found, hash: %ld, key: %s\n", hash, key);
-    printf("exist hash:\n");
+    // printf("remove not found, hash: %ld, key: %s\n", hash, key);
+    // printf("exist hash:\n");
 
     for (int i = 0; i < TABLE_SIZE; i++)
     {
         if((*self)[i]!=nullptr){
-            printf("hash: %d\n", i);
+            // printf("hash: %d\n", i);
         }
     }
-    printf("remove not found, hash: %ld, key: %s\n", hash, key);
+    // printf("remove not found, hash: %ld, key: %s\n", hash, key);
     
     return 0;
+}
+
+
+void entry_init1(entry *self, char *key, Type* value){
+    sprintf(self->key, "%s", key);
+    self->value = value;
 }
