@@ -1,3 +1,6 @@
+
+#define nullptr -1
+
 enum Primitive
 {
     P_INT,
@@ -11,7 +14,7 @@ typedef struct Type
     {
         PRIMITIVE,
         ARRAY,
-        STRUCTURE
+        STRUCTURE,
     } category;
     union
     {

@@ -1,4 +1,7 @@
 #include "type.h"
+#include "hash_table.h"
+
+#define nullptr -1
 
 typedef struct Function{
     char name[32];
@@ -10,6 +13,15 @@ typedef struct Argument{
     struct Type *type;
     struct Argument *next;
 } Argument;
+
+
+typedef struct Scope{
+    int scope_level;
+    symtab* symble_table;
+    Scope* last_scope;
+}Scope;
+
+Scope* current_scope=nullptr;
 
 void enter_scope();
 
