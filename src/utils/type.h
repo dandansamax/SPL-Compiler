@@ -1,4 +1,3 @@
-
 #define nullptr -1
 
 enum Primitive
@@ -15,10 +14,12 @@ typedef struct Type
         PRIMITIVE,
         ARRAY,
         STRUCTURE,
+        FUNCTION
     } category;
     union
     {
         enum Primitive primitive;
+        struct Function* function;
         struct Array *array;
         struct FieldList *structure;
     };
@@ -37,6 +38,18 @@ typedef struct FieldList
     struct Type *type;
     struct FieldList *next;
 } FieldList;
+
+typedef struct Function{
+    char name[32];
+    Type *return_type;
+    struct Argument *arg;
+} Function;
+
+typedef struct Argument{
+    struct Type *type;
+    struct Argument *next;
+} Argument;
+
 
 int compare_type(Type *a, Type *b);
 
@@ -57,3 +70,17 @@ int *add_struct_prototype(Type *struct_type,char* struct_name);
 int* check_struct(Type* type);
 
 int* check_array(Type* type);
+
+Type* new_empty_type();
+
+
+Function *new_function(char* function_name);
+
+// Function* add_function_return(Type*,Type*);
+Function* add_function_return(Function*,Type*);
+
+// int add_function_member(Type*, Type *);
+
+int add_function_member(Function*, Type *);
+
+Function *find_function(char* function_name);

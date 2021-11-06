@@ -3,21 +3,12 @@
 
 #define nullptr -1
 
-typedef struct Function{
-    char name[32];
-    Type *return_type;
-    struct Argument *arg;
-} Function;
-
-typedef struct Argument{
-    struct Type *type;
-    struct Argument *next;
-} Argument;
 
 
 typedef struct Scope{
     int scope_level;
     symtab* symble_table;
+    symtab* structure_prototype;
     Scope* last_scope;
 }Scope;
 
@@ -31,11 +22,6 @@ int add_symbol(char* symbol_name, Type* type);
 
 void exit_scope();
 
-Function *new_function(char* function_name);
-
-int add_function_member(Type* function_type, Type *arg_type);
-
-Function *find_function(char* function_name);
 
 
 Type *get_struct_prototype(char* struct_name);

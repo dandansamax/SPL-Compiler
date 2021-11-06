@@ -26,6 +26,25 @@ int compare_type(Type* a, Type* b){
                 fb=fb->next;
             }
             return 0;//handle the condition that both two structure have no member
+        }else if(a->category==FUNCTION){
+        
+            if(a->function==nullptr||b->function==nullptr)return nullptr;
+            if(strcmp(a->function->name,b->function->name)!=0){
+                return nullptr;
+            }
+
+            Argument* arg_a=a->function->arg;
+            Argument* arg_b=b->function->arg;
+            if(arg_a==arg_b==nullptr)return 0;
+            
+            while (arg_a!=nullptr && arg_b!=nullptr && compare_type(arg_a->type,arg_b->type)==0)
+            {
+                arg_a=arg_a->next;
+                arg_b=arg_b->next;
+            }
+            if(compare_type(arg_a->type,arg_b->type)!=0)return nullptr;
+            if(arg_a==arg_b==nullptr)return 0;
+            return nullptr;
         }
     }
 }
@@ -90,6 +109,7 @@ Type *make_array(Type *base_type, int size){
 
     new_array->primitive=nullptr;
     new_array->structure=nullptr;
+    new_array->function=nullptr;
 
     return new_array;
 }
@@ -102,6 +122,8 @@ Type *new_primitive(enum Primitive prim){
     new_primitive->structure=nullptr;
     
     new_primitive->primitive=prim;
+
+    new_primitive->function=nullptr;
 
     return new_primitive;
 }
@@ -118,3 +140,15 @@ int* check_array(Type* type){
     if(type->category!=ARRAY)return nullptr;
     return 0;
 }
+
+
+Type* new_empty_type(){
+    Type* new_type=malloc(sizeof(Type));
+    new_type->array=nullptr;
+    new_type->function=nullptr;
+    new_type->structure=nullptr;
+}
+
+
+
+
