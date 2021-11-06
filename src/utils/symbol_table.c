@@ -42,15 +42,14 @@ int add_symbol(char* symbol_name, Type* type){
     return 0;
 }
 
+//内存的释放统一在exit scope中进行，会把scope中的symble table 和structure prototype释放掉，希望没错
 void exit_scope(){
-    //TODO: Need to free more content
     Scope* tmp_scope=current_scope;
     current_scope=tmp_scope->last_scope;
-    tmp_scope->last_scope=-1;
-
-    free(tmp_scope->symble_table);
+    tmp_scope->last_scope=nullptr;
+    symtab_free(tmp_scope->symble_table);
+    symtab_free(tmp_scope->structure_prototype);
     free(tmp_scope);
-
 }
 //-1 stands for this id do not exist, -2 stands for this id exists but not function type
 Function *new_function(char* function_name){

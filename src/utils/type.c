@@ -151,4 +151,41 @@ Type* new_empty_type(){
 
 
 
-
+void free_type(Type* type){
+    if(type==nullptr){
+        // free(type);
+        return;
+    }
+    if(type->category==PRIMITIVE){
+        free(type);
+    }else if(type->category==ARRAY){
+        free_type(type->array->base);
+        free(type->array);
+        free(type);
+    }else if(type->category==STRUCTURE){
+        FieldList* fl=type->structure;
+        
+        while (fl!=nullptr)
+        {
+            FieldList* next=fl->next;
+            free_type(fl->type);
+            free(fl);
+            fl=next;
+        }
+        
+        free(type);
+        
+    }else if(type->category==FUNCTION){
+        Argument* args=type->function->arg;
+        Type* return_type=type->function->return_type;
+        free_type(return_type);
+        while (args!=nullptr)
+        {
+            Argument* next=args->next;
+            free_type(args->type);
+            free(args);
+            args=next;
+        }
+        free(type);
+    }
+}

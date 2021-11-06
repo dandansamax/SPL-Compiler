@@ -53,6 +53,8 @@ typedef struct Argument{
 
 int compare_type(Type *a, Type *b);
 
+void free_type(Type* type);
+
 Type *get_struct_member(Type *struct_type, char *member_name);
 
 int *add_struct_member(Type *struct_type, char *member_name, Type *member_type);

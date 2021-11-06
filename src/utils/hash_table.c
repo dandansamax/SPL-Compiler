@@ -35,28 +35,45 @@ symtab *symtab_init()
     memset(self, 0, sizeof(symtab));
     for (int i = 0; i < TABLE_SIZE; i++)
     {
-        (*self)[i] = NULL;
+        (*self)[i] = nullptr;
     }
     return self;
+}
+
+void symtab_free(symtab* tab){
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
+        if((*tab)[i]==nullptr)continue;
+        struct _node *node=(*tab)[i];
+        while (node!=nullptr)
+        {
+            struct _node *next=node->next;
+            free_type(node->entry.value);
+            free(node);
+            node=next;
+        }
+        
+    }
+    free(tab);
 }
 
 int symtab_insert(symtab *self, char *key, VAL_T value)
 {
     long hash = GetHash(key);
     printf("insert, hash: %ld, key: %s, value: %d\n", hash, key, value);
-    if ((*self)[hash] == NULL)
+    if ((*self)[hash] == nullptr)
     {
         struct _node *node = malloc(sizeof(struct _node));
         entry en;
         entry_init(&en, key, value);
-        node->next = NULL;
+        node->next = nullptr;
         node->entry = en;
         (*self)[hash] = node;
     }
     else
     {
         struct _node *cur_node = (*self)[hash];
-        while (cur_node->next != NULL)
+        while (cur_node->next != nullptr)
         {
             if (strcmp(cur_node->entry.key, key) == 0)
             {
@@ -73,7 +90,7 @@ int symtab_insert(symtab *self, char *key, VAL_T value)
         struct _node *node = malloc(sizeof(struct _node));
         entry en;
         entry_init(&en, key, value);
-        node->next = NULL;
+        node->next = nullptr;
         node->entry = en;
         cur_node->next = node;
     }
@@ -84,11 +101,11 @@ VAL_T symtab_lookup(symtab *self, char *key)
 {
     long hash = GetHash(key);
     // printf("lookup, hash: %ld, key: %s\n", hash, key);
-    if ((*self)[hash] != NULL)
+    if ((*self)[hash] != nullptr)
     {
         struct _node *cur_node = (*self)[hash];
         // printf("lookup and is not null, hash: %ld, key: %s, entry key:%s, entry value: %d\n", hash, key, cur_node->entry.key, cur_node->entry.value);
-        while (strcmp(cur_node->entry.key, key) != 0 && cur_node->next != NULL)
+        while (strcmp(cur_node->entry.key, key) != 0 && cur_node->next != nullptr)
         {
             cur_node = cur_node->next;
         }
@@ -105,7 +122,7 @@ int symtab_remove(symtab *self, char *key)
 {
     long hash = GetHash(key);
     printf("remove, hash: %ld, key: %s\n", hash, key);
-    if ((*self)[hash] != NULL)
+    if ((*self)[hash] != nullptr)
     {
         printf("start to remove, hash: %ld, key: %s\n", hash, key);
         struct _node *cur_node = (*self)[hash];
@@ -123,7 +140,7 @@ int symtab_remove(symtab *self, char *key)
         //     (*self)[hash]=cur_node->next;
         //     return 1;
         // }
-        while (strcmp(cur_node->entry.key, key)!=0 && cur_node->next != NULL)
+        while (strcmp(cur_node->entry.key, key)!=0 && cur_node->next != nullptr)
         {
             last_node = cur_node;
             cur_node = cur_node->next;
@@ -131,7 +148,7 @@ int symtab_remove(symtab *self, char *key)
         if (strcmp(cur_node->entry.key, key)==0)
         {
             last_node->next = cur_node->next;
-            cur_node->next = NULL;
+            cur_node->next = nullptr;
             return 1;
         }
     }
@@ -140,7 +157,7 @@ int symtab_remove(symtab *self, char *key)
 
     for (int i = 0; i < TABLE_SIZE; i++)
     {
-        if((*self)[i]!=NULL){
+        if((*self)[i]!=nullptr){
             printf("hash: %d\n", i);
         }
     }

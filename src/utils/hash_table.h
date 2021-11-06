@@ -31,6 +31,8 @@ typedef struct _node *symtab[TABLE_SIZE];
 // init a single symbol table
 symtab *symtab_init();
 
+void symtab_free(symtab* tab);
+
 // insert a key-value pair to the table
 // if insert success, return 1, otherwise 0
 int symtab_insert(symtab*, char*, VAL_T);
