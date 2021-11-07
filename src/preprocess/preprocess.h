@@ -1,10 +1,12 @@
+#ifndef MY_PREPROCESS
+#define MY_PREPROCESS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
 
-#define MAX_SIZE 4*1024*1024
+#define MAX_SIZE 4 * 1024 * 1024
 
 typedef enum TokenType
 {
@@ -90,4 +92,6 @@ void append_token(Token *head, const char *value, int line_number, TokenType typ
 
 char *print_token(Token *head);
 
-char* preprocess(char*);
+char *preprocess(char *file_path);
+
+#endif

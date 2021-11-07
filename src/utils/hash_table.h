@@ -2,8 +2,7 @@
 #define SYMTAB_H
 
 #include "type.h"
-#include<stdio.h>
-
+#include <stdio.h>
 
 #define KEY_LEN 32
 #define nullptr -1
@@ -13,10 +12,11 @@
 #define TABLE_SIZE 0x1003
 
 /* symbol table entry, only used internally */
-typedef struct entry {
-    char key[KEY_LEN+1];
-    Type* value;
-} entry;
+typedef struct Entry
+{
+    char key[KEY_LEN + 1];
+    Type *value;
+} Entry;
 
 // void entry_init(entry *self, char *key, Type* value);
 // {
@@ -26,7 +26,7 @@ typedef struct entry {
 
 struct _node
 {
-    entry entry;
+    Entry entry;
     struct _node *next;
 };
 typedef struct _node *symtab[TABLE_SIZE];
@@ -34,18 +34,18 @@ typedef struct _node *symtab[TABLE_SIZE];
 // init a single symbol table
 symtab *symtab_init();
 
-void symtab_free(symtab* tab);
+void symtab_free(symtab *tab);
 
 // insert a key-value pair to the table
 // if insert success, return 1, otherwise 0
-int symtab_insert(symtab*, char*, Type*);
+int symtab_insert(symtab *, char *, Type *);
 
 // lookup the value of a specific key
 // return -1 if not found
-Type* symtab_lookup(symtab*, char*);
+Type *symtab_lookup(symtab *, char *);
 
 // remove a key-value pair from the table
 // if remove success, return 1, otherwise 0
-int symtab_remove(symtab*, char*);
+int symtab_remove(symtab *, char *);
 
-#endif  /* SYMTAB_H */
+#endif

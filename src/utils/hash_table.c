@@ -15,17 +15,18 @@
 // ************************************************************
 //    Your implementation goes here
 // ************************************************************
-unsigned long GetHash(const unsigned char *s)
+unsigned long calc_hash(const unsigned char *s)
 {
-    unsigned long h = 0, high;
+    unsigned long hash_rst = 0, high;
     while (*s)
     {
-        h = (h << 4) + *s++;
-        if (high = h & 0xF0000000)
-            h ^= high >> 24;
-        h &= ~high;
+        hash_rst = (hash_rst << 4) + *s;
+        s++;
+        if (high = hash_rst & 0xF0000000)
+            hash_rst ^= high >> 24;
+        hash_rst &= ~high;
     }
-    return h % TABLE_SIZE;
+    return hash_rst % TABLE_SIZE;
 }
 
 symtab *symtab_init()
@@ -39,31 +40,32 @@ symtab *symtab_init()
     return self;
 }
 
-void symtab_free(symtab* tab){
+void symtab_free(symtab *tab)
+{
     for (int i = 0; i < TABLE_SIZE; i++)
     {
-        if((*tab)[i]==nullptr)continue;
-        struct _node *node=(*tab)[i];
-        while (node!=nullptr)
+        if ((*tab)[i] == nullptr)
+            continue;
+        struct _node *node = (*tab)[i];
+        while (node != nullptr)
         {
-            struct _node *next=node->next;
+            struct _node *next = node->next;
             free_type(node->entry.value);
             free(node);
-            node=next;
+            node = next;
         }
-        
     }
     free(tab);
 }
 
-int symtab_insert(symtab *self, char *key, Type* value)
+int symtab_insert(symtab *self, char *key, Type *value)
 {
-    long hash = GetHash(key);
+    long hash = calc_hash(key);
     // printf("insert, hash: %ld, key: %s, value: %d\n", hash, key, value);
     if ((*self)[hash] == nullptr)
     {
         struct _node *node = malloc(sizeof(struct _node));
-        entry en;
+        Entry en;
         entry_init1(&en, key, value);
         node->next = nullptr;
         node->entry = en;
@@ -87,7 +89,7 @@ int symtab_insert(symtab *self, char *key, Type* value)
             return 0;
         }
         struct _node *node = malloc(sizeof(struct _node));
-        entry en;
+        Entry en;
         entry_init1(&en, key, value);
         node->next = nullptr;
         node->entry = en;
@@ -96,9 +98,9 @@ int symtab_insert(symtab *self, char *key, Type* value)
     return 1;
 }
 
-Type* symtab_lookup(symtab *self, char *key)
+Type *symtab_lookup(symtab *self, char *key)
 {
-    long hash = GetHash(key);
+    long hash = calc_hash(key);
     // printf("lookup, hash: %ld, key: %s\n", hash, key);
     if ((*self)[hash] != nullptr)
     {
@@ -119,7 +121,7 @@ Type* symtab_lookup(symtab *self, char *key)
 
 int symtab_remove(symtab *self, char *key)
 {
-    long hash = GetHash(key);
+    long hash = calc_hash(key);
     // printf("remove, hash: %ld, key: %s\n", hash, key);
     if ((*self)[hash] != nullptr)
     {
@@ -127,9 +129,9 @@ int symtab_remove(symtab *self, char *key)
         struct _node *cur_node = (*self)[hash];
         struct _node *last_node;
 
-        if (strcmp(cur_node->entry.key, key)==0)
+        if (strcmp(cur_node->entry.key, key) == 0)
         {
-            (*self)[hash]=cur_node->next;
+            (*self)[hash] = cur_node->next;
             return 1;
         }
         last_node = cur_node;
@@ -139,12 +141,12 @@ int symtab_remove(symtab *self, char *key)
         //     (*self)[hash]=cur_node->next;
         //     return 1;
         // }
-        while (strcmp(cur_node->entry.key, key)!=0 && cur_node->next != nullptr)
+        while (strcmp(cur_node->entry.key, key) != 0 && cur_node->next != nullptr)
         {
             last_node = cur_node;
             cur_node = cur_node->next;
         }
-        if (strcmp(cur_node->entry.key, key)==0)
+        if (strcmp(cur_node->entry.key, key) == 0)
         {
             last_node->next = cur_node->next;
             cur_node->next = nullptr;
@@ -156,17 +158,18 @@ int symtab_remove(symtab *self, char *key)
 
     for (int i = 0; i < TABLE_SIZE; i++)
     {
-        if((*self)[i]!=nullptr){
+        if ((*self)[i] != nullptr)
+        {
             // printf("hash: %d\n", i);
         }
     }
     // printf("remove not found, hash: %ld, key: %s\n", hash, key);
-    
+
     return 0;
 }
 
-
-void entry_init1(entry *self, char *key, Type* value){
+void entry_init1(Entry *self, char *key, Type *value)
+{
     sprintf(self->key, "%s", key);
     self->value = value;
 }

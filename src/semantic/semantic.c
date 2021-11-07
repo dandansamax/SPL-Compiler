@@ -617,7 +617,7 @@ Type *p_Exp(Node *node)
         }
         if (flag == 0)
         {
-            return lvalue->array->base;
+            return lvalue->array_info->base;
         }
         else
         {
