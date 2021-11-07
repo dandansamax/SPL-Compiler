@@ -1,0 +1,1 @@
+/usr/bin/cc -g  -rdynamic CMakeFiles/SPL.dir/main.c.o CMakeFiles/SPL.dir/hash_table.c.o CMakeFiles/SPL.dir/symbol_table.c.o CMakeFiles/SPL.dir/type.c.o  -o SPL 

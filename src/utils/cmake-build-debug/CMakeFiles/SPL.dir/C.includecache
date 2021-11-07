@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/d/Projects/CS323Compiler/SPL/hash_table.h
+type.h
+/mnt/d/Projects/CS323Compiler/SPL/type.h
+stdio.h
+-
+
+/mnt/d/Projects/CS323Compiler/SPL/main.c
+stdio.h
+-
+symbol_table.h
+/mnt/d/Projects/CS323Compiler/SPL/symbol_table.h
+
+/mnt/d/Projects/CS323Compiler/SPL/symbol_table.h
+type.h
+/mnt/d/Projects/CS323Compiler/SPL/type.h
+hash_table.h
+/mnt/d/Projects/CS323Compiler/SPL/hash_table.h
+
+/mnt/d/Projects/CS323Compiler/SPL/type.h
+stdlib.h
+-
+
