@@ -67,7 +67,7 @@ Function *new_function(char *function_name)
 
     Function *new_func = malloc(sizeof(Function));
 
-    Type *function_type = new_empty_type();
+    Type *function_type = malloc(sizeof(Type));
 
     function_type->category = FUNCTION;
     function_type->function = new_func;
