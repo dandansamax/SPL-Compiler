@@ -6,8 +6,8 @@ void enter_scope()
 {
     Scope *new_scope = malloc(sizeof(Scope));
     new_scope->scope_level;
-    new_scope->symble_table = init_hashmap();
-    new_scope->structure_prototype = init_hashmap();
+    new_scope->symble_table = init_map();
+    new_scope->structure_prototype = init_map();
     if (current_scope == NULL_PTR)
     {
         new_scope->scope_level = 0;
@@ -26,7 +26,7 @@ Type *find_symbol(char *symbol_name)
 {
     Scope *cur_scope = current_scope;
     cur_scope->symble_table;
-    while (cur_scope != NULL_PTR || symtab_lookup(cur_scope->symble_table, symbol_name) == -1)
+    while (cur_scope != NULL_PTR || get_value(cur_scope->symble_table, symbol_name) == -1)
     {
         cur_scope = cur_scope->last_scope;
     }
@@ -34,19 +34,19 @@ Type *find_symbol(char *symbol_name)
     if (cur_scope == NULL_PTR)
         return NULL_PTR;
 
-    return symtab_lookup(cur_scope->symble_table, symbol_name);
+    return get_value(cur_scope->symble_table, symbol_name);
 }
 
 // if symbol has existed, reuturn -1, if add successully, return0，如果这里添加不上就自动销毁释放内存
 int add_symbol(char *symbol_name, Type *type)
 {
-    if (symtab_lookup(current_scope->symble_table, symbol_name) != -1)
+    if (get_value(current_scope->symble_table, symbol_name) != -1)
     {
         // free_type(type);
         return -1;
     }
 
-    symtab_insert(current_scope->symble_table, symbol_name, type);
+    insert_pair(current_scope->symble_table, symbol_name, type);
     return 0;
 }
 
@@ -71,7 +71,7 @@ Function *new_function(char *function_name)
 
     function_type->category = FUNCTION;
     function_type->function = new_func;
-    int result = symtab_insert(current_scope->symble_table, function_name, function_type);
+    int result = insert_pair(current_scope->symble_table, function_name, function_type);
     if (result == 1)
         return new_func;
     return NULL_PTR;
@@ -108,7 +108,7 @@ int add_function_member(Function *func, Type *arg_type)
 //-1 stands for this id do not exist, -2 stands for this id exists but not function type
 Function *find_function(const char *function_name)
 {
-    Type *existing = symtab_lookup(current_scope->symble_table, function_name);
+    Type *existing = get_value(current_scope->symble_table, function_name);
     if (existing != NULL_PTR)
     {
         if (existing->category == FUNCTION)
@@ -128,7 +128,7 @@ Type *get_struct_prototype(char *struct_name)
 
     while (cur_scope != NULL_PTR)
     {
-        Type *prototype = symtab_lookup(cur_scope->structure_prototype, struct_name);
+        Type *prototype = get_value(cur_scope->structure_prototype, struct_name);
         if (prototype != NULL_PTR)
             return prototype;
         cur_scope = cur_scope->last_scope;
@@ -138,7 +138,7 @@ Type *get_struct_prototype(char *struct_name)
 
 int add_struct_prototype(Type *struct_type, char *struct_name)
 {
-    int result = symtab_insert(current_scope->structure_prototype, struct_name, struct_type);
+    int result = insert_pair(current_scope->structure_prototype, struct_name, struct_type);
     if (result == 0)
         return 1;
     return 0;
