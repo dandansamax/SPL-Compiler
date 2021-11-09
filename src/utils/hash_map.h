@@ -21,6 +21,8 @@ HashMap init_map();
 
 void free_map(HashMap map);
 
+void free_prototypes(HashMap map);
+
 // insert a key-value pair to the map
 // if insert success, return 1, otherwise 0
 int insert_pair(HashMap map, const char *key, Type *value);
@@ -32,5 +34,7 @@ Type *get_value(HashMap map, const char *key);
 // remove a key-value pair from the table
 // if remove success, return 1, otherwise 0
 int remove_pair(HashMap map, const char *key);
+
+void print_map(HashMap map);
 
 #endif

@@ -1,8 +1,9 @@
 #ifndef MY_TYPE
 #define MY_TYPE
 #include <stdlib.h>
+#include <string.h>
 
-#define NULL_PTR -1
+#define NULL_PTR (void *)-1
 #define TRUE 0
 #define FALSE -1
 
@@ -40,61 +41,47 @@ struct Type
 
 struct ArrayInfo
 {
-    const Type *base;
+    Type *base;
     int size;
 };
 
 struct FieldNode
 {
     const char *name;
-    const Type *type;
+    Type *type;
     FieldNode *next;
 };
 
 struct ArgNode
 {
-    const Type *type;
+    Type *type;
     ArgNode *next;
 };
 
 struct Function
 {
-    const Type *return_type;
+    Type *return_type;
     ArgNode *arg_list;
 };
 
 int compare_type(const Type *a, const Type *b);
 
-void free_type(Type *type);
-
 Type *get_struct_member(const Type *struct_type, const char *member_name);
 
-int add_struct_member(Type *struct_type, const char *member_name, const Type *member_type);
+int add_struct_member(Type *struct_type, const char *member_name, Type *member_type);
 
 Type *new_struct();
 
-Type *make_array(const Type *base_type, int size);
+Type *make_array(Type *base_type, int size);
 
 Type *new_primitive(enum PrimitiveType prim);
 
-Type *get_struct_prototype(char *struct_name);
+int check_struct(const Type *type);
 
-int add_struct_prototype(Type *struct_type, char *struct_name);
+int check_array(const Type *type);
 
-int check_struct(Type *type);
+void free_array(Type *array_type);
 
-int check_array(Type *type);
-
-Function *new_function(char *function_name);
-
-// Function* add_function_return(Type*,Type*);
-
-Function *add_function_return(Function *, Type *);
-
-// int add_function_member(Type*, Type *);
-
-int add_function_member(Function *, Type *);
-
-Function *find_function(const char *function_name);
+void free_structure(Type *structure_type);
 
 #endif

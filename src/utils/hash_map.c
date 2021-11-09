@@ -31,6 +31,24 @@ void free_map(HashMap map)
         while (cur_node != NULL_PTR)
         {
             next = cur_node->next;
+            free_array(cur_node->value);
+            free(cur_node);
+            cur_node = next;
+        }
+    }
+    free(map);
+}
+
+// Free the map and all the types inside
+void free_prototypes(HashMap map)
+{
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
+        HashMapNode *cur_node = map[i], *next;
+        while (cur_node != NULL_PTR)
+        {
+            next = cur_node->next;
+            free_structure(cur_node->value);
             free(cur_node);
             cur_node = next;
         }
@@ -41,29 +59,18 @@ void free_map(HashMap map)
 int insert_pair(HashMap map, const char *key, Type *value)
 {
     long index = calc_index(key);
-    if (map[index] == NULL_PTR)
+    HashMapNode *cur_node = map[index];
+    while (cur_node != NULL_PTR)
     {
-        HashMapNode *new_node = malloc(sizeof(HashMapNode));
-        new_node->key = key;
-        new_node->value = value;
-        new_node->next = NULL_PTR;
-        map[index] = new_node;
+        if (!strcmp(cur_node->key, key))
+            return 0;
+        cur_node = cur_node->next;
     }
-    else
-    {
-        HashMapNode *cur_node = map[index];
-        while (cur_node != NULL_PTR)
-        {
-            if (!strcmp(cur_node->key, key))
-                return 0;
-            cur_node = cur_node->next;
-        }
-        HashMapNode *new_node = malloc(sizeof(HashMapNode));
-        new_node->key = key;
-        new_node->value = value;
-        new_node->next = NULL_PTR;
-        cur_node->next = new_node;
-    }
+    HashMapNode *new_node = malloc(sizeof(HashMapNode));
+    new_node->key = key;
+    new_node->value = value;
+    new_node->next = map[index];
+    map[index] = new_node;
     return 1;
 }
 
@@ -74,6 +81,7 @@ Type *get_value(HashMap map, const char *key)
     {
         if (!strcmp(cur_node->key, key))
             return cur_node->value;
+        cur_node = cur_node->next;
     }
     return NULL_PTR;
 }
@@ -103,4 +111,33 @@ int remove_pair(HashMap map, const char *key)
         cur_node = cur_node->next;
     }
     return 0;
+}
+
+// Used in test only
+void print_map(HashMap map)
+{
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
+        HashMapNode *cur_node = map[i];
+        while (cur_node != NULL_PTR)
+        {
+            printf("\t%s:", cur_node->key);
+            switch (cur_node->value->category)
+            {
+            case ARRAY:
+                printf(" ARRAY\n");
+                break;
+            case FUNCTION:
+                printf(" FUNCTION\n");
+                break;
+            case STRUCTURE:
+                printf(" STRUCTURE\n");
+                break;
+            case PRIMITIVE:
+                printf(" PRIMITIVE\n");
+                break;
+            }
+            cur_node = cur_node->next;
+        }
+    }
 }

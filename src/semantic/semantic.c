@@ -106,7 +106,7 @@ Type *p_StructSpecifier(Node *node)
         struct_name = get_son(node, 1)->attribute_value;
         struct_type = new_struct();
         p_DefList_struct(get_son(node, 3), struct_type);
-        add_struct_prototype(struct_type, struct_name);
+        insert_struct_prototype(struct_type, struct_name);
         return struct_type;
         break;
 
@@ -123,7 +123,7 @@ int p_VarDec(Node *node, Type *type)
     switch (node->production_no)
     {
     case 0: // ID
-        if (add_symbol(get_son(node, 0)->attribute_value, type) == -1)
+        if (insert_symbol(get_son(node, 0)->attribute_value, type) == -1)
         {
             print_error(3, node->lineno, "a variable is redefined in the same scope", get_son(node, 0)->attribute_value);
             return -1;
@@ -177,7 +177,7 @@ int p_VarDec_function(Node *node, Type *type, Function *func)
     {
     case 0: // ID
         char *param_name = get_son(node, 0)->attribute_value;
-        if (add_symbol(param_name, type) == -1)
+        if (insert_symbol(param_name, type) == -1)
         {
             print_error(3, node->lineno, "a variable is redefined in the same scope", param_name);
             return -1;
