@@ -4,11 +4,8 @@
 #include <stdio.h>
 #include "type.h"
 
-#define KEY_LEN 32
-
 #define TABLE_SIZE 0x1003
 
-/* symbol table pair, only used internally */
 typedef struct HashMapNode HashMapNode;
 typedef struct HashMapNode **HashMap;
 
@@ -18,14 +15,13 @@ struct HashMapNode
     Type *value;
     HashMapNode *next;
 };
-// typedef struct HashMapNode *HashMap[TABLE_SIZE];
 
-// init a single symbol table
+// Init a hash map
 HashMap init_map();
 
 void free_map(HashMap map);
 
-// insert a key-value pair to the table
+// insert a key-value pair to the map
 // if insert success, return 1, otherwise 0
 int insert_pair(HashMap map, const char *key, Type *value);
 

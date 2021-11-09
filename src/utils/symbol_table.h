@@ -9,23 +9,29 @@ typedef struct Scope Scope;
 struct Scope
 {
     int scope_level;
-    HashMap symble_table;
+    HashMap symbol_table;
     HashMap structure_prototype;
-    struct Scope *last_scope;
+    Scope *last_scope;
 };
 
 void enter_scope();
 
-Type *find_symbol(char *symbol_name);
+Type *find_symbol(const char *symbol_name);
 
-int add_symbol(char *symbol_name, Type *type);
+int add_symbol(const char *symbol_name, Type *type);
 
 void exit_scope();
 
-Scope *current_scope;
+Function *new_function(const char *function_name);
 
-Type *get_struct_prototype(char *struct_name);
+Function *add_function_return(Function *func, Type *function_return_type);
 
-int add_struct_prototype(Type *struct_type, char *struct_name);
+int add_function_member(Function *func, Type *arg_type);
+
+Function *find_function(const char *function_name);
+
+Type *get_struct_prototype(const char *struct_name);
+
+int add_struct_prototype(Type *struct_type, const char *struct_name);
 
 #endif

@@ -2,11 +2,12 @@
 #include "symbol_table.h"
 
 Scope *current_scope = NULL_PTR;
+
 void enter_scope()
 {
     Scope *new_scope = malloc(sizeof(Scope));
     new_scope->scope_level;
-    new_scope->symble_table = init_map();
+    new_scope->symbol_table = init_map();
     new_scope->structure_prototype = init_map();
     if (current_scope == NULL_PTR)
     {
@@ -22,11 +23,11 @@ void enter_scope()
     }
 }
 
-Type *find_symbol(char *symbol_name)
+Type *find_symbol(const char *symbol_name)
 {
     Scope *cur_scope = current_scope;
-    cur_scope->symble_table;
-    while (cur_scope != NULL_PTR || get_value(cur_scope->symble_table, symbol_name) == -1)
+    cur_scope->symbol_table;
+    while (cur_scope != NULL_PTR || get_value(cur_scope->symbol_table, symbol_name) == -1)
     {
         cur_scope = cur_scope->last_scope;
     }
@@ -34,19 +35,19 @@ Type *find_symbol(char *symbol_name)
     if (cur_scope == NULL_PTR)
         return NULL_PTR;
 
-    return get_value(cur_scope->symble_table, symbol_name);
+    return get_value(cur_scope->symbol_table, symbol_name);
 }
 
 // if symbol has existed, reuturn -1, if add successully, return0，如果这里添加不上就自动销毁释放内存
-int add_symbol(char *symbol_name, Type *type)
+int add_symbol(const char *symbol_name, Type *type)
 {
-    if (get_value(current_scope->symble_table, symbol_name) != -1)
+    if (get_value(current_scope->symbol_table, symbol_name) != -1)
     {
         // free_type(type);
         return -1;
     }
 
-    insert_pair(current_scope->symble_table, symbol_name, type);
+    insert_pair(current_scope->symbol_table, symbol_name, type);
     return 0;
 }
 
@@ -56,13 +57,13 @@ void exit_scope()
     Scope *tmp_scope = current_scope;
     current_scope = tmp_scope->last_scope;
     tmp_scope->last_scope = NULL_PTR;
-    free_map(tmp_scope->symble_table);
+    free_map(tmp_scope->symbol_table);
     free_map(tmp_scope->structure_prototype);
     free(tmp_scope);
 }
 
 //-1 stands for this id do not exist, -2 stands for this id exists but not function type
-Function *new_function(char *function_name)
+Function *new_function(const char *function_name)
 {
 
     Function *new_func = malloc(sizeof(Function));
@@ -71,7 +72,7 @@ Function *new_function(char *function_name)
 
     function_type->category = FUNCTION;
     function_type->function = new_func;
-    int result = insert_pair(current_scope->symble_table, function_name, function_type);
+    int result = insert_pair(current_scope->symbol_table, function_name, function_type);
     if (result == 1)
         return new_func;
     return NULL_PTR;
@@ -108,7 +109,7 @@ int add_function_member(Function *func, Type *arg_type)
 //-1 stands for this id do not exist, -2 stands for this id exists but not function type
 Function *find_function(const char *function_name)
 {
-    Type *existing = get_value(current_scope->symble_table, function_name);
+    Type *existing = get_value(current_scope->symbol_table, function_name);
     if (existing != NULL_PTR)
     {
         if (existing->category == FUNCTION)
@@ -122,7 +123,7 @@ Function *find_function(const char *function_name)
     }
 }
 
-Type *get_struct_prototype(char *struct_name)
+Type *get_struct_prototype(const char *struct_name)
 {
     Scope *cur_scope = current_scope;
 
@@ -136,7 +137,7 @@ Type *get_struct_prototype(char *struct_name)
     return NULL_PTR;
 }
 
-int add_struct_prototype(Type *struct_type, char *struct_name)
+int add_struct_prototype(Type *struct_type, const char *struct_name)
 {
     int result = insert_pair(current_scope->structure_prototype, struct_name, struct_type);
     if (result == 0)

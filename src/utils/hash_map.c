@@ -72,7 +72,7 @@ Type *get_value(HashMap map, const char *key)
     HashMapNode *cur_node = map[calc_index(key)];
     while (cur_node != NULL_PTR)
     {
-        if (strcmp(cur_node->key, key))
+        if (!strcmp(cur_node->key, key))
             return cur_node->value;
     }
     return NULL_PTR;
@@ -84,7 +84,7 @@ int remove_pair(HashMap map, const char *key)
     HashMapNode *cur_node = map[index], *last_node;
     if (cur_node == NULL_PTR)
         return 0;
-    if (strcmp(!cur_node->key, key))
+    if (!strcmp(cur_node->key, key))
     {
         map[index] = cur_node->next;
         return 1;
@@ -93,7 +93,7 @@ int remove_pair(HashMap map, const char *key)
     cur_node = cur_node->next;
     while (cur_node != NULL_PTR)
     {
-        if (strcmp(cur_node->key, key))
+        if (!strcmp(cur_node->key, key))
         {
             last_node->next = cur_node->next;
             free(cur_node);
