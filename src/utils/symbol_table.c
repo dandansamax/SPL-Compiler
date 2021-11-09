@@ -1,17 +1,17 @@
 #include <string.h>
 #include "symbol_table.h"
 
-Scope *current_scope = nullptr;
+Scope *current_scope = NULL_PTR;
 void enter_scope()
 {
     Scope *new_scope = malloc(sizeof(Scope));
     new_scope->scope_level;
-    new_scope->symble_table = symtab_init();
-    new_scope->structure_prototype = symtab_init();
-    if (current_scope == nullptr)
+    new_scope->symble_table = init_hashmap();
+    new_scope->structure_prototype = init_hashmap();
+    if (current_scope == NULL_PTR)
     {
         new_scope->scope_level = 0;
-        new_scope->last_scope = nullptr;
+        new_scope->last_scope = NULL_PTR;
         current_scope = new_scope;
     }
     else
@@ -26,13 +26,13 @@ Type *find_symbol(char *symbol_name)
 {
     Scope *cur_scope = current_scope;
     cur_scope->symble_table;
-    while (cur_scope != nullptr || symtab_lookup(cur_scope->symble_table, symbol_name) == -1)
+    while (cur_scope != NULL_PTR || symtab_lookup(cur_scope->symble_table, symbol_name) == -1)
     {
         cur_scope = cur_scope->last_scope;
     }
 
-    if (cur_scope == nullptr)
-        return nullptr;
+    if (cur_scope == NULL_PTR)
+        return NULL_PTR;
 
     return symtab_lookup(cur_scope->symble_table, symbol_name);
 }
@@ -55,9 +55,9 @@ void exit_scope()
 {
     Scope *tmp_scope = current_scope;
     current_scope = tmp_scope->last_scope;
-    tmp_scope->last_scope = nullptr;
-    symtab_free(tmp_scope->symble_table);
-    symtab_free(tmp_scope->structure_prototype);
+    tmp_scope->last_scope = NULL_PTR;
+    free_map(tmp_scope->symble_table);
+    free_map(tmp_scope->structure_prototype);
     free(tmp_scope);
 }
 
@@ -74,7 +74,7 @@ Function *new_function(char *function_name)
     int result = symtab_insert(current_scope->symble_table, function_name, function_type);
     if (result == 1)
         return new_func;
-    return nullptr;
+    return NULL_PTR;
 }
 // Function* add_function_return(Type* function_type,Type* function_return_type){
 //     Function* function=function_type->function;
@@ -93,7 +93,7 @@ Function *add_function_return(Function *func, Type *function_return_type)
 
 int add_function_member(Function *func, Type *arg_type)
 {
-    if (func->arg_list == nullptr)
+    if (func->arg_list == NULL_PTR)
     {
         func->arg_list = arg_type;
     }
@@ -109,7 +109,7 @@ int add_function_member(Function *func, Type *arg_type)
 Function *find_function(const char *function_name)
 {
     Type *existing = symtab_lookup(current_scope->symble_table, function_name);
-    if (existing != nullptr)
+    if (existing != NULL_PTR)
     {
         if (existing->category == FUNCTION)
             return existing;
@@ -118,7 +118,7 @@ Function *find_function(const char *function_name)
     }
     else
     {
-        return nullptr;
+        return NULL_PTR;
     }
 }
 
@@ -126,14 +126,14 @@ Type *get_struct_prototype(char *struct_name)
 {
     Scope *cur_scope = current_scope;
 
-    while (cur_scope != nullptr)
+    while (cur_scope != NULL_PTR)
     {
         Type *prototype = symtab_lookup(cur_scope->structure_prototype, struct_name);
-        if (prototype != nullptr)
+        if (prototype != NULL_PTR)
             return prototype;
         cur_scope = cur_scope->last_scope;
     }
-    return nullptr;
+    return NULL_PTR;
 }
 
 int add_struct_prototype(Type *struct_type, char *struct_name)

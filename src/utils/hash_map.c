@@ -1,16 +1,16 @@
 #include <string.h>
-#include "hash_table.h"
+#include "hash_map.h"
 
 /*
  * symbol table type, hash table (separate chaining) impl
  */
 // #define TABLE_SIZE 0x1003
-// struct _node
+// struct HashMapNode
 // {
-//     entry entry;
-//     struct _node *next;
+//     pair pair;
+//     struct HashMapNode *next;
 // };
-// typedef struct _node *symtab[TABLE_SIZE];
+// typedef struct HashMapNode *HashMap[TABLE_SIZE];
 
 // ************************************************************
 //    Your implementation goes here
@@ -29,28 +29,25 @@ unsigned long calc_hash(const unsigned char *s)
     return hash_rst % TABLE_SIZE;
 }
 
-symtab *symtab_init()
+HashMap init_hashmap()
 {
-    symtab *self = malloc(sizeof(symtab));
-    memset(self, 0, sizeof(symtab));
+    HashMap new_hashtable = malloc(sizeof(HashMapNode *) * TABLE_SIZE);
     for (int i = 0; i < TABLE_SIZE; i++)
-    {
-        (*self)[i] = nullptr;
-    }
-    return self;
+        new_hashtable[i] = NULL_PTR;
+    return new_hashtable;
 }
 
-void symtab_free(symtab *tab)
+void free_map(HashMap hashmap)
 {
     for (int i = 0; i < TABLE_SIZE; i++)
     {
-        if ((*tab)[i] == nullptr)
+        if ((*tab)[i] == NULL_PTR)
             continue;
-        struct _node *node = (*tab)[i];
-        while (node != nullptr)
+        struct HashMapNode *node = (*tab)[i];
+        while (node != NULL_PTR)
         {
-            struct _node *next = node->next;
-            free_type(node->entry.value);
+            struct HashMapNode *next = node->next;
+            free_type(node->pair.value);
             free(node);
             node = next;
         }
@@ -58,98 +55,98 @@ void symtab_free(symtab *tab)
     free(tab);
 }
 
-int symtab_insert(symtab *self, char *key, Type *value)
+int symtab_insert(HashMap *self, char *key, Type *value)
 {
     long hash = calc_hash(key);
     // printf("insert, hash: %ld, key: %s, value: %d\n", hash, key, value);
-    if ((*self)[hash] == nullptr)
+    if ((*self)[hash] == NULL_PTR)
     {
-        struct _node *node = malloc(sizeof(struct _node));
-        Entry en;
+        struct HashMapNode *node = malloc(sizeof(struct HashMapNode));
+        Pair en;
         entry_init1(&en, key, value);
-        node->next = nullptr;
-        node->entry = en;
+        node->next = NULL_PTR;
+        node->pair = en;
         (*self)[hash] = node;
     }
     else
     {
-        struct _node *cur_node = (*self)[hash];
-        while (cur_node->next != nullptr)
+        struct HashMapNode *cur_node = (*self)[hash];
+        while (cur_node->next != NULL_PTR)
         {
-            if (strcmp(cur_node->entry.key, key) == 0)
+            if (strcmp(cur_node->pair.key, key) == 0)
             {
                 // printf("insert conflict occured, hash: %ld, key: %s, value: %d\n", hash, key, value);
                 return 0;
             }
             cur_node = cur_node->next;
         }
-        if (strcmp(cur_node->entry.key, key) == 0)
+        if (strcmp(cur_node->pair.key, key) == 0)
         {
             // printf("insert conflict occured, hash: %ld, key: %s, value: %d\n", hash, key, value);
             return 0;
         }
-        struct _node *node = malloc(sizeof(struct _node));
-        Entry en;
+        struct HashMapNode *node = malloc(sizeof(struct HashMapNode));
+        Pair en;
         entry_init1(&en, key, value);
-        node->next = nullptr;
-        node->entry = en;
+        node->next = NULL_PTR;
+        node->pair = en;
         cur_node->next = node;
     }
     return 1;
 }
 
-Type *symtab_lookup(symtab *self, char *key)
+Type *symtab_lookup(HashMap *self, char *key)
 {
     long hash = calc_hash(key);
     // printf("lookup, hash: %ld, key: %s\n", hash, key);
-    if ((*self)[hash] != nullptr)
+    if ((*self)[hash] != NULL_PTR)
     {
-        struct _node *cur_node = (*self)[hash];
-        // printf("lookup and is not null, hash: %ld, key: %s, entry key:%s, entry value: %d\n", hash, key, cur_node->entry.key, cur_node->entry.value);
-        while (strcmp(cur_node->entry.key, key) != 0 && cur_node->next != nullptr)
+        struct HashMapNode *cur_node = (*self)[hash];
+        // printf("lookup and is not null, hash: %ld, key: %s, pair key:%s, pair value: %d\n", hash, key, cur_node->pair.key, cur_node->pair.value);
+        while (strcmp(cur_node->pair.key, key) != 0 && cur_node->next != NULL_PTR)
         {
             cur_node = cur_node->next;
         }
-        if (strcmp(cur_node->entry.key, key) == 0)
+        if (strcmp(cur_node->pair.key, key) == 0)
         {
-            // printf("founded, hash: %ld, key: %s, value:%d\n", hash, key, cur_node->entry.value);
-            return cur_node->entry.value;
+            // printf("founded, hash: %ld, key: %s, value:%d\n", hash, key, cur_node->pair.value);
+            return cur_node->pair.value;
         }
     }
     return -1;
 }
 
-int symtab_remove(symtab *self, char *key)
+int symtab_remove(HashMap *self, char *key)
 {
     long hash = calc_hash(key);
     // printf("remove, hash: %ld, key: %s\n", hash, key);
-    if ((*self)[hash] != nullptr)
+    if ((*self)[hash] != NULL_PTR)
     {
         // printf("start to remove, hash: %ld, key: %s\n", hash, key);
-        struct _node *cur_node = (*self)[hash];
-        struct _node *last_node;
+        struct HashMapNode *cur_node = (*self)[hash];
+        struct HashMapNode *last_node;
 
-        if (strcmp(cur_node->entry.key, key) == 0)
+        if (strcmp(cur_node->pair.key, key) == 0)
         {
             (*self)[hash] = cur_node->next;
             return 1;
         }
         last_node = cur_node;
         cur_node = cur_node->next;
-        // if (strcmp(cur_node->entry.key, key)==0)
+        // if (strcmp(cur_node->pair.key, key)==0)
         // {
         //     (*self)[hash]=cur_node->next;
         //     return 1;
         // }
-        while (strcmp(cur_node->entry.key, key) != 0 && cur_node->next != nullptr)
+        while (strcmp(cur_node->pair.key, key) != 0 && cur_node->next != NULL_PTR)
         {
             last_node = cur_node;
             cur_node = cur_node->next;
         }
-        if (strcmp(cur_node->entry.key, key) == 0)
+        if (strcmp(cur_node->pair.key, key) == 0)
         {
             last_node->next = cur_node->next;
-            cur_node->next = nullptr;
+            cur_node->next = NULL_PTR;
             return 1;
         }
     }
@@ -158,7 +155,7 @@ int symtab_remove(symtab *self, char *key)
 
     for (int i = 0; i < TABLE_SIZE; i++)
     {
-        if ((*self)[i] != nullptr)
+        if ((*self)[i] != NULL_PTR)
         {
             // printf("hash: %d\n", i);
         }
@@ -168,7 +165,7 @@ int symtab_remove(symtab *self, char *key)
     return 0;
 }
 
-void entry_init1(Entry *self, char *key, Type *value)
+void entry_init1(Pair *self, char *key, Type *value)
 {
     sprintf(self->key, "%s", key);
     self->value = value;

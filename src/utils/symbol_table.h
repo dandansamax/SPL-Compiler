@@ -2,17 +2,17 @@
 #define SYMBOL_TAB
 
 #include "type.h"
-#include "hash_table.h"
+#include "hash_map.h"
 
-#define nullptr -1
+typedef struct Scope Scope;
 
-typedef struct Scope
+struct Scope
 {
     int scope_level;
-    symtab *symble_table;
-    symtab *structure_prototype;
+    HashMap symble_table;
+    HashMap structure_prototype;
     struct Scope *last_scope;
-} Scope;
+};
 
 void enter_scope();
 
