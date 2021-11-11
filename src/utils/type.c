@@ -1,193 +1,138 @@
-
-
 #include "type.h"
 
-#define nullptr -1
-//if a and b is the same type, return 0
-//else return nullptr
-int compare_type(Type* a, Type* b){
-    if(a==nullptr || b==nullptr)return nullptr;
-    if(a->category!=b->category)return nullptr;
-    if(a->category==PRIMITIVE){
-        if(a->primitive!=b->primitive)return nullptr;
-        return a->structure->type==b->structure->type;
-    }else{
-        if(a->category==ARRAY){
-            //if compare type of array, only compare array.base, do not compare size
-            return compare_type(a->array->base,b->array->base);
-        }else if(a->category==STRUCTURE){
-            //递归判断两者type是否相同
-            FieldList* fa=a->structure;
-            FieldList* fb=b->structure;
-            while (fa!=nullptr && fb!=nullptr)
-            {
-                int result = compare_type(fa->type,fb->type);
-                if(result!=0)return nullptr;
-                fa=fa->next;
-                fb=fb->next;
-            }
-            return 0;//handle the condition that both two structure have no member
-        }else if(a->category==FUNCTION){
-        
-            if(a->function==nullptr||b->function==nullptr)return nullptr;
-            if(strcmp(a->function->name,b->function->name)!=0){
-                return nullptr;
-            }
+#include <stdio.h>
 
-            Argument* arg_a=a->function->arg;
-            Argument* arg_b=b->function->arg;
-            if(arg_a==arg_b==nullptr)return 0;
-            
-            while (arg_a!=nullptr && arg_b!=nullptr && compare_type(arg_a->type,arg_b->type)==0)
-            {
-                arg_a=arg_a->next;
-                arg_b=arg_b->next;
-            }
-            if(compare_type(arg_a->type,arg_b->type)!=0)return nullptr;
-            if(arg_a==arg_b==nullptr)return 0;
-            return nullptr;
-        }
-    }
-}
-
-//if struct_type is not struct or  no struct member found, return nullptr
-Type *get_struct_member(Type* struct_type, char* member_name){
-    if(check_struct(struct_type)==nullptr)return nullptr;
-
-    FieldList* current=struct_type->structure;
-    while (current!=nullptr)
+// If a and b is the same type, return 0
+// else return -1
+int compare_type(const Type *a, const Type *b)
+{
+    if (a == NULL_PTR || b == NULL_PTR)
+        return FALSE;
+    if (a->category != b->category)
+        return FALSE;
+    if (a->category == PRIMITIVE)
     {
-        if(strcmp(current->name,member_name)==0){
-            return current->type;
-        }else{
-            current=current->next;
+        return a->primitive_type == b->primitive_type ? TRUE : FALSE;
+    }
+    else if (a->category == ARRAY)
+    {
+        // If compare type of array, only compare array.base, do not compare size
+        return compare_type(a->array_info->base, b->array_info->base);
+    }
+    else if (a->category == STRUCTURE)
+    {
+        // Check if a equals to b recursively
+        FieldNode *fa = a->field_list;
+        FieldNode *fb = b->field_list;
+        while (fa != NULL_PTR && fb != NULL_PTR)
+        {
+            if (compare_type(fa->type, fb->type) != TRUE)
+                return FALSE;
+            fa = fa->next;
+            fb = fb->next;
         }
+        return TRUE; // Handle the condition that both two structure have no member
     }
-    
-
 }
 
-int *add_struct_member(Type *struct_type, char *member_name, Type *member_type){
-    if(check_struct(struct_type)==nullptr)return nullptr;
-
-    FieldList* new_field=(FieldList *)malloc(sizeof(FieldList));
-    strcpy(new_field->name,member_name);
-    // new_field->name=member_name;
-    new_field->type=member_type;
-
-    FieldList* current_field = struct_type->structure;
-    if(current_field==nullptr){
-        struct_type->structure=new_field;
-        new_field->next=nullptr;
-    }else{
-        struct_type->structure=new_field;
-        new_field->next=current_field;
+// If struct_type is not struct or no struct member found, return nullptr
+Type *get_struct_member(const Type *struct_type, const char *member_name)
+{
+    if (check_struct(struct_type) == FALSE)
+        return NULL_PTR;
+    FieldNode *current = struct_type->field_list;
+    while (current != NULL_PTR)
+    {
+        if (!strcmp(current->name, member_name))
+            return current->type;
+        else
+            current = current->next;
     }
-    
-
-    return 0;
-    
 }
 
-Type *new_struct(){
-    Type* new_struct=malloc(sizeof(Type));
-    new_struct->category=STRUCTURE;
-    new_struct->array=nullptr;
-    new_struct->primitive=nullptr;
-    new_struct->structure=nullptr;
+int add_struct_member(Type *struct_type, const char *member_name, Type *member_type)
+{
+    if (check_struct(struct_type) == FALSE)
+        return FALSE;
+    FieldNode *new_field = (FieldNode *)malloc(sizeof(FieldNode));
+    new_field->name = member_name;
+    new_field->type = member_type;
+    FieldNode *current_field = struct_type->field_list;
+    if (current_field == NULL_PTR)
+    {
+        struct_type->field_list = new_field;
+        new_field->next = NULL_PTR;
+    }
+    else
+    {
+        struct_type->field_list = new_field;
+        new_field->next = current_field;
+    }
+    return TRUE;
+}
 
+Type *new_struct()
+{
+    Type *new_struct = malloc(sizeof(Type));
+    new_struct->category = STRUCTURE;
+    new_struct->field_list = NULL_PTR;
     return new_struct;
-
 }
 
-Type *make_array(Type *base_type, int size){
-    Type* new_array=malloc(sizeof(Type));
-    new_array->category=ARRAY;
+Type *make_array(Type *base_type, int size)
+{
+    Type *new_array = malloc(sizeof(Type));
+    new_array->category = ARRAY;
 
-    new_array->array=malloc(sizeof(ARRAY));
-    new_array->array->base=base_type;
-    new_array->array->size=size;
-
-    new_array->primitive=nullptr;
-    new_array->structure=nullptr;
-    new_array->function=nullptr;
-
+    new_array->array_info = malloc(sizeof(ARRAY));
+    new_array->array_info->base = base_type;
+    new_array->array_info->size = size;
     return new_array;
 }
 
-Type *new_primitive(enum Primitive prim){
-    Type* new_primitive=malloc(sizeof(Type));
-    new_primitive->category=PRIMITIVE;
-
-    new_primitive->array=nullptr;
-    new_primitive->structure=nullptr;
-    
-    new_primitive->primitive=prim;
-
-    new_primitive->function=nullptr;
-
+Type *new_primitive(enum PrimitiveType primitive_type)
+{
+    Type *new_primitive = malloc(sizeof(Type));
+    new_primitive->category = PRIMITIVE;
+    new_primitive->primitive_type = primitive_type;
     return new_primitive;
 }
 
-//return 0 when type is structure, or return -1
-int* check_struct(Type* type){
-    if(type==nullptr)return nullptr;
-    if(type->category!=STRUCTURE)return nullptr;
-    return 0;
+// Return 0 when type is structure, or return -1
+int check_struct(const Type *type)
+{
+    return (type != NULL_PTR && type->category == STRUCTURE) ? TRUE : FALSE;
 }
 
-int* check_array(Type* type){
-    if(type==nullptr)return nullptr;
-    if(type->category!=ARRAY)return nullptr;
-    return 0;
+int check_array(const Type *type)
+{
+    return (type != NULL_PTR && type->category == ARRAY) ? TRUE : FALSE;
 }
 
-
-Type* new_empty_type(){
-    Type* new_type=malloc(sizeof(Type));
-    new_type->array=nullptr;
-    new_type->function=nullptr;
-    new_type->structure=nullptr;
-}
-
-
-
-void free_type(Type* type){
-    if(type==nullptr){
-        // free(type);
+// Free array recursively
+// Only types of array will be freed in this function
+void free_array(Type *array_type)
+{
+    if (array_type == NULL_PTR || array_type->category != ARRAY)
         return;
-    }
-    if(type->category==PRIMITIVE){
-        free(type);
-    }else if(type->category==ARRAY){
-        free_type(type->array->base);
-        free(type->array);
-        free(type);
-    }else if(type->category==STRUCTURE){
-        FieldList* fl=type->structure;
-        
-        while (fl!=nullptr)
-        {
-            FieldList* next=fl->next;
-            free_type(fl->type);
-            free(fl);
-            fl=next;
-        }
-        
-        free(type);
-        
-    }else if(type->category==FUNCTION){
-        Argument* args=type->function->arg;
-        Type* return_type=type->function->return_type;
-        free_type(return_type);
-        while (args!=nullptr)
-        {
-            Argument* next=args->next;
-            free_type(args->type);
-            free(args);
-            args=next;
-        }
-        free(type);
-    }
+    free_array(array_type->array_info->base);
+    free(array_type->array_info);
+    free(array_type);
 }
 
+// Free the structure itself, and array inside recursively
+// Will not free the other nested type in it 
+void free_structure(Type *structure_type)
+{
+    if (structure_type == NULL_PTR || structure_type->category != STRUCTURE)
+        return;
+    FieldNode *cur_node = structure_type->field_list, *next;
+    while (cur_node != NULL_PTR)
+    {
+        next = cur_node->next;
+        free_array(cur_node->type);
+        free(cur_node);
+        cur_node = next;
+    }
+    free(structure_type);
+}

@@ -17,6 +17,9 @@ BISON=bison
 splc: .lex .syntax .lex_preprocess
 	$(CC) src/syntax.tab.c src/utils/tokentree.c src/preprocess/preprocess.yy.c src/preprocess/preprocess.c src/semantic/semantic.c src/utils/symbol_table.c src/utils/type.c -o bin/splc
 
+sym_test:
+	cd src/utils/ && $(CC) test_symbol_table.c symbol_table.c hash_map.c type.c -o test_symbol_table && ./test_symbol_table && rm -f test_symbol_table
+
 # preprocess: .lex_preprocess
 # 	$(CC) -o bin/preprocess src/preprocess.yy.c src/preprocess.c
 

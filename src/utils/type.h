@@ -1,18 +1,27 @@
+#ifndef MY_TYPE
+#define MY_TYPE
+#include <stdlib.h>
+#include <string.h>
 
+#define NULL_PTR (void *)-1
+#define TRUE 0
+#define FALSE -1
 
-#ifndef TYPE
-#define TYPE
-#include<stdlib.h>
-#define nullptr -1
+typedef enum PrimitiveType PrimitiveType;
+typedef struct Type Type;
+typedef struct ArrayInfo ArrayInfo;
+typedef struct FieldNode FieldNode;
+typedef struct ArgNode ArgNode;
+typedef struct Function Function;
 
-enum Primitive
+enum PrimitiveType
 {
     P_INT,
     P_FLOAT,
     P_CHAR
 };
 
-typedef struct Type
+struct Type
 {
     enum
     {
@@ -23,74 +32,56 @@ typedef struct Type
     } category;
     union
     {
-        enum Primitive primitive;
-        struct Function* function;
-        struct Array *array;
-        struct FieldList *structure;
+        PrimitiveType primitive_type;
+        Function *function;
+        ArrayInfo *array_info;
+        FieldNode *field_list;
     };
+};
 
-} Type;
-
-typedef struct Array
+struct ArrayInfo
 {
-    struct Type *base;
+    Type *base;
     int size;
-} Array;
+};
 
-typedef struct FieldList
+struct FieldNode
 {
-    char name[32];
-    struct Type *type;
-    struct FieldList *next;
-} FieldList;
+    const char *name;
+    Type *type;
+    FieldNode *next;
+};
 
-typedef struct Function{
-    char name[32];
+struct ArgNode
+{
+    Type *type;
+    ArgNode *next;
+};
+
+struct Function
+{
     Type *return_type;
-    struct Argument *arg;
-} Function;
+    ArgNode *arg_list;
+};
 
-typedef struct Argument{
-    struct Type *type;
-    struct Argument *next;
-} Argument;
+int compare_type(const Type *a, const Type *b);
 
+Type *get_struct_member(const Type *struct_type, const char *member_name);
 
-int compare_type(Type *a, Type *b);
-
-void free_type(Type* type);
-
-Type *get_struct_member(Type *struct_type, char *member_name);
-
-int *add_struct_member(Type *struct_type, char *member_name, Type *member_type);
+int add_struct_member(Type *struct_type, const char *member_name, Type *member_type);
 
 Type *new_struct();
 
 Type *make_array(Type *base_type, int size);
 
-Type *new_primitive(enum Primitive prim);
+Type *new_primitive(enum PrimitiveType prim);
 
-Type *get_struct_prototype(char* struct_name);
+int check_struct(const Type *type);
 
-int *add_struct_prototype(Type *struct_type,char* struct_name);
+int check_array(const Type *type);
 
-int* check_struct(Type* type);
+void free_array(Type *array_type);
 
-int* check_array(Type* type);
-
-Type* new_empty_type();
-
-
-Function *new_function(char* function_name);
-
-// Function* add_function_return(Type*,Type*);
-Function* add_function_return(Function*,Type*);
-
-// int add_function_member(Type*, Type *);
-
-int add_function_member(Function*, Type *);
-
-Function *find_function(char* function_name);
-
+void free_structure(Type *structure_type);
 
 #endif

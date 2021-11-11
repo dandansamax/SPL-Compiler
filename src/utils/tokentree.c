@@ -60,7 +60,11 @@ void add_nodes_tail(Node *root, int num, ...)
 
 Node *get_son(Node *node,int num){
     Node* rnt=node->first_son;
-    for (int i=0;i<num;rnt=rnt->next){}
+    int i=0;
+    while (i<num){
+        rnt=rnt->next;
+        i++;
+    }
     return rnt;
 }
 

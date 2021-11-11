@@ -287,11 +287,11 @@ int main(int argc, char **argv){
 	    yy_switch_to_buffer(bp);
 
         output_file=fopen(output,"w");
-
+        // output_file=stdout;
         int val=yyparse();
         if (error_flag==0) {
-            print_tree(root,0,output_file);
-            // semantic_analysis(root);
+            /* print_tree(root,0,output_file); */
+            semantic_analysis(root,output_file);
         }
 
         fclose(output_file);
