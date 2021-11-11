@@ -59,6 +59,7 @@ Function *new_function(const char *function_name, Type *return_type)
     function_type->category = FUNCTION;
     function_type->function = new_func;
     function_type->function->return_type = return_type;
+    function_type->function->arg_list = NULL_PTR;
     return insert_pair(current_scope->symbol_table, function_name, function_type) ? new_func : NULL_PTR;
 }
 

@@ -1,13 +1,15 @@
 #include "type.h"
 
+#include <stdio.h>
+
 // If a and b is the same type, return 0
 // else return -1
 int compare_type(const Type *a, const Type *b)
 {
     if (a == NULL_PTR || b == NULL_PTR)
-        return TRUE;
+        return FALSE;
     if (a->category != b->category)
-        return TRUE;
+        return FALSE;
     if (a->category == PRIMITIVE)
     {
         return a->primitive_type == b->primitive_type ? TRUE : FALSE;
