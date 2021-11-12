@@ -305,7 +305,7 @@ int main(int argc, char **argv){
                     printf("[Error] Error occurs at semantic analysis!\n");
                 }
                 else {
-                    printf("[Info] The semantic analysis successful!\n");
+                    printf("[Info] The semantic analysis successed!\n");
                 }
             }
             else if (tree_flag==1){

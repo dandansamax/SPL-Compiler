@@ -2,7 +2,7 @@
 
 #include <stdarg.h>
 
-Node *new_node(char *token_name, char *attribute_value, int lineno, int print_type,int production_no)
+Node *new_node(char *token_name, char *attribute_value, int lineno, int print_type, int production_no)
 {
 
     Node *nd = (Node *)malloc(sizeof(Node));
@@ -35,9 +35,10 @@ void link_nodes(Node *root, int num, ...)
     }
 }
 
-void add_node_head(Node *root,Node *leave){
-    leave->next=root->first_son;
-    root->first_son=leave;
+void add_node_head(Node *root, Node *leave)
+{
+    leave->next = root->first_son;
+    root->first_son = leave;
 }
 
 void add_nodes_tail(Node *root, int num, ...)
@@ -47,8 +48,9 @@ void add_nodes_tail(Node *root, int num, ...)
 
     Node *last_node = root->first_son;
 
-    while (last_node->next!=0){
-        last_node=last_node->next;
+    while (last_node->next != 0)
+    {
+        last_node = last_node->next;
     }
 
     for (int i = 0; i < num; i++)
@@ -58,11 +60,13 @@ void add_nodes_tail(Node *root, int num, ...)
     }
 }
 
-Node *get_son(Node *node,int num){
-    Node* rnt=node->first_son;
-    int i=0;
-    while (i<num){
-        rnt=rnt->next;
+Node *get_son(Node *node, int num)
+{
+    Node *rnt = node->first_son;
+    int i = 0;
+    while (i < num)
+    {
+        rnt = rnt->next;
         i++;
     }
     return rnt;
@@ -70,25 +74,26 @@ Node *get_son(Node *node,int num){
 
 void print_tree(Node *root, int depth, FILE *f)
 {
-    if (root->lineno==-1) return;
+    if (root->lineno == -1)
+        return;
     for (int i = 0; i < depth; i++)
     {
-        fprintf(f,"  ");
+        fprintf(f, "  ");
     }
     switch (root->print_type)
     {
     case NONTERMINAL:
-        fprintf(f,"%s (%d)\n", root->token_name, root->lineno);
+        fprintf(f, "%s (%d)\n", root->token_name, root->lineno);
         break;
 
     case INT_FLOAT_CHAR_TOKEN:
     case ID_TOKEN:
     case TYPE_TOKEN:
-        fprintf(f,"%s: %s\n", root->token_name, root->attribute_value);
+        fprintf(f, "%s: %s\n", root->token_name, root->attribute_value);
         break;
 
     case OTHER_TOKEN:
-        fprintf(f,"%s\n", root->token_name);
+        fprintf(f, "%s\n", root->token_name);
     }
     if (root->first_son)
     {
