@@ -127,3 +127,4 @@ Scope *get_cur_scope()
 {
     return current_scope;
 }
+

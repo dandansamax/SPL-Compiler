@@ -134,3 +134,26 @@ void free_structure(Type *structure_type)
     }
     free(structure_type);
 }
+void to_string(Type* type,char* result){
+    if(type->category==PRIMITIVE){
+        switch (type->primitive_type) {
+            case P_FLOAT:
+                strcpy(result,"float");
+                break;
+            case P_INT:
+                strcpy(result,"int");break;
+            case P_CHAR:
+                strcpy(result,"char");break;
+        }
+    }else if(type->category==ARRAY){
+        char tmp[32];
+        to_string(type->array_info->base,tmp);
+        sprintf(result,"%s[%d]",tmp,type->array_info->size);
+    }else if(type->category==FUNCTION){
+        char tmp[32];
+        to_string(type->function->return_type,tmp);
+        sprintf(result,"function:%s",tmp);
+    }else if(type->category==STRUCTURE){
+
+    }
+}
