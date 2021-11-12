@@ -152,6 +152,6 @@ void to_string(Type* type,char* result){
         to_string(type->function->return_type,tmp);
         sprintf(result,"function %s:%s",type->name,tmp);
     }else if(type->category==STRUCTURE){
-
+        sprintf(result,"struct %s",type->name);
     }
 }
