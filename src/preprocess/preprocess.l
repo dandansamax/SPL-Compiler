@@ -16,10 +16,13 @@ id {letter_}({letter_}|{digit})*
 %%
 
   //comment
-"//" { char c; while((c=input()) != '\n'); }
+"//" { char c; while((c=input()) != '\n'); append_token(token_sequence, "\n", yylineno, NL);}
 "/*" { char c=input(); int state=0; char test;
     while(1){
-        if (c==0){
+        if(c == '\n'){
+            append_token(token_sequence, "\n", yylineno, NL);
+        }
+        if (c == 0){
             fprintf(stderr,"[FATAL] Comment error at line %d: cannot find \"*/\"\n",yylineno);
             exit(1);
             break;
@@ -53,43 +56,31 @@ id {letter_}({letter_}|{digit})*
 }
 
 \".*\"|\'.*\' { 
-    char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
-    strcpy(buf, yytext);
-    append_token(token_sequence, buf, yylineno, STR); 
+    append_token(token_sequence, strdup(yytext), yylineno, STR); 
 }
 
 {define} {
-    char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
-    strcpy(buf, yytext);
-    append_token(token_sequence, buf, yylineno, DEF);
+    append_token(token_sequence, strdup(yytext), yylineno, DEF);
 }
+
 {undefine} {
-    char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
-    strcpy(buf, yytext);
-    append_token(token_sequence, buf, yylineno, UNDEF);
+    append_token(token_sequence, strdup(yytext), yylineno, UNDEF);
 }
-{id} { 
-    char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
-    strcpy(buf, yytext);
-    append_token(token_sequence, buf, yylineno, PREPROCESS_ID);
+
+{id} {
+    append_token(token_sequence, strdup(yytext), yylineno, PREPROCESS_ID);
 }
 
 [ ]+ {
-    char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
-    strcpy(buf, yytext);
-    append_token(token_sequence, buf, yylineno, SPC);
+    append_token(token_sequence, strdup(yytext), yylineno, SPC);
 }
 
-. { 
-    char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
-    strcpy(buf, yytext);
-    append_token(token_sequence, buf, yylineno, PREPROCESS_CHAR);
+. {
+    append_token(token_sequence, strdup(yytext), yylineno, PREPROCESS_CHAR);
 }
 
-\n { 
-    char *buf = (char *)malloc(sizeof(char) * (yyleng + 1));
-    strcpy(buf, yytext);
-    append_token(token_sequence, buf, yylineno, NL); 
+\n {
+    append_token(token_sequence, strdup(yytext), yylineno, NL); 
 }
 
 %%
