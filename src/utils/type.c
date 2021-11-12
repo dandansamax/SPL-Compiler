@@ -1,7 +1,5 @@
 #include "type.h"
 
-#include <stdio.h>
-
 // If a and b is the same type, return 0
 // else return -1
 int compare_type(const Type *a, const Type *b)
