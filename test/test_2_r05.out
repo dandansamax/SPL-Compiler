@@ -1,1 +1,1 @@
-Error type 5 at Line 6: unmatching type on both sides of assignment
+Error type 5 at Line 6: unmatching types appear at both sides of the assignment operator (=): LHS is int, but RHS is float.

@@ -1,1 +1,1 @@
-Error type 15 at Line 6: redefine struct: Child
+Error type 15 at Line 6: redefine the same structure type: Child
