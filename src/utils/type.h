@@ -29,6 +29,7 @@ struct Type {
         STRUCTURE,
         FUNCTION
     } category;
+    const char* name;
     union {
         PrimitiveType primitive_type;
         Function *function;

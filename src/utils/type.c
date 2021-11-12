@@ -146,13 +146,11 @@ void to_string(Type* type,char* result){
                 strcpy(result,"char");break;
         }
     }else if(type->category==ARRAY){
-        char tmp[32];
-        to_string(type->array_info->base,tmp);
-        sprintf(result,"%s[%d]",tmp,type->array_info->size);
+        sprintf(result,"%s[%d]",type->name,type->array_info->size);
     }else if(type->category==FUNCTION){
         char tmp[32];
         to_string(type->function->return_type,tmp);
-        sprintf(result,"function:%s",tmp);
+        sprintf(result,"function %s:%s",type->name,tmp);
     }else if(type->category==STRUCTURE){
 
     }
