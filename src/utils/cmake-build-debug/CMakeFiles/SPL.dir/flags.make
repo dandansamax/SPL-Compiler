@@ -6,5 +6,5 @@ C_FLAGS = -g   -std=gnu99
 
 C_DEFINES = 
 
-C_INCLUDES = -I/mnt/d/Projects/CS323Compiler/SPL/. 
+C_INCLUDES = -I/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/. 
 
