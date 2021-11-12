@@ -1,7 +1,9 @@
 #ifndef MY_TYPE
 #define MY_TYPE
+
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #define NULL_PTR (void *)-1
 #define TRUE 0
@@ -14,24 +16,21 @@ typedef struct FieldNode FieldNode;
 typedef struct ArgNode ArgNode;
 typedef struct Function Function;
 
-enum PrimitiveType
-{
+enum PrimitiveType {
     P_INT,
     P_FLOAT,
     P_CHAR
 };
 
-struct Type
-{
-    enum
-    {
+struct Type {
+    enum {
         PRIMITIVE,
         ARRAY,
         STRUCTURE,
         FUNCTION
     } category;
-    union
-    {
+    const char* name;
+    union {
         PrimitiveType primitive_type;
         Function *function;
         ArrayInfo *array_info;
@@ -39,27 +38,23 @@ struct Type
     };
 };
 
-struct ArrayInfo
-{
+struct ArrayInfo {
     Type *base;
     int size;
 };
 
-struct FieldNode
-{
+struct FieldNode {
     const char *name;
     Type *type;
     FieldNode *next;
 };
 
-struct ArgNode
-{
+struct ArgNode {
     Type *type;
     ArgNode *next;
 };
 
-struct Function
-{
+struct Function {
     Type *return_type;
     ArgNode *arg_list;
 };
@@ -83,5 +78,8 @@ int check_array(const Type *type);
 void free_array(Type *array_type);
 
 void free_structure(Type *structure_type);
+
+void to_string(Type *type, char *result);
+
 
 #endif

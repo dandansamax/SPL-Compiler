@@ -1,4 +1,3 @@
-#include <string.h>
 #include "symbol_table.h"
 
 Scope *current_scope = NULL_PTR;
@@ -56,6 +55,8 @@ Function *new_function(const char *function_name, Type *return_type)
 {
     Function *new_func = malloc(sizeof(Function));
     Type *function_type = malloc(sizeof(Type));
+
+    function_type->name=function_name;
     function_type->category = FUNCTION;
     function_type->function = new_func;
     function_type->function->return_type = return_type;
@@ -98,6 +99,7 @@ Type *get_struct_prototype(const char *struct_name)
 
 int insert_struct_prototype(Type *struct_type, const char *struct_name)
 {
+    struct_type->name=struct_name;
     return insert_pair(current_scope->structure_prototype, struct_name, struct_type) ? TRUE : FALSE;
 }
 
@@ -127,3 +129,4 @@ Scope *get_cur_scope()
 {
     return current_scope;
 }
+

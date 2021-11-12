@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/d/Projects/CS323Compiler/SPL
+CMAKE_SOURCE_DIR = /home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug
+CMAKE_BINARY_DIR = /home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/CMakeFiles /mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/CMakeFiles /home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -123,32 +123,32 @@ SPL/fast:
 	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/build
 .PHONY : SPL/fast
 
-hash_table.o: hash_table.c.o
+hash_map.o: hash_map.c.o
 
-.PHONY : hash_table.o
+.PHONY : hash_map.o
 
 # target to build an object file
-hash_table.c.o:
-	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/hash_table.c.o
-.PHONY : hash_table.c.o
+hash_map.c.o:
+	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/hash_map.c.o
+.PHONY : hash_map.c.o
 
-hash_table.i: hash_table.c.i
+hash_map.i: hash_map.c.i
 
-.PHONY : hash_table.i
+.PHONY : hash_map.i
 
 # target to preprocess a source file
-hash_table.c.i:
-	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/hash_table.c.i
-.PHONY : hash_table.c.i
+hash_map.c.i:
+	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/hash_map.c.i
+.PHONY : hash_map.c.i
 
-hash_table.s: hash_table.c.s
+hash_map.s: hash_map.c.s
 
-.PHONY : hash_table.s
+.PHONY : hash_map.s
 
 # target to generate assembly for a file
-hash_table.c.s:
-	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/hash_table.c.s
-.PHONY : hash_table.c.s
+hash_map.c.s:
+	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/hash_map.c.s
+.PHONY : hash_map.c.s
 
 main.o: main.c.o
 
@@ -204,6 +204,60 @@ symbol_table.c.s:
 	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/symbol_table.c.s
 .PHONY : symbol_table.c.s
 
+test.o: test.c.o
+
+.PHONY : test.o
+
+# target to build an object file
+test.c.o:
+	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/test.c.o
+.PHONY : test.c.o
+
+test.i: test.c.i
+
+.PHONY : test.i
+
+# target to preprocess a source file
+test.c.i:
+	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/test.c.i
+.PHONY : test.c.i
+
+test.s: test.c.s
+
+.PHONY : test.s
+
+# target to generate assembly for a file
+test.c.s:
+	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/test.c.s
+.PHONY : test.c.s
+
+tokentree.o: tokentree.c.o
+
+.PHONY : tokentree.o
+
+# target to build an object file
+tokentree.c.o:
+	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/tokentree.c.o
+.PHONY : tokentree.c.o
+
+tokentree.i: tokentree.c.i
+
+.PHONY : tokentree.i
+
+# target to preprocess a source file
+tokentree.c.i:
+	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/tokentree.c.i
+.PHONY : tokentree.c.i
+
+tokentree.s: tokentree.c.s
+
+.PHONY : tokentree.s
+
+# target to generate assembly for a file
+tokentree.c.s:
+	$(MAKE) -f CMakeFiles/SPL.dir/build.make CMakeFiles/SPL.dir/tokentree.c.s
+.PHONY : tokentree.c.s
+
 type.o: type.c.o
 
 .PHONY : type.o
@@ -240,15 +294,21 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... SPL"
-	@echo "... hash_table.o"
-	@echo "... hash_table.i"
-	@echo "... hash_table.s"
+	@echo "... hash_map.o"
+	@echo "... hash_map.i"
+	@echo "... hash_map.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
 	@echo "... symbol_table.o"
 	@echo "... symbol_table.i"
 	@echo "... symbol_table.s"
+	@echo "... test.o"
+	@echo "... test.i"
+	@echo "... test.s"
+	@echo "... tokentree.o"
+	@echo "... tokentree.i"
+	@echo "... tokentree.s"
 	@echo "... type.o"
 	@echo "... type.i"
 	@echo "... type.s"

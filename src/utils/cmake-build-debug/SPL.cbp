@@ -8,98 +8,107 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug"/>
+				<Option working_dir="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug"/>
+				<Option working_dir="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug"/>
+				<Option working_dir="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="SPL">
-				<Option output="/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/SPL" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug"/>
+				<Option output="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/SPL" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/mnt/d/Projects/CS323Compiler/SPL/."/>
+					<Add directory="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/."/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 SPL"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 SPL"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="SPL/fast">
-				<Option output="/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/SPL" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug"/>
+				<Option output="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/SPL" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/mnt/d/Projects/CS323Compiler/SPL/."/>
+					<Add directory="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/."/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 SPL/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 SPL/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/mnt/d/Projects/CS323Compiler/SPL/hash_table.c">
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/hash_map.c">
 			<Option target="SPL"/>
 		</Unit>
-		<Unit filename="/mnt/d/Projects/CS323Compiler/SPL/hash_table.h">
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/hash_map.h">
 			<Option target="SPL"/>
 		</Unit>
-		<Unit filename="/mnt/d/Projects/CS323Compiler/SPL/main.c">
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/main.c">
 			<Option target="SPL"/>
 		</Unit>
-		<Unit filename="/mnt/d/Projects/CS323Compiler/SPL/symbol_table.c">
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/symbol_table.c">
 			<Option target="SPL"/>
 		</Unit>
-		<Unit filename="/mnt/d/Projects/CS323Compiler/SPL/symbol_table.h">
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/symbol_table.h">
 			<Option target="SPL"/>
 		</Unit>
-		<Unit filename="/mnt/d/Projects/CS323Compiler/SPL/type.c">
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/test.c">
 			<Option target="SPL"/>
 		</Unit>
-		<Unit filename="/mnt/d/Projects/CS323Compiler/SPL/type.h">
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/tokentree.c">
 			<Option target="SPL"/>
 		</Unit>
-		<Unit filename="/mnt/d/Projects/CS323Compiler/SPL/CMakeLists.txt">
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/tokentree.h">
+			<Option target="SPL"/>
+		</Unit>
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/type.c">
+			<Option target="SPL"/>
+		</Unit>
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/type.h">
+			<Option target="SPL"/>
+		</Unit>
+		<Unit filename="/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

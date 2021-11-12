@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/d/Projects/CS323Compiler/SPL
+# Install script for directory: /home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

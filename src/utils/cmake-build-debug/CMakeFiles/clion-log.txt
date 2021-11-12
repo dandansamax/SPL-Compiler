@@ -1,4 +1,11 @@
-C:\Windows\system32\wsl.exe --distribution Ubuntu-20.04 --exec /bin/sh -c "export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd /mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug && /usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G 'CodeBlocks - Unix Makefiles' /mnt/d/Projects/CS323Compiler/SPL"
+C:\Windows\system32\wsl.exe --distribution Ubuntu-20.04 --exec /bin/sh -c "export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd /home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug && /usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G 'CodeBlocks - Unix Makefiles' /home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils"
+-- The C compiler identification is GNU 9.3.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
 -- Configuring done
 -- Generating done
--- Build files have been written to: /mnt/d/Projects/CS323Compiler/SPL/cmake-build-debug
+-- Build files have been written to: /home/byll/CSE/CS323Compiler/Labs/Project/CS323-Project1/src/utils/cmake-build-debug
