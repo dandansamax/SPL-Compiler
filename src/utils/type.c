@@ -15,6 +15,10 @@ int compare_type(const Type *a, const Type *b)
     else if (a->category == ARRAY)
     {
         // If compare type of array, only compare array.base, do not compare size
+        if (a->array_info->size != b->array_info->size)
+        {
+            return FALSE;
+        }
         return compare_type(a->array_info->base, b->array_info->base);
     }
     else if (a->category == STRUCTURE)
@@ -119,7 +123,7 @@ void free_array(Type *array_type)
 }
 
 // Free the structure itself, and array inside recursively
-// Will not free the other nested type in it 
+// Will not free the other nested type in it
 void free_structure(Type *structure_type)
 {
     if (structure_type == NULL_PTR || structure_type->category != STRUCTURE)
