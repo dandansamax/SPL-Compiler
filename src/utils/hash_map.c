@@ -1,21 +1,7 @@
 #include <string.h>
 #include "hash_map.h"
 
-/*
- * symbol table type, hash table (separate chaining) impl
- */
-// #define TABLE_SIZE 0x1003
-// struct HashMapNode
-// {
-//     pair pair;
-//     struct HashMapNode *next;
-// };
-// typedef struct HashMapNode *HashMap[TABLE_SIZE];
-
-// ************************************************************
-//    Your implementation goes here
-// ************************************************************
-unsigned long calc_hash(const unsigned char *s)
+unsigned long calc_index(const unsigned char *s)
 {
     unsigned long hash_rst = 0, high;
     while (*s)
@@ -29,144 +15,129 @@ unsigned long calc_hash(const unsigned char *s)
     return hash_rst % TABLE_SIZE;
 }
 
-HashMap init_hashmap()
+HashMap init_map()
 {
-    HashMap new_hashtable = malloc(sizeof(HashMapNode *) * TABLE_SIZE);
+    HashMap new_hashmap = malloc(sizeof(HashMapNode *) * TABLE_SIZE);
     for (int i = 0; i < TABLE_SIZE; i++)
-        new_hashtable[i] = NULL_PTR;
-    return new_hashtable;
+        new_hashmap[i] = NULL_PTR;
+    return new_hashmap;
 }
 
-void free_map(HashMap hashmap)
+void free_map(HashMap map)
 {
     for (int i = 0; i < TABLE_SIZE; i++)
     {
-        if ((*tab)[i] == NULL_PTR)
-            continue;
-        struct HashMapNode *node = (*tab)[i];
-        while (node != NULL_PTR)
+        HashMapNode *cur_node = map[i], *next;
+        while (cur_node != NULL_PTR)
         {
-            struct HashMapNode *next = node->next;
-            free_type(node->pair.value);
-            free(node);
-            node = next;
+            next = cur_node->next;
+            free_array(cur_node->value);
+            free(cur_node);
+            cur_node = next;
         }
     }
-    free(tab);
+    free(map);
 }
 
-int symtab_insert(HashMap *self, char *key, Type *value)
+// Free the map and all the types inside
+void free_prototypes(HashMap map)
 {
-    long hash = calc_hash(key);
-    // printf("insert, hash: %ld, key: %s, value: %d\n", hash, key, value);
-    if ((*self)[hash] == NULL_PTR)
+    for (int i = 0; i < TABLE_SIZE; i++)
     {
-        struct HashMapNode *node = malloc(sizeof(struct HashMapNode));
-        Pair en;
-        entry_init1(&en, key, value);
-        node->next = NULL_PTR;
-        node->pair = en;
-        (*self)[hash] = node;
-    }
-    else
-    {
-        struct HashMapNode *cur_node = (*self)[hash];
-        while (cur_node->next != NULL_PTR)
+        HashMapNode *cur_node = map[i], *next;
+        while (cur_node != NULL_PTR)
         {
-            if (strcmp(cur_node->pair.key, key) == 0)
-            {
-                // printf("insert conflict occured, hash: %ld, key: %s, value: %d\n", hash, key, value);
-                return 0;
-            }
-            cur_node = cur_node->next;
+            next = cur_node->next;
+            free_structure(cur_node->value);
+            free(cur_node);
+            cur_node = next;
         }
-        if (strcmp(cur_node->pair.key, key) == 0)
-        {
-            // printf("insert conflict occured, hash: %ld, key: %s, value: %d\n", hash, key, value);
+    }
+    free(map);
+}
+
+int insert_pair(HashMap map, const char *key, Type *value)
+{
+    long index = calc_index(key);
+    HashMapNode *cur_node = map[index];
+    while (cur_node != NULL_PTR)
+    {
+        if (!strcmp(cur_node->key, key))
             return 0;
-        }
-        struct HashMapNode *node = malloc(sizeof(struct HashMapNode));
-        Pair en;
-        entry_init1(&en, key, value);
-        node->next = NULL_PTR;
-        node->pair = en;
-        cur_node->next = node;
+        cur_node = cur_node->next;
     }
+    HashMapNode *new_node = malloc(sizeof(HashMapNode));
+    new_node->key = key;
+    new_node->value = value;
+    new_node->next = map[index];
+    map[index] = new_node;
     return 1;
 }
 
-Type *symtab_lookup(HashMap *self, char *key)
+Type *get_value(HashMap map, const char *key)
 {
-    long hash = calc_hash(key);
-    // printf("lookup, hash: %ld, key: %s\n", hash, key);
-    if ((*self)[hash] != NULL_PTR)
+    HashMapNode *cur_node = map[calc_index(key)];
+    while (cur_node != NULL_PTR)
     {
-        struct HashMapNode *cur_node = (*self)[hash];
-        // printf("lookup and is not null, hash: %ld, key: %s, pair key:%s, pair value: %d\n", hash, key, cur_node->pair.key, cur_node->pair.value);
-        while (strcmp(cur_node->pair.key, key) != 0 && cur_node->next != NULL_PTR)
-        {
-            cur_node = cur_node->next;
-        }
-        if (strcmp(cur_node->pair.key, key) == 0)
-        {
-            // printf("founded, hash: %ld, key: %s, value:%d\n", hash, key, cur_node->pair.value);
-            return cur_node->pair.value;
-        }
+        if (!strcmp(cur_node->key, key))
+            return cur_node->value;
+        cur_node = cur_node->next;
     }
-    return -1;
+    return NULL_PTR;
 }
 
-int symtab_remove(HashMap *self, char *key)
+int remove_pair(HashMap map, const char *key)
 {
-    long hash = calc_hash(key);
-    // printf("remove, hash: %ld, key: %s\n", hash, key);
-    if ((*self)[hash] != NULL_PTR)
+    long index = calc_index(key);
+    HashMapNode *cur_node = map[index], *last_node;
+    if (cur_node == NULL_PTR)
+        return 0;
+    if (!strcmp(cur_node->key, key))
     {
-        // printf("start to remove, hash: %ld, key: %s\n", hash, key);
-        struct HashMapNode *cur_node = (*self)[hash];
-        struct HashMapNode *last_node;
-
-        if (strcmp(cur_node->pair.key, key) == 0)
+        map[index] = cur_node->next;
+        return 1;
+    }
+    last_node = cur_node;
+    cur_node = cur_node->next;
+    while (cur_node != NULL_PTR)
+    {
+        if (!strcmp(cur_node->key, key))
         {
-            (*self)[hash] = cur_node->next;
+            last_node->next = cur_node->next;
+            free(cur_node);
             return 1;
         }
         last_node = cur_node;
         cur_node = cur_node->next;
-        // if (strcmp(cur_node->pair.key, key)==0)
-        // {
-        //     (*self)[hash]=cur_node->next;
-        //     return 1;
-        // }
-        while (strcmp(cur_node->pair.key, key) != 0 && cur_node->next != NULL_PTR)
-        {
-            last_node = cur_node;
-            cur_node = cur_node->next;
-        }
-        if (strcmp(cur_node->pair.key, key) == 0)
-        {
-            last_node->next = cur_node->next;
-            cur_node->next = NULL_PTR;
-            return 1;
-        }
     }
-    // printf("remove not found, hash: %ld, key: %s\n", hash, key);
-    // printf("exist hash:\n");
-
-    for (int i = 0; i < TABLE_SIZE; i++)
-    {
-        if ((*self)[i] != NULL_PTR)
-        {
-            // printf("hash: %d\n", i);
-        }
-    }
-    // printf("remove not found, hash: %ld, key: %s\n", hash, key);
-
     return 0;
 }
 
-void entry_init1(Pair *self, char *key, Type *value)
+// Used in test only
+void print_map(HashMap map)
 {
-    sprintf(self->key, "%s", key);
-    self->value = value;
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
+        HashMapNode *cur_node = map[i];
+        while (cur_node != NULL_PTR)
+        {
+            printf("\t%s:", cur_node->key);
+            switch (cur_node->value->category)
+            {
+            case ARRAY:
+                printf(" ARRAY\n");
+                break;
+            case FUNCTION:
+                printf(" FUNCTION\n");
+                break;
+            case STRUCTURE:
+                printf(" STRUCTURE\n");
+                break;
+            case PRIMITIVE:
+                printf(" PRIMITIVE\n");
+                break;
+            }
+            cur_node = cur_node->next;
+        }
+    }
 }

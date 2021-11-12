@@ -1,5 +1,0 @@
-int test_11911413_2(){
-    struct balaba;
-
-   return 0;
-}

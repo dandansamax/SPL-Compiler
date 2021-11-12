@@ -5,9 +5,9 @@
 int compare_type(const Type *a, const Type *b)
 {
     if (a == NULL_PTR || b == NULL_PTR)
-        return TRUE;
+        return FALSE;
     if (a->category != b->category)
-        return TRUE;
+        return FALSE;
     if (a->category == PRIMITIVE)
     {
         return a->primitive_type == b->primitive_type ? TRUE : FALSE;
@@ -36,7 +36,7 @@ int compare_type(const Type *a, const Type *b)
 // If struct_type is not struct or no struct member found, return nullptr
 Type *get_struct_member(const Type *struct_type, const char *member_name)
 {
-    if (check_struct(struct_type) == NULL_PTR)
+    if (check_struct(struct_type) == FALSE)
         return NULL_PTR;
     FieldNode *current = struct_type->field_list;
     while (current != NULL_PTR)
@@ -48,7 +48,7 @@ Type *get_struct_member(const Type *struct_type, const char *member_name)
     }
 }
 
-int add_struct_member(Type *struct_type, const char *member_name, const Type *member_type)
+int add_struct_member(Type *struct_type, const char *member_name, Type *member_type)
 {
     if (check_struct(struct_type) == FALSE)
         return FALSE;
@@ -77,7 +77,7 @@ Type *new_struct()
     return new_struct;
 }
 
-Type *make_array(const Type *base_type, int size)
+Type *make_array(Type *base_type, int size)
 {
     Type *new_array = malloc(sizeof(Type));
     new_array->category = ARRAY;
@@ -92,43 +92,45 @@ Type *new_primitive(enum PrimitiveType primitive_type)
 {
     Type *new_primitive = malloc(sizeof(Type));
     new_primitive->category = PRIMITIVE;
-
     new_primitive->primitive_type = primitive_type;
-
     return new_primitive;
 }
 
 // Return 0 when type is structure, or return -1
-int check_struct(Type *type)
+int check_struct(const Type *type)
 {
     return (type != NULL_PTR && type->category == STRUCTURE) ? TRUE : FALSE;
 }
 
-int check_array(Type *type)
+int check_array(const Type *type)
 {
     return (type != NULL_PTR && type->category == ARRAY) ? TRUE : FALSE;
 }
 
-// Free the Type itself
-// Primitive types are not allowed to be freed
-void free_type(Type *type)
+// Free array recursively
+// Only types of array will be freed in this function
+void free_array(Type *array_type)
 {
-    if (type == NULL_PTR || type->category == PRIMITIVE || type->category == FUNCTION)
+    if (array_type == NULL_PTR || array_type->category != ARRAY)
         return;
-    else if (type->category == ARRAY)
+    free_array(array_type->array_info->base);
+    free(array_type->array_info);
+    free(array_type);
+}
+
+// Free the structure itself, and array inside recursively
+// Will not free the other nested type in it 
+void free_structure(Type *structure_type)
+{
+    if (structure_type == NULL_PTR || structure_type->category != STRUCTURE)
+        return;
+    FieldNode *cur_node = structure_type->field_list, *next;
+    while (cur_node != NULL_PTR)
     {
-        free(type->array_info);
-        free(type);
+        next = cur_node->next;
+        free_array(cur_node->type);
+        free(cur_node);
+        cur_node = next;
     }
-    else if (type->category == STRUCTURE)
-    {
-        FieldNode *cur_node = type->field_list, *next;
-        while (cur_node != NULL_PTR)
-        {
-            next = cur_node->next;
-            free(cur_node);
-            cur_node = next;
-        }
-        free(type);
-    }
+    free(structure_type);
 }
