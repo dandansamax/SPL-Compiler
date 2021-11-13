@@ -1,1 +1,1 @@
-Error type 2 at Line 8: undefined function: add
+Error type 2 at Line 8: a function is invoked without a definition: add

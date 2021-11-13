@@ -29,6 +29,7 @@
     #define MISPLACE_ARR(loc) fprintf(output_file,"Error type B at Line %d: Invalid array declaration\n",loc->lineno);
     #define INVALID_FOR(loc) fprintf(output_file,"Error type B at Line %d: Invalid 'for' statement\n",loc->lineno);
     #define MISSING_STMT(loc) fprintf(output_file,"Error type B at Line %d: Missing statment\n",loc->lineno);
+    #define MISSING_STRUCT(loc) fprintf(output_file,"Error type B at Line %d: Missing 'struct'\n",loc->lineno);
 %}
 %define parse.error verbose
 
@@ -66,6 +67,7 @@ ExtDef: Specifier ExtDecList SEMI {$$=new_node("ExtDef","",$1->lineno,NONTERMINA
     | Specifier FunDec CompSt {$$=new_node("ExtDef","",$1->lineno,NONTERMINAL,2); link_nodes($$,3,$1,$2,$3);}
     | Specifier ExtDecList SEMI SEMI error {REDUNDANT_SEMI($3)}
     | Specifier SEMI SEMI error {REDUNDANT_SEMI($2)}
+    | ID ExtDecList SEMI error {MISSING_STRUCT($1)}
     ;
 ExtDecList: VarDec {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL,0); link_nodes($$,1,$1);}
     | VarDec COMMA ExtDecList {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL,1); link_nodes($$,3,$1,$2,$3);}
@@ -229,8 +231,9 @@ int main(int argc, char **argv){
     // -i intermdeia file
 
     char intermdedia[128]={},output[128]={},input[128]={},c;
+    int tree_flag=0;
 
-    while ((c=getopt(argc,argv,"i:o:"))!=-1){
+    while ((c=getopt(argc,argv,"i:o:t"))!=-1){
         switch (c){
             case 'i':
                 strcpy(intermdedia,optarg);
@@ -238,6 +241,8 @@ int main(int argc, char **argv){
             case 'o':
                 strcpy(output,optarg);
                 break;
+            case 't':
+                tree_flag = 1;
         }
     }
     strcpy(input,argv[optind]);
@@ -288,10 +293,28 @@ int main(int argc, char **argv){
 
         output_file=fopen(output,"w");
         // output_file=stdout;
+
         int val=yyparse();
         if (error_flag==0) {
-            /* print_tree(root,0,output_file); */
-            semantic_analysis(root,output_file);
+            if (tree_flag==0){
+                int flag=semantic_analysis(root,output_file);
+                if (flag==-1){
+                    printf("[Error] Invalid parsing!\n");
+                }
+                else if (flag == 1){
+                    printf("[Error] Error occurs at semantic analysis!\n");
+                }
+                else {
+                    printf("[Info] The semantic analysis successful!\n");
+                }
+            }
+            else if (tree_flag==1){
+                print_tree(root,0,output_file); 
+            }
+        }
+        else
+        {
+            printf("[Error] Error occurs at parsing!\n");
         }
 
         fclose(output_file);

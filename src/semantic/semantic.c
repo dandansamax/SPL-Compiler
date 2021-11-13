@@ -7,6 +7,7 @@ FILE *output_file_semantic;
 Type *int_type;
 Type *float_type;
 Type *char_type;
+char error_msg[256], lvalue_str[128], rvalue_str[128];
 
 void print_error(int error_type, int line_no, char *msg, char *target);
 
@@ -44,16 +45,18 @@ void p_Dec_struct(Node *node, Type *type, Type *struct_type);
 /* Expression */
 Type *p_Exp(Node *node);
 void Check_lvalue(Node *node);
-int p_Args(Node *node, Function *func, ArgNode *arg);
+int p_Args(Node *node, Function *func, ArgNode *arg, char* func_name);
 
 /* Terminal */
 Type *p_TYPE(Node *node);
+
+int sema_error_flag = 0;
 
 int semantic_analysis(Node *root, FILE *file)
 {
     if (strcmp(root->token_name, "Program") != 0)
     {
-        return 1;
+        return -1;
     }
     output_file_semantic = file;
     int_type = new_primitive(P_INT);
@@ -64,11 +67,12 @@ int semantic_analysis(Node *root, FILE *file)
     p_ExtDefList(root->first_son);
     exit_scope();
 
-    return 0;
+    return sema_error_flag;
 }
 
 inline void print_error(int error_type, int line_no, char *msg, char *target)
 {
+    sema_error_flag = 1;
     fprintf(output_file_semantic, "Error type %d at Line %d: %s: %s\n", error_type, line_no, msg, target);
 }
 
@@ -166,7 +170,14 @@ Type *p_StructSpecifier(Node *node)
 
     case 1: // STRUCT ID
         struct_name = SON(1)->attribute_value;
-        return get_struct_prototype(struct_name);
+        struct_type = get_struct_prototype(struct_name);
+
+        if (struct_type == NULL_PTR)
+        {
+            print_error(20, node->lineno, "undefined structure type", struct_name);
+            return NULL_PTR;
+        }
+        return struct_type;
         break;
     }
 }
@@ -334,6 +345,7 @@ void p_Stmt(Node *node, Type *rnt_type)
 {
     Type *type;
     Type *int_type = new_primitive(P_INT);
+
     switch (node->production_no)
     {
     case 0: // Exp SEMI
@@ -348,7 +360,10 @@ void p_Stmt(Node *node, Type *rnt_type)
         type = p_Exp(SON(1));
         if (type != NULL_PTR && compare_type(type, rnt_type) != 0)
         {
-            print_error(8, node->lineno, "return value type mismatches the declared type", "");
+            to_string(rnt_type, lvalue_str);
+            to_string(type, rvalue_str);
+            sprintf(error_msg, "The function need return %s type, but you return %s type.", lvalue_str, rvalue_str);
+            print_error(8, node->lineno, "return value type mismatches the declared type", error_msg);
             return;
         }
         break;
@@ -358,7 +373,8 @@ void p_Stmt(Node *node, Type *rnt_type)
         type = p_Exp(SON(2));
         if (type != NULL_PTR && compare_type(type, int_type) != 0)
         {
-            print_error(16, node->lineno, "only int variables can be in \"if\" expression", "");
+            to_string(type, lvalue_str);
+            print_error(16, node->lineno, "boolean expression can only be int type", lvalue_str);
         }
         p_Stmt(SON(4), rnt_type);
         break;
@@ -367,7 +383,8 @@ void p_Stmt(Node *node, Type *rnt_type)
         type = p_Exp(SON(2));
         if (type != NULL_PTR && compare_type(type, int_type) != 0)
         {
-            print_error(16, node->lineno, "only int variables can be in \"if\" expression", "");
+            to_string(type, lvalue_str);
+            print_error(16, node->lineno, "boolean expression can only be int type", lvalue_str);
         }
         p_Stmt(SON(4), rnt_type);
         p_Stmt(SON(6), rnt_type);
@@ -382,16 +399,17 @@ void p_Stmt(Node *node, Type *rnt_type)
 
 void p_ForArgs(Node *node)
 {
+    Type *type;
     switch (node->production_no)
     {
     case 0: // Exp SEMI Exp SEMI Exp
         p_Exp(SON(0));
-        p_Exp(SON(2));
+        type = p_Exp(SON(2));
         p_Exp(SON(4));
         break;
 
     case 1: // SEMI Exp SEMI Exp
-        p_Exp(SON(1));
+        type = p_Exp(SON(1));
         p_Exp(SON(3));
         break;
 
@@ -402,7 +420,7 @@ void p_ForArgs(Node *node)
 
     case 3: // Exp SEMI Exp SEMI
         p_Exp(SON(0));
-        p_Exp(SON(2));
+        type = p_Exp(SON(2));
         break;
 
     case 4: // SEMI SEMI Exp
@@ -410,7 +428,7 @@ void p_ForArgs(Node *node)
         break;
 
     case 5: // SEMI Exp SEMI
-        p_Exp(SON(1));
+        type = p_Exp(SON(1));
         break;
 
     case 6: // Exp SEMI SEMI
@@ -419,6 +437,11 @@ void p_ForArgs(Node *node)
 
     case 7: // SEMI SEMI
         break;
+    }
+    if (compare_type(type, int_type) != 0)
+    {
+        to_string(type, lvalue_str);
+        print_error(16, node->lineno, "boolean expression can only be int type", lvalue_str);
     }
 }
 
@@ -501,7 +524,10 @@ void p_Dec(Node *node, Type *type)
 
         if (compare_type(type, exp_type) != 0)
         {
-            print_error(5, node->lineno, "unmatching types appear at both sides of the assignment operator (=)", "");
+            to_string(type, lvalue_str);
+            to_string(exp_type, rvalue_str);
+            sprintf(error_msg, "LHS is %s, but RHS is %s.", lvalue_str, rvalue_str);
+            print_error(5, node->lineno, "unmatching types appear at both sides of the assignment operator (=)", error_msg);
         }
         break;
     }
@@ -525,7 +551,10 @@ void p_Dec_struct(Node *node, Type *type, Type *struct_type)
 
         if (compare_type(type, exp_type) != 0)
         {
-            print_error(5, node->lineno, "unmatching types appear at both sides of the assignment operator (=)", "");
+            to_string(type, lvalue_str);
+            to_string(exp_type, rvalue_str);
+            sprintf(error_msg, "LHS is %s, but RHS is %s.", lvalue_str, rvalue_str);
+            print_error(5, node->lineno, "unmatching types appear at both sides of the assignment operator (=)", error_msg);
         }
         break;
     }
@@ -553,7 +582,10 @@ Type *p_Exp(Node *node)
         }
         if (compare_type(lvalue, rvalue) != 0)
         {
-            print_error(5, node->lineno, "unmatching types appear at both sides of the assignment operator (=)", "");
+            to_string(lvalue, lvalue_str);
+            to_string(rvalue, rvalue_str);
+            sprintf(error_msg, "LHS is %s, but RHS is %s.", lvalue_str, rvalue_str);
+            print_error(5, node->lineno, "unmatching types appear at both sides of the assignment operator (=)", error_msg);
             return NULL_PTR;
         }
         return lvalue;
@@ -569,12 +601,17 @@ Type *p_Exp(Node *node)
         }
         if (compare_type(lvalue, rvalue) != 0)
         {
-            print_error(7, node->lineno, "unmatching operands", "");
+            to_string(lvalue, lvalue_str);
+            to_string(rvalue, rvalue_str);
+            sprintf(error_msg, "LHS is %s, but RHS is %s.", lvalue_str, rvalue_str);
+            print_error(7, node->lineno, "unmatching operands", error_msg);
             return NULL_PTR;
         }
         if (compare_type(lvalue, int_type) != 0 || compare_type(rvalue, int_type) != 0)
         {
-            print_error(17, node->lineno, "only int type can be used as boolean", "");
+            to_string(lvalue, lvalue_str);
+            sprintf(error_msg,"get %s.",lvalue_str);
+            print_error(17, node->lineno, "only int type can be used as boolean", error_msg);
             return NULL_PTR;
         }
         return lvalue;
@@ -592,12 +629,17 @@ Type *p_Exp(Node *node)
         }
         if (compare_type(lvalue, rvalue) != 0)
         {
-            print_error(7, node->lineno, "unmatching operands", "");
+            to_string(lvalue, lvalue_str);
+            to_string(rvalue, rvalue_str);
+            sprintf(error_msg, "LHS is %s, but RHS is %s.", lvalue_str, rvalue_str);
+            print_error(7, node->lineno, "unmatching operands", error_msg);
             return NULL_PTR;
         }
-        if (lvalue->category != PRIMITIVE || rvalue->category != PRIMITIVE)
+        if (lvalue->category != PRIMITIVE)
         {
-            print_error(18, node->lineno, "only primitive type can be campared", "");
+            to_string(lvalue, lvalue_str);
+            sprintf(error_msg, "get %s.", lvalue_str);
+            print_error(18, node->lineno, "only primitive type can be campared", error_msg);
             return NULL_PTR;
         }
         return int_type;
@@ -613,7 +655,10 @@ Type *p_Exp(Node *node)
         }
         if (compare_type(lvalue, rvalue) != 0)
         {
-            print_error(7, node->lineno, "unmatching operands", "");
+            to_string(lvalue, lvalue_str);
+            to_string(rvalue, rvalue_str);
+            sprintf(error_msg, "LHS is %s, but RHS is %s.", lvalue_str, rvalue_str);
+            print_error(7, node->lineno, "unmatching operands", error_msg);
             return NULL_PTR;
         }
         return int_type;
@@ -631,7 +676,10 @@ Type *p_Exp(Node *node)
         }
         if (compare_type(lvalue, rvalue) != 0)
         {
-            print_error(7, node->lineno, "unmatching operands", "");
+            to_string(lvalue, lvalue_str);
+            to_string(rvalue, rvalue_str);
+            sprintf(error_msg, "LHS is %s, but RHS is %s.", lvalue_str, rvalue_str);
+            print_error(7, node->lineno, "unmatching operands", error_msg);
             return NULL_PTR;
         }
         if ((compare_type(lvalue, int_type) != 0 &&
@@ -639,7 +687,9 @@ Type *p_Exp(Node *node)
             (compare_type(rvalue, int_type) != 0 &&
              compare_type(rvalue, float_type) != 0))
         {
-            print_error(19, node->lineno, "only int and float variables can do arithmetic operations", "");
+            to_string(lvalue, lvalue_str);
+            sprintf(error_msg, "get %s.", lvalue_str);
+            print_error(19, node->lineno, "only int and float variables can do arithmetic operations", error_msg);
             return NULL_PTR;
         }
         return lvalue;
@@ -658,7 +708,9 @@ Type *p_Exp(Node *node)
         if (compare_type(lvalue, int_type) != 0 &&
             compare_type(lvalue, float_type) != 0)
         {
-            print_error(19, node->lineno, "only int and float variables can do arithmetic operations", "");
+            to_string(lvalue, lvalue_str);
+            sprintf(error_msg, "get %s.", lvalue_str);
+            print_error(19, node->lineno, "only int and float variables can do arithmetic operations", error_msg);
             return NULL_PTR;
         }
         return lvalue;
@@ -672,7 +724,9 @@ Type *p_Exp(Node *node)
         }
         if (compare_type(lvalue, int_type) != 0)
         {
-            print_error(17, node->lineno, "only int type can be used as boolean", "");
+            to_string(lvalue, lvalue_str);
+            sprintf(error_msg, "get %s.", lvalue_str);
+            print_error(17, node->lineno, "only int type can be used as boolean", error_msg);
             return NULL_PTR;
         }
         return int_type;
@@ -695,7 +749,7 @@ Type *p_Exp(Node *node)
         // print_info();
         if (node->production_no == 16)
         {
-            p_Args(SON(2), func, func->arg_list);
+            p_Args(SON(2), func, func->arg_list, func_name);
         }
         return func->return_type;
         break;
@@ -710,12 +764,16 @@ Type *p_Exp(Node *node)
         int flag = 0;
         if (check_array(lvalue) != 0)
         {
-            print_error(10, node->lineno, "applying indexing operator on non-array type variables", "");
+            to_string(lvalue, lvalue_str);
+            sprintf(error_msg, "get %s.", lvalue_str);
+            print_error(10, node->lineno, "applying indexing operator on non-array type variables", error_msg);
             flag = -1;
         }
         if (compare_type(rvalue, int_type) != 0)
         {
-            print_error(12, node->lineno, "array indexing with a non-integer type expression", "");
+            to_string(rvalue, rvalue_str);
+            sprintf(error_msg, "get %s.", rvalue_str);
+            print_error(12, node->lineno, "array indexing with a non-integer type expression", error_msg);
         }
         if (flag == 0)
         {
@@ -732,13 +790,15 @@ Type *p_Exp(Node *node)
         member_name = SON(2)->attribute_value;
         if (check_struct(lvalue) != 0)
         {
-            print_error(13, node->lineno, "accessing members of a non-structure variable", "");
+            to_string(lvalue, lvalue_str);
+            sprintf(error_msg, "get %s.", lvalue_str);
+            print_error(13, node->lineno, "accessing members of a non-structure variable", error_msg);
             return NULL_PTR;
         }
         rvalue = get_struct_member(lvalue, member_name);
         if (rvalue == NULL_PTR)
         {
-            print_error(14, node->lineno, "accessing an undefined structure member", "");
+            print_error(14, node->lineno, "accessing an undefined structure member", member_name);
             return NULL_PTR;
         }
         return rvalue;
@@ -782,7 +842,7 @@ void Check_lvalue(Node *node)
     }
 }
 
-int p_Args(Node *node, Function *func, ArgNode *arg)
+int p_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
 {
     Type *type;
     switch (node->production_no)
@@ -796,17 +856,23 @@ int p_Args(Node *node, Function *func, ArgNode *arg)
         }
         if (compare_type(type, arg->type) != 0)
         {
-            print_error(9, node->lineno, "a function’s arguments mismatch the declared parameters", "mismatch type");
+            to_string(arg->type, lvalue_str);
+            to_string(type, rvalue_str);
+            sprintf(error_msg, "mismatch type in function %s, expect %s, get %s.", func_name, lvalue_str, rvalue_str);
+            print_error(9, node->lineno, "a function’s arguments mismatch the declared parameters", error_msg);
             return -1;
         }
-        p_Args(SON(2), func, arg->next);
+        p_Args(SON(2), func, arg->next, func_name);
         return 0;
         break;
     case 1: // Exp
         type = p_Exp(SON(0));
         if (compare_type(type, arg->type) != 0)
         {
-            print_error(9, node->lineno, "a function’s arguments mismatch the declared parameters", "mismatch type");
+            to_string(arg->type, lvalue_str);
+            to_string(type, rvalue_str);
+            sprintf(error_msg, "mismatch type in function %s, expect %s, get %s.", func_name, lvalue_str, rvalue_str);
+            print_error(9, node->lineno, "a function’s arguments mismatch the declared parameters", error_msg);
             return -1;
         }
         if (arg->next != NULL_PTR)

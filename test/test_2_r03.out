@@ -1,1 +1,1 @@
-Error type 3 at Line 6: redefine variable: ttt
+Error type 3 at Line 6: a variable is redefined in the same scope: ttt
