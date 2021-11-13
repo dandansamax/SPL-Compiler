@@ -21,6 +21,7 @@ void p_ExtDecList(Node *node, Type *type);
 /* specifier */
 Type *p_Specifier(Node *node);
 Type *p_StructSpecifier(Node *node);
+Type *p_FunctionSpecifier(Node *node);
 
 /* declarator */
 int p_VarDec(Node *node, Type *type);
@@ -136,6 +137,8 @@ void p_ExtDecList(Node *node, Type *type)
 /* specifier */
 Type *p_Specifier(Node *node)
 {
+    // print_error(9999,node->lineno, "specifier node", node->production_no);
+    // printf("type case: %d",node->production_no);
     switch (node->production_no)
     {
     case 0: // TYPE
@@ -144,6 +147,10 @@ Type *p_Specifier(Node *node)
 
     case 1: // StructSpecifier
         return p_StructSpecifier(SON(0));
+        break;
+    
+    case 2://FunctionSpecifier
+        return p_FunctionSpecifier(SON(0));
         break;
     }
 }
@@ -182,6 +189,26 @@ Type *p_StructSpecifier(Node *node)
         return struct_type;
         break;
     }
+}
+
+Type* p_FunctionSpecifier(Node *node){
+    char *function_name;
+    Type *function_type;
+    switch (node->production_no)
+    {
+
+    case 0: // FUNC_VAR ID
+        function_name = SON(1)->attribute_value;
+        function_type = get_function_prototype(function_name);
+
+        if (function_type == NULL_PTR)
+        {
+            print_error(99, node->lineno, "undefined function type", function_name);
+            return NULL_PTR;
+        }
+        return function_type;
+        break;
+    }   
 }
 
 /* declarator */

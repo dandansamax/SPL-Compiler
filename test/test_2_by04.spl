@@ -1,0 +1,19 @@
+struct Pokemon{
+    char name[20];
+    int hp;
+};
+
+int Hit(struct Pokemon poke){
+    poke.hp=poke.hp-5;
+    return 0;
+}
+
+int test_2_by03(){
+
+    function Hit hhh;
+    struct Pokemon pokes;
+
+
+
+    return 0;
+}

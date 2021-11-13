@@ -30,13 +30,14 @@
     #define INVALID_FOR(loc) fprintf(output_file,"Error type B at Line %d: Invalid 'for' statement\n",loc->lineno);
     #define MISSING_STMT(loc) fprintf(output_file,"Error type B at Line %d: Missing statment\n",loc->lineno);
     #define MISSING_STRUCT(loc) fprintf(output_file,"Error type B at Line %d: Missing 'struct'\n",loc->lineno);
+
 %}
 %define parse.error verbose
 
 
 %token INT CHAR FLOAT ID
 %token TYPE
-%token STRUCT IF WHILE RETURN FOR
+%token STRUCT IF WHILE RETURN FOR FUNC_VAR
 %token SEMI COMMA 
 %token LC RC
 
@@ -77,7 +78,7 @@ ExtDecList: VarDec {$$=new_node("ExtDecList","",$1->lineno,NONTERMINAL,0); link_
 Specifier: 
     TYPE {$$=new_node("Specifier","",$1->lineno,NONTERMINAL,0); link_nodes($$,1,$1);}
     | StructSpecifier {$$=new_node("Specifier","",$1->lineno,NONTERMINAL,1); link_nodes($$,1,$1);}
-    
+    | FunctionSpecifier {$$=new_node("Specifier","",$1->lineno,NONTERMINAL,2); link_nodes($$,1,$1);}
     | TYPE TYPE error {REDUNDANT_TYPE($1)}
     | TYPE LB INT RB error{MISPLACE_ARR($1)}
     | TYPE LB RB error{MISPLACE_ARR($1)}
@@ -90,6 +91,9 @@ StructSpecifier: STRUCT ID LC DefList RC {$$=new_node("StructSpecifier","",$1->l
     | STRUCT STRUCT ID LC DefList RC error {REDUNDANT_TYPE($1)}
     | STRUCT STRUCT ID error {REDUNDANT_TYPE($1)}
     ;
+
+FunctionSpecifier:FUNC_VAR ID{$$=new_node("FunctionSpecifier","",$1->lineno,NONTERMINAL,0); link_nodes($$,2,$1,$2);}
+    | FUNC_VAR error{MISSING_DECLARATION_CONTENT($1)}
 
 /* declarator */
 VarDec: ID {$$=new_node("VarDec","",$1->lineno,NONTERMINAL,0); link_nodes($$,1,$1);}

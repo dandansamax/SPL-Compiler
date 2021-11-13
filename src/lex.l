@@ -29,6 +29,7 @@ hex_number 0[xX]([1-9a-fA-F]{hex_digit}*|0)
 
 %%
 
+"function" {yylval=new_node("FUNC_VAR","", yylineno, OTHER_TOKEN,0); return FUNC_VAR;}
 "struct" {yylval=new_node("STRUCT","", yylineno, OTHER_TOKEN,0); return STRUCT;}
 "if" {yylval=new_node("IF","", yylineno, OTHER_TOKEN,0); return IF;}
 "else" {yylval=new_node("ELSE","", yylineno, OTHER_TOKEN,0); return ELSE;}

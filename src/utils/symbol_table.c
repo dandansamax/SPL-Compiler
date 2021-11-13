@@ -7,6 +7,7 @@ void enter_scope()
     Scope *new_scope = malloc(sizeof(Scope));
     new_scope->symbol_table = init_map();
     new_scope->structure_prototype = init_map();
+    new_scope->function_prototype=init_map();
     if (current_scope == NULL_PTR)
     {
         new_scope->scope_level = 0;
@@ -48,6 +49,9 @@ void exit_scope()
     tmp_scope->last_scope = NULL_PTR;
     free_map(tmp_scope->symbol_table);
     free_prototypes(tmp_scope->structure_prototype);
+    //TODO: No need to clear function prototype because all value stores in symbol table too.
+    free_map(tmp_scope->function_prototype);
+    // ????free_function_prototypes(tmp_scope->function_prototype);
     free(tmp_scope);
 }
 
@@ -61,6 +65,7 @@ Function *new_function(const char *function_name, Type *return_type)
     function_type->function = new_func;
     function_type->function->return_type = return_type;
     function_type->function->arg_list = NULL_PTR;
+    int result = insert_pair(current_scope->function_prototype, function_name, function_type);
     return insert_pair(current_scope->symbol_table, function_name, function_type) ? new_func : NULL_PTR;
 }
 
@@ -82,6 +87,18 @@ Function *find_function(const char *function_name)
         return (Function *)-2;
     else
         return find_rst->function;
+}
+
+Type *get_function_prototype(const char* function_name){
+    Scope *cur_scope = current_scope;
+    while (cur_scope != NULL_PTR)
+    {
+        Type *prototype = get_value(cur_scope->function_prototype, function_name);
+        if (prototype != NULL_PTR)
+            return prototype;
+        cur_scope = cur_scope->last_scope;
+    }
+    return NULL_PTR;
 }
 
 Type *get_struct_prototype(const char *struct_name)
