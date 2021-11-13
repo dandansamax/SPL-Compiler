@@ -1,0 +1,1 @@
+Error type 5 at Line 15: unmatching types appear at both sides of the assignment operator (=): LHS is struct Pokemon, but RHS is int.
