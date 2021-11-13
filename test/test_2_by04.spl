@@ -13,7 +13,5 @@ int test_2_by03(){
     function Hit hhh;
     struct Pokemon pokes;
 
-
-
     return 0;
 }
