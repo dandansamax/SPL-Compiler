@@ -1,0 +1,26 @@
+struct Pokemon{
+    char name[20];
+    int hp;
+};
+
+void Hit(Pokemon poke){
+    poke.hp=poke.hp-5;
+}
+
+
+int test_2_by02(){
+    Pokemon pikachu;
+    pikachu.hp=10;
+    Hit(pikachu);
+
+    Pokemon pokes[5];
+    Hit(pokes[2]);
+
+    if(pikachu.hp<5){
+        Pokemon pikachu;
+        pikachu.hp=100;
+        Hit(pikachu);
+    }
+
+    return 0;
+}
