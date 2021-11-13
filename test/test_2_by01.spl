@@ -1,0 +1,23 @@
+struct Pokemon{
+    char name[20];
+    int hp;
+};
+
+Pokemon get_pokemon(int id){
+    struct Pokemon pikachu;
+    pikachu.name="Pikachu";
+    pikachu.hp=50;
+    return pikachu;
+}
+
+Pokemon set_pokemon(int id){
+    struct Pokemon pikachu;
+    pikachu.name="Pikachu";
+    pikachu.hp=50;
+    return pikachu;
+}
+
+int test_2_by01(){
+    Pokemon who=get_pokemon(1);
+    get_pokemon=set_pokemon;
+}
