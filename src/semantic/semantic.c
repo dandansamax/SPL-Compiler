@@ -8,6 +8,8 @@ Type *int_type;
 Type *float_type;
 Type *char_type;
 char error_msg[256], lvalue_str[128], rvalue_str[128];
+int size;
+char *name;
 
 void print_error(int error_type, int line_no, char *msg, char *target);
 
@@ -45,7 +47,7 @@ void p_Dec_struct(Node *node, Type *type, Type *struct_type);
 /* Expression */
 Type *p_Exp(Node *node);
 void Check_lvalue(Node *node);
-int p_Args(Node *node, Function *func, ArgNode *arg, char* func_name);
+int p_Args(Node *node, Function *func, ArgNode *arg, char *func_name);
 
 /* Terminal */
 Type *p_TYPE(Node *node);
@@ -185,6 +187,7 @@ Type *p_StructSpecifier(Node *node)
 /* declarator */
 int p_VarDec(Node *node, Type *type)
 {
+    
     switch (node->production_no)
     {
     case 0: // ID
@@ -197,7 +200,7 @@ int p_VarDec(Node *node, Type *type)
         break;
 
     case 1: // VarDec LB INT RB
-        int size = atoi(SON(2)->attribute_value);
+        size = atoi(SON(2)->attribute_value);
         Type *new_type = make_array(type, size);
         if (p_VarDec(SON(0), new_type) == -1)
         {
@@ -214,17 +217,17 @@ int p_VarDec_struct(Node *node, Type *type, Type *struct_type)
     switch (node->production_no)
     {
     case 0: // ID
-        char *struct_name = SON(0)->attribute_value;
-        if (add_struct_member(struct_type, struct_name, type) == -1)
+        name = SON(0)->attribute_value;
+        if (add_struct_member(struct_type, name, type) == -1)
         {
-            print_error(3, node->lineno, "a variable is redefined in the same scope", struct_name);
+            print_error(3, node->lineno, "a variable is redefined in the same scope", name);
             return -1;
         }
         return 0;
         break;
 
     case 1: // VarDec LB INT RB
-        int size = atoi(SON(2)->attribute_value);
+        size = atoi(SON(2)->attribute_value);
         Type *new_type = make_array(type, size);
         if (p_VarDec_struct(SON(0), new_type, struct_type) == -1)
         {
@@ -241,10 +244,10 @@ int p_VarDec_function(Node *node, Type *type, Function *func)
     switch (node->production_no)
     {
     case 0: // ID
-        char *param_name = SON(0)->attribute_value;
-        if (insert_symbol(param_name, type) == -1)
+        name = SON(0)->attribute_value;
+        if (insert_symbol(name, type) == -1)
         {
-            print_error(3, node->lineno, "a variable is redefined in the same scope", param_name);
+            print_error(3, node->lineno, "a variable is redefined in the same scope", name);
             return -1;
         }
         add_function_argument(func, type);
@@ -252,7 +255,7 @@ int p_VarDec_function(Node *node, Type *type, Function *func)
         break;
 
     case 1: // VarDec LB INT RB
-        int size = atoi(SON(2)->attribute_value);
+        size = atoi(SON(2)->attribute_value);
         Type *new_type = make_array(type, size);
         if (p_VarDec_function(SON(0), new_type, func) == -1)
         {
@@ -610,7 +613,7 @@ Type *p_Exp(Node *node)
         if (compare_type(lvalue, int_type) != 0 || compare_type(rvalue, int_type) != 0)
         {
             to_string(lvalue, lvalue_str);
-            sprintf(error_msg,"get %s.",lvalue_str);
+            sprintf(error_msg, "get %s.", lvalue_str);
             print_error(17, node->lineno, "only int type can be used as boolean", error_msg);
             return NULL_PTR;
         }
