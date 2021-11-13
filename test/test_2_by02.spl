@@ -4,9 +4,6 @@ struct Pokemon{
 };
 
 int Hit(struct Pokemon poke){
-    int calc(int value){
-        return value;
-    }
     
     poke.hp=poke.hp-5;
 

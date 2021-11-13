@@ -15,14 +15,6 @@ int test_2_by03(){
 
     struct Pokemon pokes;
 
-    int powerOn(int poke){
-        poke.power=poke.power+20;
-        int powerOff(int power){
-            return power-20;
-        }
-        poke.power=powerOff(poke.power);
-        return 0;
-    }
 
     powerOn(pokes);
 
