@@ -1,0 +1,21 @@
+int arg;
+
+int main(int arg, float arg){
+    int arg;
+    int i, j;
+
+    arg=1;
+    while (i==j){
+        int arg;
+        arg = 2;
+    }
+    for (i=1;i<=j;i=i+1){
+        int arg;
+        int arg;
+    }
+
+    {
+        int arg;
+        arg = 3;
+    }
+}

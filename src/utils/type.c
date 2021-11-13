@@ -176,7 +176,8 @@ void to_string(const Type *type, char *result)
     }
     else if (type->category == ARRAY)
     {
-        sprintf(result, "%s[%d]", type->name, type->array_info->size);
+        to_string(type->array_info->base,result);
+        sprintf(result, "%s[%d]", result, type->array_info->size);
     }
     else if (type->category == FUNCTION)
     {

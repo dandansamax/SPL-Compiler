@@ -1,0 +1,3 @@
+Error type 5 at Line 43: unmatching types appear at both sides of the assignment operator (=): LHS is struct Book, but RHS is int.
+Error type 5 at Line 44: unmatching types appear at both sides of the assignment operator (=): LHS is struct Book[100], but RHS is struct Shelf.
+Error type 5 at Line 45: unmatching types appear at both sides of the assignment operator (=): LHS is char[20], but RHS is char[20][19].

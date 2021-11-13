@@ -1,0 +1,46 @@
+// a testcase for structural equivalence
+
+
+struct Science_fiction{
+    char name[20];
+    int price;
+    float weight;
+};
+
+struct Textbook{
+    char name[20];
+    int price;
+    float weight;
+};
+
+struct Shelf{
+    struct Book{
+        char name[20];
+        int price;
+        float weight;
+    } books[100];
+    float height;
+};
+
+struct Shelf s[10];
+
+int main(){
+    struct Shelf shelf;
+
+    int i;
+    struct Textbook book1;
+    struct Science_fiction book2;
+    struct Book book3;
+    char name[20];
+    char invalid_name[19][20];
+
+    // valid
+    shelf.books[0]=book1;
+    shelf.books[1]=book2;
+    shelf.books[3].name=name;
+
+    // invalid
+    shelf.books[2]=i;
+    shelf.books=shelf;
+    shelf.books[4].name=invalid_name;
+}
