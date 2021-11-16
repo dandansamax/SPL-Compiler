@@ -33,6 +33,7 @@ void p_ParamDec(Node *node, Function *func);
 
 /* statement */
 void p_CompSt(Node *node, Type *rnt_type);
+void p_CompStList(Node *node, Type *rnt_type);
 void p_StmtList(Node *node, Type *rnt_type);
 void p_Stmt(Node *node, Type *rnt_type);
 void p_ForArgs(Node *node);
@@ -148,8 +149,8 @@ Type *p_Specifier(Node *node)
     case 1: // StructSpecifier
         return p_StructSpecifier(SON(0));
         break;
-    
-    case 2://FunctionSpecifier
+
+    case 2: //FunctionSpecifier
         return p_FunctionSpecifier(SON(0));
         break;
     }
@@ -191,7 +192,8 @@ Type *p_StructSpecifier(Node *node)
     }
 }
 
-Type* p_FunctionSpecifier(Node *node){
+Type *p_FunctionSpecifier(Node *node)
+{
     char *function_name;
     Type *function_type;
     switch (node->production_no)
@@ -208,13 +210,13 @@ Type* p_FunctionSpecifier(Node *node){
         }
         return function_type;
         break;
-    }   
+    }
 }
 
 /* declarator */
 int p_VarDec(Node *node, Type *type)
 {
-    
+
     switch (node->production_no)
     {
     case 0: // ID
@@ -352,10 +354,31 @@ void p_ParamDec(Node *node, Function *func)
 /* statement */
 void p_CompSt(Node *node, Type *rnt_type)
 {
+    // printf("enter scope\n");
     enter_scope();
-    p_DefList(SON(1));
-    p_StmtList(SON(2), rnt_type);
+    // p_DefList(SON(1));
+    // p_StmtList(SON(2), rnt_type);
+    p_CompStList(SON(1), rnt_type);
     exit_scope();
+    // printf("exit scope\n");
+}
+
+void p_CompStList(Node *node, Type *rnt_type)
+{
+    // printf("enter compstList\n");
+    switch (node->production_no)
+    {
+    case 0://Stmt CompStList
+        p_Stmt(SON(0),rnt_type);
+        p_CompStList(SON(1),rnt_type);
+        break;
+    case 1://Def compStList
+        p_Def(SON(0));
+        p_CompStList(SON(1),rnt_type);
+        break;
+    case 2://%empty
+        return;
+    }
 }
 
 void p_StmtList(Node *node, Type *rnt_type)

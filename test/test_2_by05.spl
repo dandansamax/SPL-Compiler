@@ -14,9 +14,16 @@ int HitDelegate(function Hit h,struct Pokemon poke){
 
 int test_2_by03(){
 
+
     function Hit hhh;
+
     struct Pokemon pokes;
-    HitDelegate(hhh,pokes);
+
+    struct Pokemon pokes2;
+    HitDelegate(hhh,pokes3);
+
+
+
 
 
     return 0;
