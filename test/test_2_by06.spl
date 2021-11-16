@@ -1,0 +1,31 @@
+struct Pokemon{
+    char name[20];
+    int hp;
+};
+
+int Hit(struct Pokemon poke){
+    poke.hp=poke.hp-5;
+    int DontHit(){
+        return 0;
+    }
+    return 0;
+}
+
+int HitDelegate(function Hit h,struct Pokemon poke){
+    h(poke);
+}
+
+int test_2_by03(){
+
+
+    function Hit hhh=Hit;
+
+    struct Pokemon pokes;
+
+    struct Pokemon pokes2;
+    HitDelegate(hhh,pokes2);
+
+    int a=5;
+
+    return 0;
+}
