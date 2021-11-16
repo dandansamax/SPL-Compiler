@@ -365,6 +365,8 @@ void p_CompSt(Node *node, Type *rnt_type)
 
 void p_CompStList(Node *node, Type *rnt_type)
 {
+        Type* type ;
+
     // printf("enter compstList\n");
     switch (node->production_no)
     {
@@ -376,7 +378,16 @@ void p_CompStList(Node *node, Type *rnt_type)
         p_Def(SON(0));
         p_CompStList(SON(1),rnt_type);
         break;
-    case 2://%empty
+    case 2: // Specifier FunDec CompSt
+        type = p_Specifier(SON(0));
+
+        if (p_FunDec(SON(1), type) == 0)
+        { // enter scope in p_FunDec
+            p_CompSt(SON(2), type);
+        }
+        exit_scope();
+        break;
+    case 3://%empty
         return;
     }
 }

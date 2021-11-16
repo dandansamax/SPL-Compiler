@@ -118,21 +118,15 @@ ParamDec: Specifier VarDec {$$=new_node("ParamDec","",$1->lineno,NONTERMINAL,2);
     ;
 
 /* statement */
-//  CompSt: LC DefList StmtList RC {$$=new_node("CompSt","",$1->lineno,NONTERMINAL,0); link_nodes($$,4,$1,$2,$3,$4);}
-//      | LC DefList StmtList error{MISSING_RC($3)}
-//      ;
 CompSt:LC CompStList RC {$$=new_node("CompSt","",$1->lineno,NONTERMINAL,0); link_nodes($$,3,$1,$2,$3);}
     | LC CompStList error{MISSING_RC($3)}
     ;
 CompStList:Stmt CompStList{$$=new_node("CompStList","",$1->lineno,NONTERMINAL,0); link_nodes($$,2,$1,$2);}
     |Def CompStList{$$=new_node("CompStList","",$1->lineno,NONTERMINAL,1); link_nodes($$,2,$1,$2);}
-    |%empty{$$=new_node("CompStList","",-1,NONTERMINAL,2);}
+    |Specifier FunDec CompSt CompStList {$$=new_node("CompStList","",$1->lineno,NONTERMINAL,2); link_nodes($$,3,$1,$2,$3);}
+    |%empty{$$=new_node("CompStList","",-1,NONTERMINAL,3);}
     ;
 
-StmtList: Stmt StmtList {$$=new_node("StmtList","",$1->lineno,NONTERMINAL,0); link_nodes($$,2,$1,$2);}
-    | %empty {$$=new_node("StmtList","",-1,NONTERMINAL,1);}
-    | Stmt Def StmtList error {MISPLACE_DEF($2)}
-    ;
 Stmt: Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL,0); link_nodes($$,2,$1,$2);}
     | CompSt {$$=new_node("Stmt","",$1->lineno,NONTERMINAL,1); link_nodes($$,1,$1);}
     | RETURN Exp SEMI {$$=new_node("Stmt","",$1->lineno,NONTERMINAL,2); link_nodes($$,3,$1,$2,$3);}
