@@ -1,0 +1,16 @@
+int main(){
+    int a,b,c,d;
+    float n,m;
+    char x,y,z;
+    struct st{
+        int a,b;
+    } s[10];
+
+    struct undefined_st s2;
+    
+    a=((b+c)+(n+m))+(x+y)*(n-m);
+
+    if (n){}
+
+    if (s[0]>s[1]){}
+}

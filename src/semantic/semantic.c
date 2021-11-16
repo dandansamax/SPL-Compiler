@@ -184,7 +184,7 @@ Type *p_StructSpecifier(Node *node)
 
         if (struct_type == NULL_PTR)
         {
-            print_error(20, node->lineno, "undefined structure type", struct_name);
+            print_error(19, node->lineno, "undefined structure type", struct_name);
             return NULL_PTR;
         }
         return struct_type;
@@ -427,7 +427,8 @@ void p_Stmt(Node *node, Type *rnt_type)
         if (type != NULL_PTR && compare_type(type, int_type) != 0)
         {
             to_string(type, lvalue_str);
-            print_error(16, node->lineno, "boolean expression can only be int type", lvalue_str);
+            sprintf(error_msg, "get %s.", lvalue_str);
+            print_error(16, node->lineno, "boolean expression can only be int type", error_msg);
         }
         p_Stmt(SON(4), rnt_type);
         break;
@@ -437,7 +438,8 @@ void p_Stmt(Node *node, Type *rnt_type)
         if (type != NULL_PTR && compare_type(type, int_type) != 0)
         {
             to_string(type, lvalue_str);
-            print_error(16, node->lineno, "boolean expression can only be int type", lvalue_str);
+            sprintf(error_msg, "get %s.", lvalue_str);
+            print_error(16, node->lineno, "boolean expression can only be int type", error_msg);
         }
         p_Stmt(SON(4), rnt_type);
         p_Stmt(SON(6), rnt_type);
@@ -664,7 +666,7 @@ Type *p_Exp(Node *node)
         {
             to_string(lvalue, lvalue_str);
             sprintf(error_msg, "get %s.", lvalue_str);
-            print_error(17, node->lineno, "only int type can be used as boolean", error_msg);
+            print_error(16, node->lineno, "boolean expression can only be int type", error_msg);
             return NULL_PTR;
         }
         return lvalue;
@@ -692,7 +694,7 @@ Type *p_Exp(Node *node)
         {
             to_string(lvalue, lvalue_str);
             sprintf(error_msg, "get %s.", lvalue_str);
-            print_error(18, node->lineno, "only primitive type can be campared", error_msg);
+            print_error(17, node->lineno, "only primitive type can be campared", error_msg);
             return NULL_PTR;
         }
         return int_type;
@@ -742,7 +744,7 @@ Type *p_Exp(Node *node)
         {
             to_string(lvalue, lvalue_str);
             sprintf(error_msg, "get %s.", lvalue_str);
-            print_error(19, node->lineno, "only int and float variables can do arithmetic operations", error_msg);
+            print_error(18, node->lineno, "only int and float variables can do arithmetic operations", error_msg);
             return NULL_PTR;
         }
         return lvalue;
@@ -763,7 +765,7 @@ Type *p_Exp(Node *node)
         {
             to_string(lvalue, lvalue_str);
             sprintf(error_msg, "get %s.", lvalue_str);
-            print_error(19, node->lineno, "only int and float variables can do arithmetic operations", error_msg);
+            print_error(18, node->lineno, "only int and float variables can do arithmetic operations", error_msg);
             return NULL_PTR;
         }
         return lvalue;
@@ -779,7 +781,7 @@ Type *p_Exp(Node *node)
         {
             to_string(lvalue, lvalue_str);
             sprintf(error_msg, "get %s.", lvalue_str);
-            print_error(17, node->lineno, "only int type can be used as boolean", error_msg);
+            print_error(16, node->lineno, "boolean expression can only be int type", error_msg);
             return NULL_PTR;
         }
         return int_type;
@@ -907,6 +909,9 @@ int p_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
             print_error(9, node->lineno, "a function’s arguments mismatch the declared parameters", "too much parameters");
             return -1;
         }
+        if (type == NULL_PTR){
+            return -1;
+        }
         if (compare_type(type, arg->type) != 0)
         {
             to_string(arg->type, lvalue_str);
@@ -920,6 +925,9 @@ int p_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
         break;
     case 1: // Exp
         type = p_Exp(SON(0));
+        if (type == NULL_PTR){
+            return -1;
+        }
         if (compare_type(type, arg->type) != 0)
         {
             to_string(arg->type, lvalue_str);
