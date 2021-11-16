@@ -33,25 +33,32 @@ int compare_type(const Type *a, const Type *b)
             fa = fa->next;
             fb = fb->next;
         }
-        if(fa!=NULL_PTR||fb!=NULL_PTR)return FALSE;
+        if (fa != NULL_PTR || fb != NULL_PTR)
+            return FALSE;
         return TRUE; // Handle the condition that both two structure have no member
-    }else if(a->category==FUNCTION){
-        Function *fa=a->function;
-        Function *fb=b->function;
-        if(compare_type(fa->return_type,fb->return_type)!=TRUE){
+    }
+    else if (a->category == FUNCTION)
+    {
+        Function *fa = a->function;
+        Function *fb = b->function;
+        if (compare_type(fa->return_type, fb->return_type) != TRUE)
+        {
             return FALSE;
         }
-        ArgNode* arg_a=fa->arg_list;
-        ArgNode* arg_b=fb->arg_list;
+        ArgNode *arg_a = fa->arg_list;
+        ArgNode *arg_b = fb->arg_list;
 
-        while(arg_a!=NULL_PTR && arg_b!=NULL_PTR){
-            if(compare_type(arg_a->type,arg_b->type)!=TRUE){
+        while (arg_a != NULL_PTR && arg_b != NULL_PTR)
+        {
+            if (compare_type(arg_a->type, arg_b->type) != TRUE)
+            {
                 return FALSE;
             }
-            arg_a=arg_a->next;
-            arg_b=arg_b->next;
+            arg_a = arg_a->next;
+            arg_b = arg_b->next;
         }
-        if(arg_a!=NULL_PTR||arg_b!=NULL_PTR)return FALSE;
+        if (arg_a != NULL_PTR || arg_b != NULL_PTR)
+            return FALSE;
         return TRUE;
     }
 }
@@ -176,7 +183,7 @@ void to_string(const Type *type, char *result)
     }
     else if (type->category == ARRAY)
     {
-        to_string(type->array_info->base,result);
+        to_string(type->array_info->base, result);
         sprintf(result, "%s[%d]", result, type->array_info->size);
     }
     else if (type->category == FUNCTION)

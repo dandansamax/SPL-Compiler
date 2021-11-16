@@ -859,6 +859,9 @@ int p_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
             print_error(9, node->lineno, "a function’s arguments mismatch the declared parameters", "too much parameters");
             return -1;
         }
+        if (type == NULL_PTR){
+            return -1;
+        }
         if (compare_type(type, arg->type) != 0)
         {
             to_string(arg->type, lvalue_str);
@@ -872,6 +875,9 @@ int p_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
         break;
     case 1: // Exp
         type = p_Exp(SON(0));
+        if (type == NULL_PTR){
+            return -1;
+        }
         if (compare_type(type, arg->type) != 0)
         {
             to_string(arg->type, lvalue_str);
