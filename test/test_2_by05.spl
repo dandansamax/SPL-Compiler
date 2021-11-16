@@ -9,7 +9,7 @@ int Hit(struct Pokemon poke){
 }
 
 int HitDelegate(function Hit h,struct Pokemon poke){
-    h(poke);
+    h(poke2);
 }
 
 int test_2_by03(){
@@ -20,11 +20,7 @@ int test_2_by03(){
     struct Pokemon pokes;
 
     struct Pokemon pokes2;
-    HitDelegate(hhh,pokes3);
-
-
-
-
+    HitDelegate(hhh,pokes2);
 
     return 0;
 }
