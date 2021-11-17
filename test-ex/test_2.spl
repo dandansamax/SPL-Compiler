@@ -1,20 +1,24 @@
 // a testcase for structural equivalence
 
 
-struct Science_fiction{
+struct Science_fiction
+{
     char name[20];
     int price;
     float weight;
 };
 
-struct Textbook{
+struct Textbook
+{
     char name[20];
     int price;
     float weight;
 };
 
-struct Shelf{
-    struct Book{
+struct Shelf 
+{
+    struct Book
+    {
         char name[20];
         int price;
         float weight;
@@ -24,7 +28,8 @@ struct Shelf{
 
 struct Shelf s[10];
 
-int main(){
+int main()
+{
     struct Shelf shelf;
 
     int i;
@@ -35,12 +40,12 @@ int main(){
     char invalid_name[19][20];
 
     // valid
-    shelf.books[0]=book1;
-    shelf.books[1]=book2;
-    shelf.books[3].name=name;
+    shelf.books[0] = book1;
+    shelf.books[1] = book2;
+    shelf.books[3].name = name;
 
     // invalid
-    shelf.books[2]=i;
-    shelf.books=shelf;
-    shelf.books[4].name=invalid_name;
+    shelf.books[2] = i;
+    shelf.books = shelf;
+    shelf.books[4].name = invalid_name;
 }

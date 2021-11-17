@@ -1,10 +1,12 @@
-struct Pokemon{
+struct Pokemon
+{
     char name[20];
     int hp;
 };
 
 struct Pokemon pokes[5];
 
-int func(){
+int test_1()
+{
     struct Pokemon pokes[5];
 }

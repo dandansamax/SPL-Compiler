@@ -1,22 +1,18 @@
-
-struct Pokemon{
+struct Pokemon
+{
     char name[20];
     int hp;
 };
 
-int Hit(struct Pokemon poke){
-    poke.hp=poke.hp-5;
+int Hit(struct Pokemon poke)
+{
+    poke.hp = poke.hp-5;
     return 0;
 }
 
-
-int test_2_by03(){
-
-
+int test_4()
+{
     struct Pokemon pokes;
-
-
     powerOn(pokes);
-
     return 0;
 }
