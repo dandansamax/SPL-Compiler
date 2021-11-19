@@ -7,7 +7,7 @@ FILE *output_file_semantic;
 Type *int_type;
 Type *float_type;
 Type *char_type;
-char error_msg[256], lvalue_str[128], rvalue_str[128];
+char error_msg[256], lvalue_str[64], rvalue_str[64];
 int size;
 char *name;
 
