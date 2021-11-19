@@ -1,0 +1,17 @@
+int sum(int x, int y)
+{
+    return x + y;
+}
+
+int test_10()
+{
+    int x = 3, y = 2;
+    // x = sum(x, x, y);  // Segmentation Fault. Need to fix it.
+    x = sum(y);
+    return comp(x, y);
+}
+
+int comp(int x, int y)
+{
+    return !(x < y);
+}

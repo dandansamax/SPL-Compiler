@@ -1,0 +1,14 @@
+int mismatch_retn(float i1, float i2)
+{
+    return 2.0 * i1 * i2;
+}
+
+int test_6()
+{
+    float a;
+    float b[20];
+    int c[3];
+    a[2] = 3.5;
+    a = mismatch_retn(a[2], b);
+    c[1] = mismatch_retn(b[1], b[2]);
+}

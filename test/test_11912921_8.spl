@@ -1,0 +1,6 @@
+int test_8()
+{
+    int var = 30;
+    float f = 3.2;
+    var(33) = f;
+}
