@@ -1,2 +1,2 @@
-Error type 1 at Line 10: a variable is used without a definition: a
-Error type 2 at Line 11: a function is invoked without a definition: comp
+Error type 9 at Line 9: a function’s arguments mismatch the declared parameters: too much parameters
+Error type 2 at Line 10: a function is invoked without a definition: comp

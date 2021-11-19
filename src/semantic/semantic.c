@@ -187,7 +187,7 @@ Type *p_StructSpecifier(Node *node)
 /* declarator */
 int p_VarDec(Node *node, Type *type)
 {
-    
+
     switch (node->production_no)
     {
     case 0: // ID
@@ -853,13 +853,14 @@ int p_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
     switch (node->production_no)
     {
     case 0: // Exp COMMA Args
-        type = p_Exp(SON(0));
         if (arg == NULL_PTR)
         {
             print_error(9, node->lineno, "a function’s arguments mismatch the declared parameters", "too much parameters");
             return -1;
         }
-        if (type == NULL_PTR){
+        type = p_Exp(SON(0));
+        if (type == NULL_PTR)
+        {
             return -1;
         }
         if (compare_type(type, arg->type) != 0)
@@ -874,8 +875,14 @@ int p_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
         return 0;
         break;
     case 1: // Exp
+        if (arg == NULL_PTR)
+        {
+            print_error(9, node->lineno, "a function’s arguments mismatch the declared parameters", "too much parameters");
+            return -1;
+        }
         type = p_Exp(SON(0));
-        if (type == NULL_PTR){
+        if (type == NULL_PTR)
+        {
             return -1;
         }
         if (compare_type(type, arg->type) != 0)
