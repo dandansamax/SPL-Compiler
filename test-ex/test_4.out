@@ -1,0 +1,4 @@
+Error type 7 at Line 6: unmatching operands: LHS is float, but RHS is char.
+Error type 7 at Line 6: unmatching operands: LHS is float, but RHS is char.
+Error type 7 at Line 15: unmatching operands: LHS is float, but RHS is char.
+Error type 18 at Line 17: only int and float variables can do arithmetic operations: get char.

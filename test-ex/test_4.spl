@@ -1,0 +1,19 @@
+int main(){
+    int a, b;
+    float n, m;
+    char x,y;
+
+    a = (n + x) + (m + y);
+    /*
+        (n + x) and (m + y) will cause problem and error reporting because they add up different types,
+        thus they will have atrributes Exp.type = undefined.
+        
+        When we check validation of (undefined {or (n + x)} ) + (undefined {or (m + y)} ),
+        although finding an error, we will not report it.
+    */
+
+    a = n + x;      // This feature also affect assignment operation,
+
+    return x + y;   // and return expression.
+
+}

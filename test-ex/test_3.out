@@ -1,5 +1,5 @@
-Error type 19 at Line 9: undefined structure type: undefined_st
-Error type 7 at Line 11: unmatching operands: LHS is int, but RHS is float.
-Error type 18 at Line 11: only int and float variables can do arithmetic operations: get char.
-Error type 16 at Line 13: boolean expression can only be int type: get float.
-Error type 17 at Line 15: only primitive type can be campared: get struct st.
+Error type 16 at Line 6: boolean expression can only be int type: get float.
+Error type 17 at Line 17: only primitive type can be campared: get struct st.
+Error type 18 at Line 19: only int and float variables can do arithmetic operations: get char.
+Error type 18 at Line 20: only int and float variables can do arithmetic operations: get struct st.
+Error type 19 at Line 24: undefined structure type: undefined_st

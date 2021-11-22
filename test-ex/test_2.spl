@@ -37,15 +37,15 @@ int main()
     struct Science_fiction book2;
     struct Book book3;
     char name[20];
-    char invalid_name[19][20];
+    char invalid_name[19];
 
     // valid
-    shelf.books[0] = book1;
-    shelf.books[1] = book2;
-    shelf.books[3].name = name;
+    shelf.books[0] = book1;     // struct Book = struct Textbook
+    shelf.books[1] = book2;     // struct Book = struct Science_fiction
+    shelf.books[3].name = name; // char[20] = char[20]
 
     // invalid
-    shelf.books[2] = i;
-    shelf.books = shelf;
-    shelf.books[4].name = invalid_name;
+    shelf.books[2] = i;         // struct Book = int
+    shelf.books = shelf;        // struct books[100] = struct Shellf
+    shelf.books[4].name = invalid_name;     // char[20] = char[19]
 }
