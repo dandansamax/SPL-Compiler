@@ -1,3 +1,0 @@
-Error type 5 at Line 9: unmatching types appear at both sides of the assignment operator (=): LHS is int, but RHS is float.
-Error type 14 at Line 11: accessing an undefined structure member: bone
-Error type 7 at Line 11: unmatching operands: LHS is float, but RHS is int.

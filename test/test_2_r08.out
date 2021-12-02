@@ -1,1 +1,0 @@
-Error type 8 at Line 21: return value type mismatches the declared type: The function need return int type, but you return float type.

@@ -1,4 +1,0 @@
-Error type 8 at Line 3: return value type mismatches the declared type: The function need return int type, but you return float type.
-Error type 10 at Line 11: applying indexing operator on non-array type variables: get float.
-Error type 10 at Line 12: applying indexing operator on non-array type variables: get float.
-Error type 5 at Line 12: unmatching types appear at both sides of the assignment operator (=): LHS is float, but RHS is int.

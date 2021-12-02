@@ -1,0 +1,10 @@
+[DEBUG] 2021-12-01 11:26:52,673 (irsim.py 620): Parsed arguments: {'irpath': 'test01.ir', 'inputs': '1', 'logpath': 'irsim.log'}
+[INFO] 2021-12-01 11:26:52,674 (irsim.py 567): File loaded successfully
+[INFO] 2021-12-01 11:27:26,801 (irsim.py 567): Program has exited gracefully
+[INFO] 2021-12-01 11:27:26,801 (irsim.py 567): Total instructions = 10
+[ERROR] 2021-12-01 11:27:30,040 (irsim.py 581): An error occurred at line 2: Illegal memory access
+[WARNING] 2021-12-01 11:27:38,214 (irsim.py 574): Program Counter goes out of bound. The running program will be terminated instantly
+[INFO] 2021-12-01 11:27:40,162 (irsim.py 567): KeyboardInterrupt raised, quit program
+[DEBUG] 2021-12-01 11:51:19,952 (irsim.py 620): Parsed arguments: {'irpath': 'test02.ir', 'inputs': '6', 'logpath': 'irsim.log'}
+[INFO] 2021-12-01 11:51:19,953 (irsim.py 567): File loaded successfully
+[INFO] 2021-12-01 11:52:46,743 (irsim.py 567): KeyboardInterrupt raised, quit program
