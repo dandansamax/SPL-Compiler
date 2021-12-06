@@ -54,7 +54,7 @@ TAC *combine(int num, ...)
     return head;
 }
 
-void TAC_print(const TAC *head)
+void TAC_print(const TAC *head, FILE *file)
 {
     const TAC *cur = head;
     const Quadruple *content;
@@ -62,9 +62,9 @@ void TAC_print(const TAC *head)
     {
         content = cur->content;
         if (content->arg2 == NULL)
-            printf("%s := %c%s", content->result, op_symbol[content->oper], content->arg1);
+            fprintf(file, "%s := %c%s", content->result, op_symbol[content->oper], content->arg1);
         else
-            printf("%s := %s %c %s", content->result, content->arg1, op_symbol[content->oper], content->arg2);
+            fprintf(file, "%s := %s %c %s", content->result, content->arg1, op_symbol[content->oper], content->arg2);
         cur = cur->next;
     } while (cur != head);
 }

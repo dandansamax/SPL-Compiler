@@ -37,4 +37,4 @@ void TAC_free(TAC *head);
 
 TAC *combine(int num, ...);
 
-void TAC_print(const TAC *head);
+void TAC_print(const TAC *head, FILE *file);
