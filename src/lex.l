@@ -63,6 +63,9 @@ hex_number 0[xX]([1-9a-fA-F]{hex_digit}*|0)
 "float" {yylval=new_node("TYPE","float", yylineno, TYPE_TOKEN, 1); return TYPE;}
 "char" {yylval=new_node("TYPE","char", yylineno, TYPE_TOKEN, 2); return TYPE;}
 
+"read" {yylval=new_node("READ","read", yylineno, OTHER_TOKEN, 0); return READ;}
+"write" {yylval=new_node("WRITE","write", yylineno, OTHER_TOKEN, 0); return WRITE;}
+
 {letter_}({letter_}|{digit})* {yylval = new_node("ID", strdup(yytext), yylineno, ID_TOKEN, 0); return ID;} //ID
 
 \'[[:print:]]?\' {yylval = new_node("CHAR", strdup(yytext), yylineno, INT_FLOAT_CHAR_TOKEN, 0); return CHAR;} //CHAR

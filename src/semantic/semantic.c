@@ -832,6 +832,15 @@ Type *p_Exp(Node *node)
     case 23: // CHAR
         return char_type;
         break;
+
+    case 24: // READ LP RP
+        return int_type;
+        break;
+
+    case 25: // WRITE LP Exp RP
+    	p_Exp(SON(2));
+        return int_type;
+        break;
     }
 }
 
@@ -874,6 +883,7 @@ int p_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
         p_Args(SON(2), func, arg->next, func_name);
         return 0;
         break;
+
     case 1: // Exp
         if (arg == NULL_PTR)
         {
