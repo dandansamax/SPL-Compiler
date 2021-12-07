@@ -39,6 +39,7 @@
 %token STRUCT IF WHILE RETURN FOR
 %token SEMI COMMA 
 %token LC RC
+%token READ WRITE
 
 %precedence LOWER_IF
 %precedence ELSE
@@ -198,6 +199,8 @@ Exp: Exp ASSIGN Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL,0); link_nodes(
     | INT {$$=new_node("Exp","",$1->lineno,NONTERMINAL,21); link_nodes($$,1,$1);}
     | FLOAT {$$=new_node("Exp","",$1->lineno,NONTERMINAL,22); link_nodes($$,1,$1);}
     | CHAR {$$=new_node("Exp","",$1->lineno,NONTERMINAL,23); link_nodes($$,1,$1);}
+    | READ LP RP {$$=new_node("Exp","",$1->lineno,NONTERMINAL,24); link_nodes($$,3,$1,$2,$3);}
+    | WRITE LP Exp RP {$$=new_node("Exp","",$1->lineno,NONTERMINAL,25); link_nodes($$,4,$1,$2,$3,$4);}
     | Exp ASSIGN error {MISSING_EXP($2,=)}
     | Exp AND error {MISSING_EXP($2,&&)}
     | Exp OR error {MISSING_EXP($2,||)}
@@ -246,7 +249,7 @@ int main(int argc, char **argv){
         }
     }
     strcpy(input,argv[optind]);
-    
+
     if (output[0]==0){
         char* dot=strrchr(input,'.');
         strcpy(dot,".out");
