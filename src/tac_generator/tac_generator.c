@@ -1,4 +1,5 @@
 #include "tac_generator.h"
+#include "../utils/tac_block.h"
 
 #define SON(n) get_son(node, (n))
 
@@ -8,10 +9,8 @@ Type *int_type;
 Type *float_type;
 Type *char_type;
 
-FILE *output_file_tac;
-
 /* high-level definition */
-void tac_ExtDefList(Node *node);
+TAC *tac_ExtDefList(Node *node);
 void tac_ExtDef(Node *node);
 void tac_ExtDecList(Node *node, Type *type);
 
@@ -54,12 +53,14 @@ int tac_generator(Node *root, FILE *file)
     int_type = new_primitive(P_INT);
     float_type = new_primitive(P_FLOAT);
     char_type = new_primitive(P_CHAR);
-    output_file_tac = file;
+
+    TAC *output_tac = tac_ExtDefList(root);
+    TAC_print(output_tac, file);
     return 0;
 }
 
 /* high-level definition */
-void tac_ExtDefList(Node *node)
+TAC *tac_ExtDefList(Node *node)
 {
     // %empty
     if (node->production_no == 1)
