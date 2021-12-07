@@ -49,11 +49,8 @@ int tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name);
 /* Terminal */
 Type *tac_TYPE(Node *node);
 
-
-
-
-
-int tac_generator(Node* root, FILE *file){
+int tac_generator(Node *root, FILE *file)
+{
     int_type = new_primitive(P_INT);
     float_type = new_primitive(P_FLOAT);
     char_type = new_primitive(P_CHAR);
@@ -144,7 +141,7 @@ Type *tac_StructSpecifier(Node *node)
         struct_type = new_struct();
         tac_DefList_struct(SON(3), struct_type);
         insert_struct_prototype(struct_type, struct_name);
-        
+
         return struct_type;
         break;
 
@@ -496,16 +493,22 @@ void tac_Dec_struct(Node *node, Type *type, Type *struct_type)
 
 Type *tac_Exp(Node *node)
 {
-    Type *lvalue, *rvalue;
+    Type *exp1, *exp2;
     char *name;
     Function *func;
+    Variable variable;
     switch (node->production_no)
     {
     case 0: //  Exp ASSIGN Exp
         Check_lvalue(SON(0));
-        lvalue = tac_Exp(SON(0));
-        rvalue = tac_Exp(SON(2));
-
+        exp1 = tac_Exp(SON(0));
+        exp2 = tac_Exp(SON(2));
+        variable = symtab_lookup(exp1.ID);
+        tp = new_place();
+        code1 = translate_Exp(Exp2, tp);
+        code2 = [variable.name: = tp];
+        code3 = [place: = variable.name];
+        return code1 + code2 + code3;
         return lvalue;
         break;
 
@@ -541,7 +544,7 @@ Type *tac_Exp(Node *node)
     case 12: // Exp DIV Exp
         lvalue = tac_Exp(SON(0));
         rvalue = tac_Exp(SON(2));
-        
+
         return lvalue;
         break;
 
@@ -578,7 +581,6 @@ Type *tac_Exp(Node *node)
         lvalue = tac_Exp(SON(0));
         rvalue = tac_Exp(SON(2));
 
-
         return lvalue->array_info->base;
 
         break;
@@ -593,7 +595,6 @@ Type *tac_Exp(Node *node)
     case 20: // ID
         name = SON(0)->attribute_value;
         lvalue = find_symbol(name);
-
 
         return lvalue;
         break;
