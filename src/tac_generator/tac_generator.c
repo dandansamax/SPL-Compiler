@@ -1,4 +1,5 @@
 #include "tac_generator.h"
+
 #include "../utils/tac_block.h"
 
 #define SON(n) get_son(node, (n))
@@ -9,8 +10,10 @@ Type *int_type;
 Type *float_type;
 Type *char_type;
 
+FILE *output_file_tac;
+
 /* high-level definition */
-TAC *tac_ExtDefList(Node *node);
+void tac_ExtDefList(Node *node);
 void tac_ExtDef(Node *node);
 void tac_ExtDecList(Node *node, Type *type);
 
@@ -53,14 +56,29 @@ int tac_generator(Node *root, FILE *file)
     int_type = new_primitive(P_INT);
     float_type = new_primitive(P_FLOAT);
     char_type = new_primitive(P_CHAR);
-
-    TAC *output_tac = tac_ExtDefList(root);
-    TAC_print(output_tac, file);
+    output_file_tac = file;
     return 0;
 }
 
+int place_cnt = 0;
+int label_cnt = 0;
+
+char *new_place()
+{
+    char *rnt = malloc(10);
+    sprintf(rnt, "t%d", place_cnt);
+    return rnt;
+}
+
+char *new_label()
+{
+    char *rnt = malloc(10);
+    sprintf(rnt, "L%d", place_cnt);
+    return rnt;
+}
+
 /* high-level definition */
-TAC *tac_ExtDefList(Node *node)
+void tac_ExtDefList(Node *node)
 {
     // %empty
     if (node->production_no == 1)
@@ -492,25 +510,24 @@ void tac_Dec_struct(Node *node, Type *type, Type *struct_type)
 #define func_name name
 #define member_name name
 
-Type *tac_Exp(Node *node)
+TAC *tac_Exp(Node *node)
 {
-    Type *exp1, *exp2;
+    char *str1, tp;
+    TAC *tac1;
     char *name;
     Function *func;
-    Variable variable;
     switch (node->production_no)
     {
-    case 0: //  Exp ASSIGN Exp
-        Check_lvalue(SON(0));
-        exp1 = tac_Exp(SON(0));
-        exp2 = tac_Exp(SON(2));
-        variable = symtab_lookup(exp1.ID);
+    case 0:  //  Exp ASSIGN Exp
+    case 9:  // Exp PLUS Exp
+    case 10: // Exp MINUS Exp
+    case 11: // Exp MUL Exp
+    case 12: // Exp DIV Exp
+    case 14: // MINUS Exp
+    case 20: // ID
+    case 21: // INT
         tp = new_place();
-        code1 = translate_Exp(Exp2, tp);
-        code2 = [variable.name: = tp];
-        code3 = [place: = variable.name];
-        return code1 + code2 + code3;
-        return lvalue;
+        return translate_Exp(node, tp);
         break;
 
     case 1: // Exp AND Exp
@@ -539,24 +556,8 @@ Type *tac_Exp(Node *node)
         return int_type;
         break;
 
-    case 9:  // Exp PLUS Exp
-    case 10: // Exp MINUS Exp
-    case 11: // Exp MUL Exp
-    case 12: // Exp DIV Exp
-        lvalue = tac_Exp(SON(0));
-        rvalue = tac_Exp(SON(2));
-
-        return lvalue;
-        break;
-
     case 13: // LP Exp RP
         return tac_Exp(SON(1));
-        break;
-
-    case 14: // MINUS Exp
-        lvalue = tac_Exp(SON(1));
-
-        return lvalue;
         break;
 
     case 15: // NOT Exp
@@ -593,17 +594,6 @@ Type *tac_Exp(Node *node)
         return rvalue;
         break;
 
-    case 20: // ID
-        name = SON(0)->attribute_value;
-        lvalue = find_symbol(name);
-
-        return lvalue;
-        break;
-
-    case 21: // INT
-        return int_type;
-        break;
-
     case 22: // FLOAT
         return float_type;
         break;
@@ -614,17 +604,45 @@ Type *tac_Exp(Node *node)
     }
 }
 
-#undef func_name
-#undef member_name
-
-void Check_lvalue(Node *node)
+TAC *translate_Exp(Node *node, char *place)
 {
-    // lvalue can only be ID
-    if (node->production_no != 20 && node->production_no != 19 && node->production_no != 18)
+    char *str1, tp;
+    TAC *tac1, *tac2, *tac3;
+    switch (node->production_no)
     {
-        print_error(6, node->lineno, "rvalue appears on the left-hand side of the assignment operator", "");
+    case 0: //  Exp ASSIGN Exp
+        str1 = symtab_lookup(SON(0)); 
+        tp = new_place();
+        tac1=translate_Exp(SON(2),tp);
+        tac2=TAC_gen();
+        break;
+    case 9:  // Exp PLUS Exp
+    case 10: // Exp MINUS Exp
+    case 11: // Exp MUL Exp
+    case 12: // Exp DIV Exp
+    case 14: // MINUS Exp
+    case 20: // ID
+    case 21: // INT
+        break;
     }
 }
+
+char *symtab_lookup(Node *node)
+{
+    return SON(0)->attribute_value;
+}
+
+char *tac_INT_Exp(Node *node)
+{
+    char *value = SON(0)->attribute_value;
+    char *rnt = malloc(strlen(value) + 1);
+    sprintf(rnt, "#%s", value);
+
+    return rnt;
+}
+
+#undef func_name
+#undef member_name
 
 int tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
 {
