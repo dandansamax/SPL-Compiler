@@ -4,6 +4,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/**
+ * @brief geneate an assign instruction.
+ * @param result the result at the left side.
+ * @param op the algorithm operation at the right side.
+ * @param arg1 the first argument on the left side of the operator or the only argument.
+ * @param arg2 the second on the right side of the operator. Set NULL if it does not exist.
+ */
 TACNode *gen_assign(const char *result, AlgOp op, const char *arg1, const char *arg2)
 {
     TAC *tac = (TAC *)malloc(sizeof(TAC));
@@ -17,6 +24,11 @@ TACNode *gen_assign(const char *result, AlgOp op, const char *arg1, const char *
     return node;
 }
 
+/**
+ * @brief geneate an instruction which only have one argument in it.
+ * @param type the type of the instruction. The allowed types here are LBL (label), FUNC (function), RET (return), PARAM, ARG, READ and WRITE.
+ * @param arg the argument.
+ */
 TACNode *gen_single(TACType type, const char *arg)
 {
     TAC *tac = (TAC *)malloc(sizeof(TAC));
@@ -28,17 +40,20 @@ TACNode *gen_single(TACType type, const char *arg)
     return node;
 }
 
+/**
+ * @brief geneate a copy instruction.
+ * @param op1 the address operation of the result. Set NULL if it does not exist.
+ * @param result the result at the left side.
+ * @param op2 the address operation of the argument. Set NULL if it does not exist.
+ * @param arg the argument.
+ */
 TACNode *gen_copy(AddrOp op1, const char *result, AddrOp op2, const char *arg) {}
 
 TACNode *gen_cond_branch(const char *arg1, RelOp op, const char *arg2, const char *dest) {}
 
-TACNode *gen_call(const char *arg, const char *func)
-{
-}
+TACNode *gen_call(const char *arg, const char *func) {}
 
-TACNode *gen_dec(const char *arg, int size)
-{
-}
+TACNode *gen_dec(const char *arg, int size) {}
 
 void TAC_free(TACNode *head)
 {
@@ -87,13 +102,36 @@ void TAC_code_gen(const TACNode *head, FILE *file)
     } while (cur != head);
 }
 
+/**
+ * print the TAC according to the type of the TAC.
+ */
 void TAC_print(TAC *tac, FILE *file)
 {
-    switch (tac->type)
+    TACType type = tac->type;
+    switch (type)
     {
     case LBL:
     case FUNC:
-        fprintf("%s %s :\n", keywords[tac->type], tac->operand);
+        fprintf("%s %s :\n", keywords[type], tac->operand);
+        break;
+    case RET:
+    case PARAM:
+    case ARG:
+    case READ:
+    case WRITE:
+        fprintf("%s %s\n", keywords[type], tac->operand);
+        break;
+    case ASSIGN:
+        break;
+    case COPY:
+        break;
+    case UNCB:
+        break;
+    case CONB:
+        break;
+    case CALL:
+        break;
+    case DEC:
         break;
     default:
         break;
