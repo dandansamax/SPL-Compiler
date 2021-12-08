@@ -4,6 +4,7 @@
         "symbol_table.h": "c",
         "type.h": "c",
         "hash_table.h": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "hash_map.h": "c"
     }
 }

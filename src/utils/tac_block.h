@@ -1,3 +1,6 @@
+#ifndef MY_TACBLOVK
+#define MY_TACBLOCK
+
 #include <string.h>
 
 typedef enum AlgOp AlgOp;
@@ -108,11 +111,11 @@ struct DecStruct
 
 struct CallStruct
 {
-    const char *arg;
+    const char *result;
     const char *func;
 };
 
-TACNode *gen_assign(const char *result, AlgOp op, const char *arg1, const char *arg2);
+TACNode *gen_assign(const char *result, const char *arg1, AlgOp op, const char *arg2);
 
 TACNode *gen_single(TACType type, const char *arg);
 
@@ -131,3 +134,5 @@ TACNode *combine(int num, ...);
 void TAC_code_gen(const TACNode *head, FILE *file);
 
 void TAC_print(TAC *tac, FILE *file);
+
+#endif

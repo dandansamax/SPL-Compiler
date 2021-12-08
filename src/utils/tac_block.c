@@ -11,7 +11,7 @@
  * @param arg1 the first argument on the left side of the operator or the only argument.
  * @param arg2 the second on the right side of the operator. Set NULL if it does not exist.
  */
-TACNode *gen_assign(const char *result, AlgOp op, const char *arg1, const char *arg2)
+TACNode *gen_assign(const char *result, const char *arg1, AlgOp op, const char *arg2)
 {
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
@@ -47,64 +47,67 @@ TACNode *gen_single(TACType type, const char *arg)
  * @param op2 the address operation of the argument. Set NULL if it does not exist.
  * @param arg the argument.
  */
-TACNode *gen_copy(AddrOp op1, const char *result, AddrOp op2, const char *arg) {
+TACNode *gen_copy(AddrOp op1, const char *result, AddrOp op2, const char *arg)
+{
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
 
-    tac->copy_s.arg=arg;
-    tac->copy_s.op1=op1;
-    tac->copy_s.op2=op2;
-    tac->copy_s.result=result;
+    tac->copy_s.arg = arg;
+    tac->copy_s.op1 = op1;
+    tac->copy_s.op2 = op2;
+    tac->copy_s.result = result;
 
     node->next = node->pre = node;
     return node;
 }
 
-
 /**
- * @brief geneate conditional branch instruction.
+ * @brief geneate a conditional branch instruction.
  * @param arg1 the first argument.
- * @param op the relation operator which contains EQ,LE,GE,LT,GT.
+ * @param op the relation operator which contains EQ, LE, GE, LT, GT.
  * @param arg2 the second argument.
  * @param dest the destination address to jump.
  */
-TACNode *gen_cond_branch(const char *arg1, RelOp op, const char *arg2, const char *dest) {
-
+TACNode *gen_cond_branch(const char *arg1, RelOp op, const char *arg2, const char *dest)
+{
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
     tac->type = CONB;
-    tac->cond_s.arg1=arg1;
-    tac->cond_s.arg2=arg2;
-    tac->cond_s.dst=dest;
-    tac->cond_s.op=op;
+    tac->cond_s.arg1 = arg1;
+    tac->cond_s.arg2 = arg2;
+    tac->cond_s.dst = dest;
+    tac->cond_s.op = op;
     node->tac = tac;
     node->next = node->pre = node;
     return node;
 }
 /**
-* @brief generate call instruction.
-*/
-TACNode *gen_call(const char *arg, const char *func) {
+ * @brief generate a call instruction.
+ */
+TACNode *gen_call(const char *result, const char *func)
+{
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
-    tac->type=CALL;
-    tac->call_s.arg=arg;
-    tac->call_s.func=func;
+    tac->type = CALL;
+    tac->call_s.result = result;
+    tac->call_s.func = func;
     node->tac = tac;
     node->next = node->pre = node;
     return node;
 }
 
 /**
-* @brief generate call instruction.
-* @param size I do not know if this need to multiply 4 here
-*/
-TACNode *gen_dec(const char *arg, int size) {
+ * @brief generate a call instruction.
+ * @param size the size to allocate. Must be a multiple of 4.
+ */
+TACNode *gen_dec(const char *arg, int size)
+{
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
 
-    tac->dec_s.arg=arg;
-    tac->dec_s.size=size*4;
+    tac->dec_s.arg = arg;
+    tac->dec_s.size = size;
+    // tac->dec_s.size = size * 4;
 
     node->next = node->pre = node;
     return node;
@@ -167,27 +170,28 @@ void TAC_print(TAC *tac, FILE *file)
     {
     case LBL:
     case FUNC:
-        fprintf(file,"%s %s :\n", keywords[type], tac->operand);
+        fprintf(file, "%s %s :\n", keywords[type], tac->operand);
         break;
     case RET:
     case PARAM:
     case ARG:
     case READ:
     case WRITE:
-        fprintf(file,"%s %s\n", keywords[type], tac->operand);
+        fprintf(file, "%s %s\n", keywords[type], tac->operand);
         break;
     case ASSIGN:
-        fprintf(file,"%s := %s %s %s",tac->assign_s.result,tac->assign_s.arg1,tac->assign_s.op,tac->assign_s.arg2);
+        fprintf(file, "%s := %s %s %s", tac->assign_s.result, tac->assign_s.arg1, tac->assign_s.op, tac->assign_s.arg2);
         break;
     case COPY:
-        if(tac->copy_s.result==NULL)return;
-        fprintf("%s%s := %s%s",tac->copy_s.op1,tac->copy_s.result,tac->copy_s.op2,tac->copy_s.arg);
+        if (tac->copy_s.result == NULL)
+            return;
+        fprintf("%s%s := %s%s", tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2, tac->copy_s.arg);
         // fprintf("*%s := %s",)
         break;
-    case UNCB:
+    case GOTO:
         break;
     case CONB:
-        char* relop=relop_symbols[tac->cond_s.op];
+        char *relop = relop_symbols[tac->cond_s.op];
         // switch (tac->cond_s.op)
         // {
         // case EQ:
@@ -208,13 +212,13 @@ void TAC_print(TAC *tac, FILE *file)
         // default:
         //     break;
         // }
-        fprintf("IF %s %s %s GOTO %s",tac->cond_s.arg1,relop,tac->cond_s.arg2,tac->cond_s.dst);
+        fprintf("IF %s %s %s GOTO %s", tac->cond_s.arg1, relop, tac->cond_s.arg2, tac->cond_s.dst);
         break;
     case CALL:
-        fprintf("%s := CALL %s",tac->call_s.arg,tac->call_s.func);
+        fprintf("%s := CALL %s", tac->call_s.result, tac->call_s.func);
         break;
     case DEC:
-        fprintf("DEC %s [%d]",tac->dec_s.arg,tac->dec_s.size);
+        fprintf("DEC %s [%d]", tac->dec_s.arg, tac->dec_s.size);
         break;
     default:
         break;

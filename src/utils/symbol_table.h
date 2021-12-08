@@ -36,6 +36,4 @@ void print_info();
 
 Scope *get_cur_scope();
 
-
-
 #endif
