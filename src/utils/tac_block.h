@@ -32,9 +32,10 @@ enum RelOp
     LT,
     GT,
     LE,
-    GE
+    GE,
+    NE
 };
-const char *relop_symbols[5] = {"==", "<", ">", "<=", ">="};
+const char *relop_symbols[5] = {"==", "<", ">", "<=", ">=", "!="};
 
 enum TACType
 {
@@ -42,7 +43,6 @@ enum TACType
     FUNC = 1,
     ASSIGN = -1,
     COPY = -2,
-    UNCB = -3,
     CONB = -4,
     CALL = -5,
     DEC = -6,
@@ -50,9 +50,10 @@ enum TACType
     PARAM = 3,
     ARG = 4,
     READ = 5,
-    WRITE = 6
+    WRITE = 6,
+    GOTO = 7
 };
-const char *keywords[7] = {"LABEL", "FUNCTION", "RETURN", "PARAM", "ARG", "READ", "WRITE"};
+const char *keywords[7] = {"LABEL", "FUNCTION", "RETURN", "PARAM", "ARG", "READ", "WRITE", "GOTO"};
 
 struct TAC
 {
