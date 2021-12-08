@@ -1,4 +1,5 @@
 #include "tac_generator.h"
+
 #include "../utils/tac_block.h"
 
 #define SON(n) get_son(node, (n))
@@ -8,6 +9,8 @@ char *name;
 Type *int_type;
 Type *float_type;
 Type *char_type;
+
+FILE *output_file_tac;
 
 /* high-level definition */
 TACNode *tac_ExtDefList(Node *node);
@@ -41,7 +44,7 @@ void tac_Dec(Node *node, Type *type);
 void tac_Dec_struct(Node *node, Type *type, Type *struct_type);
 
 /* Expression */
-Type *tac_Exp(Node *node);
+TACNode *tac_Exp(Node *node, char *place);
 void Check_lvalue(Node *node);
 int tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name);
 
@@ -57,6 +60,23 @@ int tac_generator(Node *root, FILE *file)
     TACNode *output_tac = tac_ExtDefList(root);
     TAC_print(output_tac, file);
     return 0;
+}
+
+int place_cnt = 0;
+int label_cnt = 0;
+
+char *new_place()
+{
+    char *rnt = malloc(10);
+    sprintf(rnt, "t%d", place_cnt);
+    return rnt;
+}
+
+char *new_label()
+{
+    char *rnt = malloc(10);
+    sprintf(rnt, "L%d", place_cnt);
+    return rnt;
 }
 
 /* high-level definition */
@@ -492,77 +512,84 @@ void tac_Dec_struct(Node *node, Type *type, Type *struct_type)
 #define func_name name
 #define member_name name
 
-Type *tac_Exp(Node *node)
+TACNode *tac_Exp(Node *node, char *place)
 {
-    Type *exp1, *exp2;
+    char *str1, t1, t2;
+    TAC *tac1, *tac2, *tac3;
     char *name;
     Function *func;
-    Variable variable;
     switch (node->production_no)
     {
     case 0: //  Exp ASSIGN Exp
-        Check_lvalue(SON(0));
-        exp1 = tac_Exp(SON(0));
-        exp2 = tac_Exp(SON(2));
-        variable = symtab_lookup(exp1.ID);
-        tp = new_place();
-        code1 = translate_Exp(Exp2, tp);
-        code2 = [variable.name: = tp];
-        code3 = [place: = variable.name];
-        return code1 + code2 + code3;
-        return lvalue;
-        break;
-
-    case 1: // Exp AND Exp
-    case 2: // Exp OR Exp
-        lvalue = tac_Exp(SON(0));
-        rvalue = tac_Exp(SON(2));
-
-        return lvalue;
-        break;
-
-    case 3: // Exp LT Exp
-    case 4: // Exp LE Exp
-    case 5: // Exp GT Exp
-    case 6: // Exp GE Exp
-        lvalue = tac_Exp(SON(0));
-        rvalue = tac_Exp(SON(2));
-
-        return int_type;
-        break;
-
-    case 7: // Exp NE Exp
-    case 8: // Exp EQ Exp
-        lvalue = tac_Exp(SON(0));
-        rvalue = tac_Exp(SON(2));
-
-        return int_type;
+        str1 = symtab_lookup(SON(0));
+        t1 = new_place();
+        tac1 = tac_Exp(SON(2), t1);
+        tac2 = gen_copy(NULL, str1, NULL, t1);
+        tac3 = gen_copy(NULL, place, NULL, t1);
+        return combine(3, tac1, tac2, tac3);
         break;
 
     case 9:  // Exp PLUS Exp
     case 10: // Exp MINUS Exp
     case 11: // Exp MUL Exp
     case 12: // Exp DIV Exp
-        lvalue = tac_Exp(SON(0));
-        rvalue = tac_Exp(SON(2));
-
-        return lvalue;
-        break;
-
-    case 13: // LP Exp RP
-        return tac_Exp(SON(1));
+        t1 = new_place();
+        t2 = new_place();
+        tac1 = tac_Exp(SON(0), t1);
+        tac2 = tac_Exp(SON(2), t2);
+        switch (node->production_no)
+        {
+        case 9:
+            tac3 = gen_assign(place, ADD, t1, t2);
+            break;
+        case 10:
+            tac3 = gen_assign(place, SUB, t1, t2);
+            break;
+        case 11:
+            tac3 = gen_assign(place, MUL, t1, t2);
+            break;
+        case 12:
+            tac3 = gen_assign(place, DIV, t1, t2);
+            break;
+        }
+        return combine(3, tac1, tac2, tac3);
         break;
 
     case 14: // MINUS Exp
-        lvalue = tac_Exp(SON(1));
-
-        return lvalue;
+        t1 = new_place();
+        tac1 = tac_Exp(SON(1), t1);
+        tac2 = gen_assign(place, SUB, "#0", t1);
+        return combine(2, tac1, tac2);
         break;
 
-    case 15: // NOT Exp
-        lvalue = tac_Exp(SON(1));
+    case 20: // ID
+        return gen_copy(NULL, place, NULL, symtab_lookup(node));
+        break;
 
-        return int_type;
+    case 21: // INT
+        str1 = immediate_number(node);
+        return gen_copy(NULL, place, NULL, str1);
+        break;
+
+    case 1:  // Exp AND Exp
+    case 2:  // Exp OR Exp
+    case 3:  // Exp LT Exp
+    case 4:  // Exp LE Exp
+    case 5:  // Exp GT Exp
+    case 6:  // Exp GE Exp
+    case 7:  // Exp NE Exp
+    case 8:  // Exp EQ Exp
+    case 15: // NOT Exp
+        t1 = new_label();
+        t2 = new_label();
+        tac1 = gen_copy(NULL, place, NULL, "#0");
+        tac2 = translate_cond_Exp(node, t1, t2);
+        tac3 = combine(2, gen_single(LBL, t1), gen_copy(NULL, place, NULL, "#1"));
+        return combine(4, tac1, tac2, tac3, gen_single(LBL, t2));
+        break;
+
+    case 13: // LP Exp RP
+        return tac_Exp(SON(1), place);
         break;
 
     case 16: // ID LP Args RP
@@ -593,17 +620,6 @@ Type *tac_Exp(Node *node)
         return rvalue;
         break;
 
-    case 20: // ID
-        name = SON(0)->attribute_value;
-        lvalue = find_symbol(name);
-
-        return lvalue;
-        break;
-
-    case 21: // INT
-        return int_type;
-        break;
-
     case 22: // FLOAT
         return float_type;
         break;
@@ -614,17 +630,72 @@ Type *tac_Exp(Node *node)
     }
 }
 
-#undef func_name
-#undef member_name
-
-void Check_lvalue(Node *node)
+char *translate_cond_Exp(Node *node, char *lb_t, char *lb_f)
 {
-    // lvalue can only be ID
-    if (node->production_no != 20 && node->production_no != 19 && node->production_no != 18)
+    char *t1, *t2;
+    TAC *tac1, *tac2, *tac3;
+    switch (node->production_no)
     {
-        print_error(6, node->lineno, "rvalue appears on the left-hand side of the assignment operator", "");
+    case 1: // Exp AND Exp
+        t1 = new_label();
+        tac1 = combine(2, translate_cond_Exp(SON(0), t1, lb_f), gen_single(LBL, t1));
+        tac2 = translate_cond_Exp(SON(2), lb_t, lb_f);
+        return combine(2, tac1, tac2);
+        break;
+
+    case 2: // Exp OR Exp
+        t1 = new_label();
+        tac1 = combine(2, translate_cond_Exp(SON(0), lb_t, t1), gen_single(LBL, t1));
+        tac2 = translate_cond_Exp(SON(2), lb_t, lb_f);
+        return combine(2, tac1, tac2);
+        break;
+    case 3: // Exp LT Exp
+    case 4: // Exp LE Exp
+    case 5: // Exp GT Exp
+    case 6: // Exp GE Exp
+    case 7: // Exp NE Exp
+    case 8: // Exp EQ Exp
+        t1 = new_place();
+        t2 = new_place();
+        tac1 = translate_Exp(SON(0), t1);
+        tac2 = translate_Exp(SON(2), t2);
+        switch (node->production_no)
+        {
+        case 3: // Exp LT Exp
+        case 4: // Exp LE Exp
+        case 5: // Exp GT Exp
+        case 6: // Exp GE Exp
+        case 7: // Exp NE Exp
+        case 8: // Exp EQ Exp
+            tac3 = [IF t1 == t2 GOTO lb_t] + [GOTO lb_f];
+            break;
+        }
+
+        return combine(tac1, tac2, tac3);
+        break;
+    case 15: // NOT Exp
+
+    default:
+        break;
     }
 }
+
+char *symtab_lookup(Node *node)
+{
+    return SON(0)->attribute_value;
+}
+
+char *immediate_number(Node *node)
+{
+    char *value = SON(0)->attribute_value;
+    char *rnt = malloc(strlen(value) + 2);
+    sprintf(rnt, "#%s", value);
+
+    return rnt;
+}
+
+#undef func_name
+#undef member_name
 
 int tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
 {

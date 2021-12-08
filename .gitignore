@@ -64,9 +64,3 @@ how_to_use.txt
 *.output
 *.py
 src/utils/.idea/workspace.xml
-.vscode/launch.json
-.vscode/settings.json
-.vscode/tasks.json
-src/tac_generator/tac_generator.c
-src/utils/tac_block.c
-src/utils/tac_block.h
