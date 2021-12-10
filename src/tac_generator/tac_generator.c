@@ -1,6 +1,7 @@
 #include "tac_generator.h"
 
 #include "../utils/tac_block.h"
+#include "../utils/arg_stack.h"
 
 #define SON(n) get_son(node, (n))
 
@@ -14,7 +15,7 @@ FILE *output_file_tac;
 
 /* high-level definition */
 TACNode *tac_ExtDefList(Node *node);
-void tac_ExtDef(Node *node);
+TACNode *tac_ExtDef(Node *node);
 void tac_ExtDecList(Node *node, Type *type);
 
 /* specifier */
@@ -22,31 +23,30 @@ Type *tac_Specifier(Node *node);
 Type *tac_StructSpecifier(Node *node);
 
 /* declarator */
-int tac_VarDec(Node *node, Type *type);
-int tac_VarDec_struct(Node *node, Type *type, Type *struct_type);
-int tac_VarDec_function(Node *node, Type *type, Function *func);
-int tac_FunDec(Node *node, Type *type);
+char *tac_VarDec(Node *node, Type *type);
+// int tac_VarDec_struct(Node *node, Type *type, Type *struct_type);
+// int tac_VarDec_function(Node *node, Type *type, Function *func);
+void tac_FunDec(Node *node, Type *type);
 void tac_VarList(Node *node, Function *func);
 void tac_ParamDec(Node *node, Function *func);
 
 /* statement */
-void tac_CompSt(Node *node, Type *rnt_type);
-void tac_StmtList(Node *node, Type *rnt_type);
-void tac_Stmt(Node *node, Type *rnt_type);
-void tac_ForArgs(Node *node);
-void tac_DefList(Node *node);
-void tac_DefList_struct(Node *node, Type *struct_type);
-void tac_Def(Node *node);
-void tac_Def_struct(Node *node, Type *struct_type);
-void tac_DecList(Node *node, Type *type);
-void tac_DecList_struct(Node *node, Type *type, Type *struct_type);
-void tac_Dec(Node *node, Type *type);
-void tac_Dec_struct(Node *node, Type *type, Type *struct_type);
+TACNode *tac_CompSt(Node *node);
+TACNode *tac_StmtList(Node *node);
+TACNode *tac_Stmt(Node *node);
+TACNode *tac_ForArgs(Node *node);
+TACNode *tac_DefList(Node *node);
+TACNode *tac_DefList_struct(Node *node, Type *struct_type);
+TACNode *tac_Def(Node *node);
+TACNode *tac_Def_struct(Node *node, Type *struct_type);
+TACNode *tac_DecList(Node *node, Type *type);
+TACNode *tac_DecList_struct(Node *node, Type *type, Type *struct_type);
+TACNode *tac_Dec(Node *node, Type *type);
+TACNode *tac_Dec_struct(Node *node, Type *type, Type *struct_type);
 
 /* Expression */
 TACNode *tac_Exp(Node *node, char *place);
-void Check_lvalue(Node *node);
-int tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name);
+TACNode *tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name, ArgStack *arg_stack);
 
 /* Terminal */
 Type *tac_TYPE(Node *node);
@@ -85,36 +85,38 @@ TACNode *tac_ExtDefList(Node *node)
     // %empty
     if (node->production_no == 1)
     {
-        return;
+        return gen_empty();
     }
 
     // ExtDef ExtDefList
-    tac_ExtDef(node->first_son);
-    tac_ExtDefList(node->first_son->next);
+    return combine(2, tac_ExtDef(SON(0)), tac_ExtDefList(SON(1)));
 }
 
-void tac_ExtDef(Node *node)
+TACNode *tac_ExtDef(Node *node)
 {
     Type *type;
+    TACNode *tac1;
     switch (node->production_no)
     {
     case 0: // Specifier ExtDecList SEMI
         type = tac_Specifier(SON(0));
         tac_ExtDecList(SON(1), type);
+        return gen_empty();
         break;
 
     case 1: // Specifier SEMI
         type = tac_Specifier(SON(0));
+        return gen_empty();
         break;
 
     case 2: // Specifier FunDec CompSt
         type = tac_Specifier(SON(0));
 
-        if (tac_FunDec(SON(1), type) == 0)
-        { // enter scope in tac_FunDec
-            tac_CompSt(SON(2), type);
-        }
+        tac_FunDec(SON(1), type); // enter scope in tac_FunDec
+        tac1 = tac_CompSt(SON(2));
+
         exit_scope();
+        return tac1;
         break;
     }
 }
@@ -143,9 +145,9 @@ Type *tac_Specifier(Node *node)
         return tac_TYPE(SON(0));
         break;
 
-    case 1: // StructSpecifier
-        return tac_StructSpecifier(SON(0));
-        break;
+        // case 1: // StructSpecifier
+        //     return tac_StructSpecifier(SON(0));
+        //     break;
     }
 }
 
@@ -176,89 +178,85 @@ Type *tac_StructSpecifier(Node *node)
 }
 
 /* declarator */
-int tac_VarDec(Node *node, Type *type)
+char *tac_VarDec(Node *node, Type *type)
 {
 
     switch (node->production_no)
     {
     case 0: // ID
-        if (insert_symbol(SON(0)->attribute_value, type) == -1)
-        {
-            print_error(3, node->lineno, "a variable is redefined in the same scope", SON(0)->attribute_value);
-            return -1;
-        }
-        return 0;
+        insert_symbol(SON(0)->attribute_value, type);
+        return SON(0)->attribute_value;
         break;
 
-    case 1: // VarDec LB INT RB
-        size = atoi(SON(2)->attribute_value);
-        Type *new_type = make_array(type, size);
-        if (tac_VarDec(SON(0), new_type) == -1)
-        {
-            free(new_type);
-            return -1;
-        }
-        return 0;
-        break;
+        // case 1: // VarDec LB INT RB
+        //     size = atoi(SON(2)->attribute_value);
+        //     Type *new_type = make_array(type, size);
+        //     if (tac_VarDec(SON(0), new_type) == -1)
+        //     {
+        //         free(new_type);
+        //         return -1;
+        //     }
+        //     return 0;
+        //     break;
     }
 }
 
-int tac_VarDec_struct(Node *node, Type *type, Type *struct_type)
-{
-    switch (node->production_no)
-    {
-    case 0: // ID
-        name = SON(0)->attribute_value;
-        if (add_struct_member(struct_type, name, type) == -1)
-        {
-            print_error(3, node->lineno, "a variable is redefined in the same scope", name);
-            return -1;
-        }
-        return 0;
-        break;
+// int tac_VarDec_struct(Node *node, Type *type, Type *struct_type)
+// {
+//     switch (node->production_no)
+//     {
+//     case 0: // ID
+//         name = SON(0)->attribute_value;
+//         if (add_struct_member(struct_type, name, type) == -1)
+//         {
+//             print_error(3, node->lineno, "a variable is redefined in the same scope", name);
+//             return -1;
+//         }
+//         return 0;
+//         break;
 
-    case 1: // VarDec LB INT RB
-        size = atoi(SON(2)->attribute_value);
-        Type *new_type = make_array(type, size);
-        if (tac_VarDec_struct(SON(0), new_type, struct_type) == -1)
-        {
-            free(new_type);
-            return -1;
-        }
-        return 0;
-        break;
-    }
-}
+//     case 1: // VarDec LB INT RB
+//         size = atoi(SON(2)->attribute_value);
+//         Type *new_type = make_array(type, size);
+//         if (tac_VarDec_struct(SON(0), new_type, struct_type) == -1)
+//         {
+//             free(new_type);
+//             return -1;
+//         }
+//         return 0;
+//         break;
+//     }
+// }
 
-int tac_VarDec_function(Node *node, Type *type, Function *func)
-{
-    switch (node->production_no)
-    {
-    case 0: // ID
-        name = SON(0)->attribute_value;
-        if (insert_symbol(name, type) == -1)
-        {
-            print_error(3, node->lineno, "a variable is redefined in the same scope", name);
-            return -1;
-        }
-        add_function_argument(func, type);
-        return 0;
-        break;
+// int tac_VarDec_function(Node *node, Type *type, Function *func)
+// {
+//     switch (node->production_no)
+//     {
+//     case 0: // ID
+//         name = SON(0)->attribute_value;
+//         if (insert_symbol(name, type) == -1)
+//         {
+//             print_error(3, node->lineno, "a variable is redefined in the same scope", name);
+//             return -1;
+//         }
+//         add_function_argument(func, type);
+//         return 0;
+//         break;
 
-    case 1: // VarDec LB INT RB
-        size = atoi(SON(2)->attribute_value);
-        Type *new_type = make_array(type, size);
-        if (tac_VarDec_function(SON(0), new_type, func) == -1)
-        {
-            free(new_type);
-            return -1;
-        }
-        return 0;
-        break;
-    }
-}
+//     case 1: // VarDec LB INT RB
+//         size = atoi(SON(2)->attribute_value);
+//         Type *new_type = make_array(type, size);
+//         if (tac_VarDec_function(SON(0), new_type, func) == -1)
+//         {
+//             free(new_type);
+//             return -1;
+//         }
+//         return 0;
+//         break;
+//     }
+// }
 
-int tac_FunDec(Node *node, Type *type)
+void tac_FunDec(Node *node, Type *type)
 {
     Function *func;
     char *func_name;
@@ -269,11 +267,6 @@ int tac_FunDec(Node *node, Type *type)
         func_name = SON(0)->attribute_value;
         func = new_function(func_name, type);
         enter_scope();
-        if (func == NULL_PTR)
-        {
-            print_error(4, node->lineno, "a function is redefined", func_name);
-            return -1;
-        }
         tac_VarList(SON(2), func);
         break;
 
@@ -281,12 +274,6 @@ int tac_FunDec(Node *node, Type *type)
         func_name = SON(0)->attribute_value;
         func = new_function(func_name, type);
         enter_scope();
-        if (func == NULL_PTR)
-        {
-            print_error(4, node->lineno, "a function is redefined", func_name);
-            return -1;
-        }
-
         break;
     }
     return 0;
@@ -296,12 +283,12 @@ void tac_VarList(Node *node, Function *func)
 {
     switch (node->production_no)
     {
-    case 0:
+    case 0: // ParamDec COMMA VarList
         tac_VarList(SON(2), func);
         tac_ParamDec(SON(0), func);
         break;
 
-    case 1:
+    case 1: // ParamDec
         tac_ParamDec(SON(0), func);
         break;
     }
@@ -309,20 +296,21 @@ void tac_VarList(Node *node, Function *func)
 
 void tac_ParamDec(Node *node, Function *func)
 {
+    // Specifier VarDec
     Type *type = tac_Specifier(SON(0));
     tac_VarDec_function(SON(1), type, func);
 }
 
 /* statement */
-void tac_CompSt(Node *node, Type *rnt_type)
+TACNode *tac_CompSt(Node *node)
 {
     enter_scope();
-    tac_DefList(SON(1));
-    tac_StmtList(SON(2), rnt_type);
+    TACNode *rnt = combine(2, tac_DefList(SON(1)), tac_StmtList(SON(2)));
     exit_scope();
+    return rnt;
 }
 
-void tac_StmtList(Node *node, Type *rnt_type)
+TACNode *tac_StmtList(Node *node)
 {
     // %empty
     if (node->production_no == 1)
@@ -331,181 +319,151 @@ void tac_StmtList(Node *node, Type *rnt_type)
     }
 
     // Stmt StmtList
-    tac_Stmt(SON(0), rnt_type);
-    tac_StmtList(SON(1), rnt_type);
+    return combine(2, tac_Stmt(SON(0)), tac_StmtList(SON(1)));
 }
 
-void tac_Stmt(Node *node, Type *rnt_type)
+TACNode *tac_Stmt(Node *node)
 {
     Type *type;
     Type *int_type = new_primitive(P_INT);
+    char *t1, *t2, *t3;
+    TACNode *tac1, *tac2, *tac3;
 
     switch (node->production_no)
     {
     case 0: // Exp SEMI
-        tac_Exp(SON(0));
+        return tac_Exp(SON(0), NULL);
         break;
 
     case 1: // CompSt
-        tac_CompSt(SON(0), rnt_type);
+        return tac_CompSt(SON(0));
         break;
 
     case 2: // RETURN Exp SEMI
-        type = tac_Exp(SON(1));
+        t1 = new_place();
+        tac1 = tac_Exp(SON(1), t1);
+        return combine(2, tac1, gen_single(RET, t1));
         break;
 
     case 3: // IF LP Exp RP Stmt
+        t1 = new_label();
+        t2 = new_label();
+        tac1 = combine(2, translate_cond_Exp(SON(2), t1, t2), gen_single(LBL, t1));
+        tac2 = combine(2, translate_Stmt(SON(4)), gen_single(LBL, t2));
+        return combine(2, tac1, tac2);
+        break;
+
     case 5: // WHILE LP Exp RP Stmt
-        type = tac_Exp(SON(2));
-        tac_Stmt(SON(4), rnt_type);
+        t1 = new_label();
+        t2 = new_label();
+        t3 = new_label();
+        tac1 = combine(2, gen_single(LBL, t1), translate_cond_Exp(SON(2), t2, t3));
+        tac2 = combine(3, gen_single(LBL, t2), translate_Stmt(SON(4)), gen_single(GOTO, t1));
+        return combine(3, tac1, tac2, gen_single(LBL, t3));
+
         break;
 
     case 4: // IF LP Exp RP Stmt ELSE Stmt
-        type = tac_Exp(SON(2));
-        tac_Stmt(SON(4), rnt_type);
-        tac_Stmt(SON(6), rnt_type);
-        break;
-
-    case 6: // FOR LP ForArgs RP Stmt
-        tac_ForArgs(SON(2));
-        tac_Stmt(SON(4), rnt_type);
-        break;
-    }
-}
-
-void tac_ForArgs(Node *node)
-{
-    Type *type;
-    switch (node->production_no)
-    {
-    case 0: // Exp SEMI Exp SEMI Exp
-        tac_Exp(SON(0));
-        type = tac_Exp(SON(2));
-        tac_Exp(SON(4));
-        break;
-
-    case 1: // SEMI Exp SEMI Exp
-        type = tac_Exp(SON(1));
-        tac_Exp(SON(3));
-        break;
-
-    case 2: // Exp SEMI SEMI Exp
-        tac_Exp(SON(0));
-        tac_Exp(SON(3));
-        break;
-
-    case 3: // Exp SEMI Exp SEMI
-        tac_Exp(SON(0));
-        type = tac_Exp(SON(2));
-        break;
-
-    case 4: // SEMI SEMI Exp
-        tac_Exp(SON(2));
-        break;
-
-    case 5: // SEMI Exp SEMI
-        type = tac_Exp(SON(1));
-        break;
-
-    case 6: // Exp SEMI SEMI
-        tac_Exp(SON(0));
-        break;
-
-    case 7: // SEMI SEMI
+        t1 = new_label();
+        t2 = new_label();
+        t3 = new_label();
+        tac1 = combine(2, translate_cond_Exp(SON(2), t1, t2), gen_single(LBL, t1));
+        tac2 = combine(3, translate_Stmt(SON(4)), gen_single(GOTO, t3), gen_single(LBL, t2));
+        tac3 = combine(2, translate_Stmt(SON(6)), gen_single(LBL, t3));
+        return combine(3, tac1, tac2, tac3);
         break;
     }
 }
 
 /* local definition */
-void tac_DefList(Node *node)
+TACNode *tac_DefList(Node *node)
 {
     if (node->production_no == 1)
     {
         return;
     }
-    tac_Def(SON(0));
-    tac_DefList(SON(1));
+    return combine(2, tac_Def(SON(0)), tac_DefList(SON(1)));
 }
 
-void tac_DefList_struct(Node *node, Type *struct_type)
-{
-    if (node->production_no == 1)
-    {
-        return;
-    }
-    tac_Def_struct(SON(0), struct_type);
-    tac_DefList_struct(SON(1), struct_type);
-}
+// void tac_DefList_struct(Node *node, Type *struct_type)
+// {
+//     if (node->production_no == 1)
+//     {
+//         return;
+//     }
+//     tac_Def_struct(SON(0), struct_type);
+//     tac_DefList_struct(SON(1), struct_type);
+// }
 
-void tac_Def(Node *node)
-{
-    Type *type = tac_Specifier(SON(0));
-    tac_DecList(SON(1), type);
-}
-
-void tac_Def_struct(Node *node, Type *struct_type)
+TACNode *tac_Def(Node *node)
 {
     Type *type = tac_Specifier(SON(0));
-    tac_DecList_struct(SON(1), type, struct_type);
+    return tac_DecList(SON(1), type);
 }
 
-void tac_DecList(Node *node, Type *type)
+// void tac_Def_struct(Node *node, Type *struct_type)
+// {
+//     Type *type = tac_Specifier(SON(0));
+//     tac_DecList_struct(SON(1), type, struct_type);
+// }
+
+TACNode *tac_DecList(Node *node, Type *type)
 {
     switch (node->production_no)
     {
     case 0:
-        tac_Dec(SON(0), type);
+        return tac_Dec(SON(0), type);
         break;
     case 1:
-        tac_Dec(SON(0), type);
-        tac_DecList(SON(2), type);
+        return combine(2, tac_Dec(SON(0), type), tac_DecList(SON(2), type));
         break;
     }
 }
 
-void tac_DecList_struct(Node *node, Type *type, Type *struct_type)
+// void tac_DecList_struct(Node *node, Type *type, Type *struct_type)
+// {
+//     switch (node->production_no)
+//     {
+//     case 0:
+//         tac_Dec_struct(SON(0), type, struct_type);
+//         break;
+//     case 1:
+//         tac_Dec_struct(SON(0), type, struct_type);
+//         tac_DecList_struct(SON(2), type, struct_type);
+//         break;
+//     }
+// }
+
+TACNode *tac_Dec(Node *node, Type *type)
 {
+    char *t1;
     switch (node->production_no)
     {
-    case 0:
-        tac_Dec_struct(SON(0), type, struct_type);
+    case 0: // VarDec
+        return tac_VarDec(SON(0), type);
         break;
-    case 1:
-        tac_Dec_struct(SON(0), type, struct_type);
-        tac_DecList_struct(SON(2), type, struct_type);
-        break;
-    }
-}
-
-void tac_Dec(Node *node, Type *type)
-{
-    switch (node->production_no)
-    {
-    case 0:
-        tac_VarDec(SON(0), type);
-        break;
-    case 1:
-        tac_VarDec(SON(0), type);
-        Type *extac_type = tac_Exp(SON(2));
+    case 1: // VarDec ASSIGN Exp
+        t1 = tac_VarDec(SON(0), type);
+        return tac_Exp(SON(2), t1);
 
         break;
     }
 }
 
-void tac_Dec_struct(Node *node, Type *type, Type *struct_type)
-{
-    switch (node->production_no)
-    {
-    case 0:
-        tac_VarDec_struct(SON(0), type, struct_type);
-        break;
-    case 1:
-        tac_VarDec_struct(SON(0), type, struct_type);
-        Type *extac_type = tac_Exp(SON(2));
+// void tac_Dec_struct(Node *node, Type *type, Type *struct_type)
+// {
+//     switch (node->production_no)
+//     {
+//     case 0:
+//         tac_VarDec_struct(SON(0), type, struct_type);
+//         break;
+//     case 1:
+//         tac_VarDec_struct(SON(0), type, struct_type);
+//         Type *extac_type = tac_Exp(SON(2));
 
-        break;
-    }
-}
+//         break;
+//     }
+// }
 
 /* Expression */
 
@@ -592,40 +550,51 @@ TACNode *tac_Exp(Node *node, char *place)
         return tac_Exp(SON(1), place);
         break;
 
+        // case 18: // Exp LB Exp RB
+        //     lvalue = tac_Exp(SON(0));
+        //     rvalue = tac_Exp(SON(2));
+        //     return lvalue->array_info->base;
+        //     break;
+
+        // case 19: // Exp DOT ID
+        //     lvalue = tac_Exp(SON(0));
+        //     member_name = SON(2)->attribute_value;
+        //     rvalue = get_struct_member(lvalue, member_name);
+        //     return rvalue;
+        //     break;
+
+    case 24: // READ LP RP
+        return gen_single(READ, place);
+        break;
+
+    case 25: //WRITE LP Exp RP
+        t1 = new_place();
+        return combine(2, translate_Exp(SON(2), t1), gen_single(WRITE, t1));
+        break;
+
     case 16: // ID LP Args RP
+    {
+        ArgStack *arg_stack = new_arg_stack();
+
+        func_name = SON(0)->attribute_value;
+        func = find_function(func_name);
+        tac1 = tac_Args(SON(2), func, func->arg_list, func_name, arg_stack);
+        tac2 = gen_empty();
+        for (int i = 0; i < MAX_ARG_NUM; i++)
+        {
+            char *arg = pop_arg_stack(arg_stack);
+            if (arg == NULL)
+                break;
+            tac2 = combine(2, tac2, gen_single(ARG, arg));
+        }
+        free_arg_stack(arg_stack);
+        return combine(2, tac1, tac2);
+        break;
+    }
     case 17: // ID LP RP
         func_name = SON(0)->attribute_value;
         func = find_function(func_name);
-
-        // print_info();
-        if (node->production_no == 16)
-        {
-            tac_Args(SON(2), func, func->arg_list, func_name);
-        }
-        return func->return_type;
-        break;
-
-    case 18: // Exp LB Exp RB
-        lvalue = tac_Exp(SON(0));
-        rvalue = tac_Exp(SON(2));
-
-        return lvalue->array_info->base;
-
-        break;
-
-    case 19: // Exp DOT ID
-        lvalue = tac_Exp(SON(0));
-        member_name = SON(2)->attribute_value;
-        rvalue = get_struct_member(lvalue, member_name);
-        return rvalue;
-        break;
-
-    case 22: // FLOAT
-        return float_type;
-        break;
-
-    case 23: // CHAR
-        return char_type;
+        return gen_call(place, func_name);
         break;
     }
 }
@@ -649,6 +618,7 @@ char *translate_cond_Exp(Node *node, char *lb_t, char *lb_f)
         tac2 = translate_cond_Exp(SON(2), lb_t, lb_f);
         return combine(2, tac1, tac2);
         break;
+
     case 3: // Exp LT Exp
     case 4: // Exp LE Exp
     case 5: // Exp GT Exp
@@ -662,20 +632,30 @@ char *translate_cond_Exp(Node *node, char *lb_t, char *lb_f)
         switch (node->production_no)
         {
         case 3: // Exp LT Exp
+            tac3 = gen_cond_branch(t1, LT, t2, lb_t);
+            break;
         case 4: // Exp LE Exp
+            tac3 = gen_cond_branch(t1, LE, t2, lb_t);
+            break;
         case 5: // Exp GT Exp
+            tac3 = gen_cond_branch(t1, GT, t2, lb_t);
+            break;
         case 6: // Exp GE Exp
+            tac3 = gen_cond_branch(t1, GE, t2, lb_t);
+            break;
         case 7: // Exp NE Exp
+            tac3 = gen_cond_branch(t1, NE, t2, lb_t);
+            break;
         case 8: // Exp EQ Exp
-            tac3 = [IF t1 == t2 GOTO lb_t] + [GOTO lb_f];
+            tac3 = gen_cond_branch(t1, EQ, t2, lb_t);
             break;
         }
 
-        return combine(tac1, tac2, tac3);
+        return combine(3, tac1, tac2, tac3);
         break;
-    case 15: // NOT Exp
 
-    default:
+    case 15: // NOT Exp
+        return translate_cond_Exp(SON(1), lb_f, lb_t);
         break;
     }
 }
@@ -697,38 +677,24 @@ char *immediate_number(Node *node)
 #undef func_name
 #undef member_name
 
-int tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name)
+TACNode *tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name, ArgStack *arg_stack)
 {
-    Type *type;
+    TACNode *tac1, *tac2;
+    char *t1;
     switch (node->production_no)
     {
     case 0: // Exp COMMA Args
-        type = tac_Exp(SON(0));
-        tac_Args(SON(2), func, arg->next, func_name);
-        return 0;
+        t1 = new_place();
+        tac1 = tac_Exp(SON(0), t1);
+        push_arg_stack(arg_stack, t1);
+        tac2 = tac_Args(SON(2), func, arg->next, func_name, arg_stack);
+        return combine(2, tac1, tac2);
         break;
     case 1: // Exp
-        type = tac_Exp(SON(0));
-        return 0;
-        break;
-    }
-}
-
-/* Terminal */
-Type *tac_TYPE(Node *node)
-{
-    switch (node->production_no)
-    {
-    case 0:
-        return int_type;
-        break;
-
-    case 1:
-        return float_type;
-        break;
-
-    case 2:
-        return char_type;
+        t1 = new_place();
+        tac1 = tac_Exp(SON(0), t1);
+        push_arg_stack(arg_stack, t1);
+        return tac1;
         break;
     }
 }
