@@ -17,7 +17,7 @@ int main()
      *      char ch;
      *      struct SuperBad badButCool;
      *  };
-     * 
+     *
      *  struct SuperCool cool[20];
      */
     enter_scope();

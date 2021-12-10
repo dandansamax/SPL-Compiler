@@ -21,6 +21,17 @@ void enter_scope()
     }
 }
 
+// Free all the array and the structures defined in the current scope
+void exit_scope()
+{
+    Scope *tmp_scope = current_scope;
+    current_scope = tmp_scope->last_scope;
+    tmp_scope->last_scope = NULL_PTR;
+    free_map(tmp_scope->symbol_table);
+    free_prototypes(tmp_scope->structure_prototype);
+    free(tmp_scope);
+}
+
 Type *find_symbol(const char *symbol_name)
 {
     Scope *cur_scope = current_scope;
@@ -34,21 +45,31 @@ Type *find_symbol(const char *symbol_name)
     return NULL_PTR;
 }
 
+const char *find_alias(const char *symbol_name)
+{
+    Scope *cur_scope = current_scope;
+    while (cur_scope != NULL_PTR)
+    {
+        const char *alias = get_alias(cur_scope->symbol_table, symbol_name);
+        if (alias != NULL_PTR)
+            return alias;
+        cur_scope = cur_scope->last_scope;
+    }
+    return NULL;
+}
+
 // If symbol has existed, return -1, if add successully, return 0
 int insert_symbol(const char *symbol_name, Type *type)
 {
-    return insert_pair(current_scope->symbol_table, symbol_name, type) ? TRUE : FALSE;
-}
-
-// Free all the array and the structures defined in the scope
-void exit_scope()
-{
-    Scope *tmp_scope = current_scope;
-    current_scope = tmp_scope->last_scope;
-    tmp_scope->last_scope = NULL_PTR;
-    free_map(tmp_scope->symbol_table);
-    free_prototypes(tmp_scope->structure_prototype);
-    free(tmp_scope);
+    char *alias = malloc(sizeof(char) * 20);
+    sprintf(alias, "var_%d", var_cnt++);
+    if (insert_pair(current_scope->symbol_table, symbol_name, alias, type))
+        return TRUE;
+    else
+    {
+        free(alias);
+        return FALSE;
+    }
 }
 
 Function *new_function(const char *function_name, Type *return_type)
@@ -56,12 +77,19 @@ Function *new_function(const char *function_name, Type *return_type)
     Function *new_func = malloc(sizeof(Function));
     Type *function_type = malloc(sizeof(Type));
 
-    function_type->name=function_name;
+    new_func->return_type = return_type;
+    new_func->arg_list = NULL_PTR;
+    function_type->name = function_name;
     function_type->category = FUNCTION;
     function_type->function = new_func;
-    function_type->function->return_type = return_type;
-    function_type->function->arg_list = NULL_PTR;
-    return insert_pair(current_scope->symbol_table, function_name, function_type) ? new_func : NULL_PTR;
+    if (insert_pair(current_scope->symbol_table, function_name, NULL, function_type))
+        return new_func;
+    else
+    {
+        free(new_func);
+        free(function_type);
+        return NULL_PTR;
+    }
 }
 
 void add_function_argument(Function *func, Type *arg_type)
@@ -99,8 +127,8 @@ Type *get_struct_prototype(const char *struct_name)
 
 int insert_struct_prototype(Type *struct_type, const char *struct_name)
 {
-    struct_type->name=struct_name;
-    return insert_pair(current_scope->structure_prototype, struct_name, struct_type) ? TRUE : FALSE;
+    struct_type->name = struct_name;
+    return insert_pair(current_scope->structure_prototype, struct_name, NULL, struct_type) ? TRUE : FALSE;
 }
 
 // Used in test only
@@ -129,4 +157,3 @@ Scope *get_cur_scope()
 {
     return current_scope;
 }
-

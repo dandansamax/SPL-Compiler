@@ -12,6 +12,7 @@ typedef struct HashMapNode **HashMap;
 struct HashMapNode
 {
     const char *key;
+    const char *alias;
     Type *value;
     HashMapNode *next;
 };
@@ -25,11 +26,13 @@ void free_prototypes(HashMap map);
 
 // insert a key-value pair to the map
 // if insert success, return 1, otherwise 0
-int insert_pair(HashMap map, const char *key, Type *value);
+int insert_pair(HashMap map, const char *key, const char *alias, Type *value);
 
 // lookup the value of a specific key
 // return NULL_PTR if not found
 Type *get_value(HashMap map, const char *key);
+
+const char *get_alias(HashMap map, const char *key);
 
 // remove a key-value pair from the table
 // if remove success, return 1, otherwise 0

@@ -5,6 +5,8 @@
         "type.h": "c",
         "hash_table.h": "c",
         "type_traits": "c",
-        "hash_map.h": "c"
+        "hash_map.h": "c",
+        "typeinfo": "c",
+        "stdio.h": "c"
     }
 }

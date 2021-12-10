@@ -56,7 +56,7 @@ void free_prototypes(HashMap map)
     free(map);
 }
 
-int insert_pair(HashMap map, const char *key, Type *value)
+int insert_pair(HashMap map, const char *key, const char *alias, Type *value)
 {
     long index = calc_index(key);
     HashMapNode *cur_node = map[index];
@@ -69,6 +69,7 @@ int insert_pair(HashMap map, const char *key, Type *value)
     HashMapNode *new_node = malloc(sizeof(HashMapNode));
     new_node->key = key;
     new_node->value = value;
+    new_node->alias = alias;
     new_node->next = map[index];
     map[index] = new_node;
     return 1;
@@ -81,6 +82,18 @@ Type *get_value(HashMap map, const char *key)
     {
         if (!strcmp(cur_node->key, key))
             return cur_node->value;
+        cur_node = cur_node->next;
+    }
+    return NULL_PTR;
+}
+
+const char *get_alias(HashMap map, const char *key)
+{
+    HashMapNode *cur_node = map[calc_index(key)];
+    while (cur_node != NULL_PTR)
+    {
+        if (!strcmp(cur_node->key, key))
+            return cur_node->alias;
         cur_node = cur_node->next;
     }
     return NULL_PTR;

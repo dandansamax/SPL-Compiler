@@ -14,13 +14,17 @@ struct Scope
     Scope *last_scope;
 };
 
+int var_cnt = 0;
+
 void enter_scope();
+
+void exit_scope();
 
 Type *find_symbol(const char *symbol_name);
 
-int insert_symbol(const char *symbol_name, Type *type);
+const char *find_alias(const char *symbol_name);
 
-void exit_scope();
+int insert_symbol(const char *symbol_name, Type *type);
 
 Function *new_function(const char *function_name, Type *return_type);
 
