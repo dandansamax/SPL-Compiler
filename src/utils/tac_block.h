@@ -54,7 +54,8 @@ enum TACType
     ARG = 4,
     READ = 5,
     WRITE = 6,
-    GOTO = 7
+    GOTO = 7,
+    EMPTY = -7
 };
 const char *keywords[7] = {"LABEL", "FUNCTION", "RETURN", "PARAM", "ARG", "READ", "WRITE", "GOTO"};
 
@@ -114,6 +115,8 @@ struct CallStruct
     const char *result;
     const char *func;
 };
+
+TACNode *gen_empty();
 
 TACNode *gen_assign(const char *result, const char *arg1, AlgOp op, const char *arg2);
 
