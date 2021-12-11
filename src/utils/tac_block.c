@@ -5,6 +5,20 @@
 #include <stdio.h>
 
 /**
+ * @brief generate an empty instruction which will not be printed
+ */
+TACNode *gen_empty()
+{
+    TAC *tac = (TAC *)malloc(sizeof(TAC));
+    TACNode *node = (TACNode *)malloc(sizeof(TACNode));
+    tac->type = EMPTY;
+    tac->operand = NULL;
+    node->tac = tac;
+    node->next = node->pre = node;
+    return node;
+}
+
+/**
  * @brief geneate an assign instruction.
  * @param result the result at the left side.
  * @param op the algorithm operation at the right side.
@@ -168,6 +182,8 @@ void TAC_print(TAC *tac, FILE *file)
     TACType type = tac->type;
     switch (type)
     {
+    case EMPTY:
+        break;
     case LBL:
     case FUNC:
         fprintf(file, "%s %s :\n", keywords[type], tac->operand);
