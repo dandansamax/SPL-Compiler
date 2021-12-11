@@ -185,7 +185,7 @@ void TAC_print(TAC *tac, FILE *file)
     case COPY:
         if (tac->copy_s.result == NULL)
             return;
-        fprintf("%s%s := %s%s", tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2, tac->copy_s.arg);
+        fprintf(file,"%s%s := %s%s", tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2, tac->copy_s.arg);
         // fprintf("*%s := %s",)
         break;
     case GOTO:
@@ -212,10 +212,10 @@ void TAC_print(TAC *tac, FILE *file)
         // default:
         //     break;
         // }
-        fprintf("IF %s %s %s GOTO %s", tac->cond_s.arg1, relop, tac->cond_s.arg2, tac->cond_s.dst);
+        fprintf(file,"IF %s %s %s GOTO %s", tac->cond_s.arg1, relop, tac->cond_s.arg2, tac->cond_s.dst);
         break;
     case CALL:
-        fprintf("%s := CALL %s", tac->call_s.result, tac->call_s.func);
+        fprintf(file,"%s := CALL %s", tac->call_s.result, tac->call_s.func);
         break;
     case DEC:
         fprintf("DEC %s [%d]", tac->dec_s.arg, tac->dec_s.size);
