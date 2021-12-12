@@ -31,7 +31,6 @@ TACNode *gen_assign(const char *result, const char *arg1, AlgOp op, const char *
 {
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
-    tac->type = ASSIGN;
     tac->assign_s.op = op;
     tac->assign_s.arg1 = arg1;
     tac->assign_s.arg2 = arg2;
@@ -68,7 +67,7 @@ TACNode *gen_copy(AddrOp op1, const char *result, AddrOp op2, const char *arg)
 {
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
-    
+
     tac->type = COPY;
     tac->copy_s.arg = arg;
     tac->copy_s.op1 = op1;
@@ -113,7 +112,7 @@ TACNode *gen_call(const char *result, const char *func)
     tac->type = CALL;
     tac->call_s.result = result;
     tac->call_s.func = func;
-    
+
     node->tac = tac;
     node->next = node->pre = node;
     return node;
@@ -210,7 +209,7 @@ void TAC_print(TAC *tac, FILE *file)
     case COPY:
         if (tac->copy_s.result == NULL)
             return;
-        fprintf(file, "%c%s := %c%s\n", tac->copy_s.op1 == NONE ? ' ' : tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2 == NONE ? ' ' : tac->copy_s.op2, tac->copy_s.arg);
+        fprintf(file, "%s%s := %s%s\n", tac->copy_s.op1 == NONE ? "" : (const char *)&(tac->copy_s.op1), tac->copy_s.result, tac->copy_s.op2 == NONE ? "" : (const char *)&(tac->copy_s.op2), tac->copy_s.arg);
         break;
     case GOTO:
         fprintf(file, "GOTO %s\n", tac->operand);
