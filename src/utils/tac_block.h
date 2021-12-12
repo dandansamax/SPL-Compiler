@@ -2,6 +2,7 @@
 #define MY_TACBLOCK
 
 #include <string.h>
+#include <stdio.h>
 
 typedef enum AlgOp AlgOp;
 typedef enum AddrOp AddrOp;

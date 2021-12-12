@@ -2,7 +2,6 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 /**
  * @brief generate an empty instruction which will not be printed
@@ -196,7 +195,7 @@ void TAC_print(TAC *tac, FILE *file)
         fprintf(file, "%s %s\n", keywords[type], tac->operand);
         break;
     case ASSIGN:
-        fprintf(file, "%s := %s %s %s", tac->assign_s.result, tac->assign_s.arg1, tac->assign_s.op, tac->assign_s.arg2);
+        fprintf(file, "%s := %s %c %s", tac->assign_s.result, tac->assign_s.arg1, tac->assign_s.op, tac->assign_s.arg2);
         break;
     case COPY:
         if (tac->copy_s.result == NULL)
@@ -207,8 +206,7 @@ void TAC_print(TAC *tac, FILE *file)
         fprintf(file, "GOTO %s", tac->operand);
         break;
     case CONB:
-        char *relop = relop_symbols[tac->cond_s.op];
-        fprintf(file, "IF %s %s %s GOTO %s", tac->cond_s.arg1, relop, tac->cond_s.arg2, tac->cond_s.dst);
+        fprintf(file, "IF %s %s %s GOTO %s", tac->cond_s.arg1, relop_symbols[tac->cond_s.op], tac->cond_s.arg2, tac->cond_s.dst);
         break;
     case CALL:
         fprintf(file, "%s := CALL %s", tac->call_s.result, tac->call_s.func);
