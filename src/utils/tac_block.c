@@ -67,7 +67,8 @@ TACNode *gen_copy(AddrOp op1, const char *result, AddrOp op2, const char *arg)
 {
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
-
+    
+    tac->type = COPY;
     tac->copy_s.arg = arg;
     tac->copy_s.op1 = op1;
     tac->copy_s.op2 = op2;
@@ -89,12 +90,13 @@ TACNode *gen_cond_branch(const char *arg1, RelOp op, const char *arg2, const cha
 {
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
+
     tac->type = CONB;
     tac->cond_s.arg1 = arg1;
     tac->cond_s.arg2 = arg2;
     tac->cond_s.dst = dest;
     tac->cond_s.op = op;
-    
+
     node->tac = tac;
     node->next = node->pre = node;
     return node;
@@ -106,9 +108,11 @@ TACNode *gen_call(const char *result, const char *func)
 {
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
+
     tac->type = CALL;
     tac->call_s.result = result;
     tac->call_s.func = func;
+    
     node->tac = tac;
     node->next = node->pre = node;
     return node;
@@ -200,24 +204,24 @@ void TAC_print(TAC *tac, FILE *file)
         fprintf(file, "%s %s\n", keywords[type], tac->operand);
         break;
     case ASSIGN:
-        fprintf(file, "%s := %s %c %s", tac->assign_s.result, tac->assign_s.arg1, tac->assign_s.op, tac->assign_s.arg2);
+        fprintf(file, "%s := %s %c %s\n", tac->assign_s.result, tac->assign_s.arg1, tac->assign_s.op, tac->assign_s.arg2);
         break;
     case COPY:
         if (tac->copy_s.result == NULL)
             return;
-        fprintf(file, "%c%s := %c%s", tac->copy_s.op1 == NONE ? ' ' : tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2 == NONE ? ' ' : tac->copy_s.op2, tac->copy_s.arg);
+        fprintf(file, "%c%s := %c%s\n", tac->copy_s.op1 == NONE ? ' ' : tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2 == NONE ? ' ' : tac->copy_s.op2, tac->copy_s.arg);
         break;
     case GOTO:
-        fprintf(file, "GOTO %s", tac->operand);
+        fprintf(file, "GOTO %s\n", tac->operand);
         break;
     case CONB:
-        fprintf(file, "IF %s %s %s GOTO %s", tac->cond_s.arg1, relop_symbols[tac->cond_s.op], tac->cond_s.arg2, tac->cond_s.dst);
+        fprintf(file, "IF %s %s %s GOTO %s\n", tac->cond_s.arg1, relop_symbols[tac->cond_s.op], tac->cond_s.arg2, tac->cond_s.dst);
         break;
     case CALL:
-        fprintf(file, "%s := CALL %s", tac->call_s.result, tac->call_s.func);
+        fprintf(file, "%s := CALL %s\n", tac->call_s.result, tac->call_s.func);
         break;
     case DEC:
-        fprintf(file, "DEC %s [%d]", tac->dec_s.arg, tac->dec_s.size);
+        fprintf(file, "DEC %s [%d]\n", tac->dec_s.arg, tac->dec_s.size);
         break;
     default:
         break;

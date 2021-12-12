@@ -1,2 +1,2 @@
 FUNCTION main :
-LABEL (null) :
+ a :=  #1
