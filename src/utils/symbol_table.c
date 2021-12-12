@@ -1,6 +1,6 @@
 #include "symbol_table.h"
 
-Scope *current_scope = NULL_PTR;\
+Scope *current_scope = NULL_PTR;
 
 int var_cnt = 0;
 

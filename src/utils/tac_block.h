@@ -60,20 +60,6 @@ enum TACType
 };
 const char *keywords[8] = {"LABEL", "FUNCTION", "RETURN", "PARAM", "ARG", "READ", "WRITE", "GOTO"};
 
-struct TAC
-{
-    TACType type;
-    union
-    {
-        const char *operand;
-        AssignStruct assign_s;
-        CondStruct cond_s;
-        CopyStruct copy_s;
-        DecStruct dec_s;
-        CallStruct call_s;
-    };
-};
-
 struct TACNode
 {
     TAC *tac;
@@ -115,6 +101,20 @@ struct CallStruct
 {
     const char *result;
     const char *func;
+};
+
+struct TAC
+{
+    TACType type;
+    union
+    {
+        const char *operand;
+        AssignStruct assign_s;
+        CondStruct cond_s;
+        CopyStruct copy_s;
+        DecStruct dec_s;
+        CallStruct call_s;
+    };
 };
 
 TACNode *gen_empty();

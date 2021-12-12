@@ -201,21 +201,20 @@ void TAC_print(TAC *tac, FILE *file)
     case COPY:
         if (tac->copy_s.result == NULL)
             return;
-        fprintf(file,"%c%s := %c%s", tac->copy_s.op1==NONE?' ':tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2==NONE?' ': tac->copy_s.op2, tac->copy_s.arg);
-        // fprintf("*%s := %s",)
+        fprintf(file, "%c%s := %c%s", tac->copy_s.op1 == NONE ? ' ' : tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2 == NONE ? ' ' : tac->copy_s.op2, tac->copy_s.arg);
         break;
     case GOTO:
-        fprintf(file,"GOTO %s",tac->operand);
+        fprintf(file, "GOTO %s", tac->operand);
         break;
     case CONB:
         char *relop = relop_symbols[tac->cond_s.op];
-        fprintf(file,"IF %s %s %s GOTO %s", tac->cond_s.arg1, relop, tac->cond_s.arg2, tac->cond_s.dst);
+        fprintf(file, "IF %s %s %s GOTO %s", tac->cond_s.arg1, relop, tac->cond_s.arg2, tac->cond_s.dst);
         break;
     case CALL:
-        fprintf(file,"%s := CALL %s", tac->call_s.result, tac->call_s.func);
+        fprintf(file, "%s := CALL %s", tac->call_s.result, tac->call_s.func);
         break;
     case DEC:
-        fprintf("DEC %s [%d]", tac->dec_s.arg, tac->dec_s.size);
+        fprintf(file, "DEC %s [%d]", tac->dec_s.arg, tac->dec_s.size);
         break;
     default:
         break;
