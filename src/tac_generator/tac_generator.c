@@ -75,13 +75,15 @@ char *new_place()
 {
     char *rnt = malloc(10);
     sprintf(rnt, "t%d", place_cnt);
+    place_cnt++;
     return rnt;
 }
 
 char *new_label()
 {
     char *rnt = malloc(10);
-    sprintf(rnt, "L%d", place_cnt);
+    sprintf(rnt, "L%d", label_cnt);
+    label_cnt++;
     return rnt;
 }
 
@@ -314,7 +316,6 @@ TACNode *tac_CompSt(Node *node)
 {
     enter_scope();
     TACNode *rnt = combine(2, tac_DefList(SON(1)), tac_StmtList(SON(2)));
-    TAC_code_gen(rnt, stderr);
     exit_scope();
     return rnt;
 }
@@ -493,6 +494,7 @@ TACNode *tac_Exp(Node *node, char *place)
         tac1 = tac_Exp(SON(2), t1);
         tac2 = gen_copy(NONE, str1, NONE, t1);
         tac3 = gen_copy(NONE, place, NONE, t1);
+        TAC_code_gen(combine(3, tac1, tac2, tac3),stderr);
         return combine(3, tac1, tac2, tac3);
         break;
 
@@ -535,8 +537,6 @@ TACNode *tac_Exp(Node *node, char *place)
 
     case 21: // INT
         str1 = immediate_number(node);
-        tac1 = gen_copy(NONE, place, NONE, str1);
-        TAC_code_gen(tac1, stderr);
         return gen_copy(NONE, place, NONE, str1);
         break;
 
