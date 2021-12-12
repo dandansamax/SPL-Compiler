@@ -40,7 +40,6 @@ enum RelOp
     GE,
     NE
 };
-const char *relop_symbols[6] = {"==", "<", ">", "<=", ">=", "!="};
 
 enum TACType
 {
@@ -59,7 +58,7 @@ enum TACType
     GOTO = 7,
     EMPTY = -7
 };
-const char *keywords[8] = {"LABEL", "FUNCTION", "RETURN", "PARAM", "ARG", "READ", "WRITE", "GOTO"};
+
 
 struct TACNode
 {

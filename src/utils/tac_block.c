@@ -3,6 +3,9 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+const char *relop_symbols[6] = {"==", "<", ">", "<=", ">=", "!="};
+const char *keywords[8] = {"LABEL", "FUNCTION", "RETURN", "PARAM", "ARG", "READ", "WRITE", "GOTO"};
+
 /**
  * @brief generate an empty instruction which will not be printed
  */

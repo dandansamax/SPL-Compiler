@@ -2,6 +2,7 @@
     #include "utils/tokentree.h"
     #include "preprocess/preprocess.h"
     #include "semantic/semantic.h"
+    #include "tac_generator/tac_generator.h"
     #include <unistd.h>
 
     #include "lex.yy.c"
@@ -298,7 +299,7 @@ int main(int argc, char **argv){
         // output_file=stdout;
 
         int val=yyparse();
-        if (error_flag==0) {
+        /* if (error_flag==0) {
             if (tree_flag==0){
                 int flag=semantic_analysis(root,output_file);
                 if (flag==-1){
@@ -318,7 +319,9 @@ int main(int argc, char **argv){
         else
         {
             printf("[Error] Error occurs at parsing!\n");
-        }
+        } */
+        
+        tac_generator(root,output_file);
 
         fclose(output_file);
         
