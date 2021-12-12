@@ -46,7 +46,7 @@ TACNode *tac_Dec_struct(Node *node, Type *type, Type *struct_type);
 
 /* Expression */
 TACNode *tac_Exp(Node *node, char *place);
-TACNode *tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name, ArgStack *arg_stack);
+TACNode *tac_Args(Node *node, ArgStack *arg_stack);
 
 /* Terminal */
 Type *tac_TYPE(Node *node);
@@ -277,7 +277,7 @@ TACNode *tac_FunDec(Node *node, Type *type)
         func = new_function(func_name, type);
         enter_scope();
         tac1 = tac_VarList(SON(2), func);
-        return combine(2, gen_single(FUNC, func_name));
+        return combine(2, gen_single(FUNC, func_name), tac1);
         break;
 
     case 1: // ID LP RP
@@ -294,7 +294,7 @@ TACNode *tac_VarList(Node *node, Function *func)
     switch (node->production_no)
     {
     case 0: // ParamDec COMMA VarList
-        return combine(2, tac_VarList(SON(2), func), tac_ParamDec(SON(0), func));
+        return combine(2,tac_ParamDec(SON(0), func), tac_VarList(SON(2), func));
         break;
 
     case 1: // ParamDec
@@ -494,7 +494,6 @@ TACNode *tac_Exp(Node *node, char *place)
         tac1 = tac_Exp(SON(2), t1);
         tac2 = gen_copy(NONE, str1, NONE, t1);
         tac3 = gen_copy(NONE, place, NONE, t1);
-        TAC_code_gen(combine(3, tac1, tac2, tac3),stderr);
         return combine(3, tac1, tac2, tac3);
         break;
 
@@ -588,8 +587,7 @@ TACNode *tac_Exp(Node *node, char *place)
         ArgStack *arg_stack = new_arg_stack();
 
         func_name = SON(0)->attribute_value;
-        func = find_function(func_name);
-        tac1 = tac_Args(SON(2), func, func->arg_list, func_name, arg_stack);
+        tac1 = tac_Args(SON(2), arg_stack);
         tac2 = gen_empty();
         for (int i = 0; i < MAX_ARG_NUM; i++)
         {
@@ -599,12 +597,12 @@ TACNode *tac_Exp(Node *node, char *place)
             tac2 = combine(2, tac2, gen_single(ARG, arg));
         }
         free_arg_stack(arg_stack);
-        return combine(2, tac1, tac2);
+        tac3 = gen_call(place, func_name);
+        return combine(3, tac1, tac2, tac3);
         break;
     }
     case 17: // ID LP RP
         func_name = SON(0)->attribute_value;
-        func = find_function(func_name);
         return gen_call(place, func_name);
         break;
     }
@@ -662,6 +660,8 @@ TACNode *translate_cond_Exp(Node *node, char *lb_t, char *lb_f)
             break;
         }
 
+        tac3 = combine(2,tac3,gen_single(GOTO,lb_f));
+
         return combine(3, tac1, tac2, tac3);
         break;
 
@@ -688,7 +688,7 @@ char *immediate_number(Node *node)
 #undef func_name
 #undef member_name
 
-TACNode *tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name, ArgStack *arg_stack)
+TACNode *tac_Args(Node *node, ArgStack *arg_stack)
 {
     TACNode *tac1, *tac2;
     char *t1;
@@ -698,7 +698,7 @@ TACNode *tac_Args(Node *node, Function *func, ArgNode *arg, char *func_name, Arg
         t1 = new_place();
         tac1 = tac_Exp(SON(0), t1);
         push_arg_stack(arg_stack, t1);
-        tac2 = tac_Args(SON(2), func, arg->next, func_name, arg_stack);
+        tac2 = tac_Args(SON(2), arg_stack);
         return combine(2, tac1, tac2);
         break;
     case 1: // Exp

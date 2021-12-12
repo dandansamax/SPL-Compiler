@@ -31,6 +31,7 @@ TACNode *gen_assign(const char *result, const char *arg1, AlgOp op, const char *
 {
     TAC *tac = (TAC *)malloc(sizeof(TAC));
     TACNode *node = (TACNode *)malloc(sizeof(TACNode));
+    tac->type = ASSIGN;
     tac->assign_s.op = op;
     tac->assign_s.arg1 = arg1;
     tac->assign_s.arg2 = arg2;
