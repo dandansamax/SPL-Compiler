@@ -1,10 +1,10 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-const int MAX_ARG_NUM = 20;
+#define MAX_ARG_NUM 20
 
 struct ArgStack{
-    int top=0;
+    int top;
     char *stack[MAX_ARG_NUM];
 };
 

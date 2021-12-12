@@ -26,7 +26,8 @@ enum AlgOp
 enum AddrOp
 {
     ADD_OF = '&',
-    DEREF = '*'
+    DEREF = '*',
+    NONE = 0
 };
 
 enum RelOp
@@ -38,7 +39,7 @@ enum RelOp
     GE,
     NE
 };
-const char *relop_symbols[5] = {"==", "<", ">", "<=", ">=", "!="};
+const char *relop_symbols[6] = {"==", "<", ">", "<=", ">=", "!="};
 
 enum TACType
 {
@@ -57,7 +58,7 @@ enum TACType
     GOTO = 7,
     EMPTY = -7
 };
-const char *keywords[7] = {"LABEL", "FUNCTION", "RETURN", "PARAM", "ARG", "READ", "WRITE", "GOTO"};
+const char *keywords[8] = {"LABEL", "FUNCTION", "RETURN", "PARAM", "ARG", "READ", "WRITE", "GOTO"};
 
 struct TAC
 {

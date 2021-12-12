@@ -14,8 +14,6 @@ struct Scope
     Scope *last_scope;
 };
 
-int var_cnt = 0;
-
 void enter_scope();
 
 void exit_scope();

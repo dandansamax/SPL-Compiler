@@ -201,7 +201,7 @@ void TAC_print(TAC *tac, FILE *file)
     case COPY:
         if (tac->copy_s.result == NULL)
             return;
-        fprintf(file,"%c%s := %c%s", tac->copy_s.op1==NULL?' ':tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2==NULL?' ': tac->copy_s.op2, tac->copy_s.arg);
+        fprintf(file,"%c%s := %c%s", tac->copy_s.op1==NONE?' ':tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2==NONE?' ': tac->copy_s.op2, tac->copy_s.arg);
         // fprintf("*%s := %s",)
         break;
     case GOTO:
@@ -209,26 +209,6 @@ void TAC_print(TAC *tac, FILE *file)
         break;
     case CONB:
         char *relop = relop_symbols[tac->cond_s.op];
-        // switch (tac->cond_s.op)
-        // {
-        // case EQ:
-        //     strcpy(relop,"==");
-        //     break;
-        // case LT:
-        //     strcpy(relop,"<\0");
-        //     break;
-        // case GT:
-        //     strcpy(relop,">\0");
-        //     break;
-        // case LE:
-        //     strcpy(relop,"<=");
-        //     break;
-        // case GE:
-        //     strcpy(relop,">=");
-        //     break;
-        // default:
-        //     break;
-        // }
         fprintf(file,"IF %s %s %s GOTO %s", tac->cond_s.arg1, relop, tac->cond_s.arg2, tac->cond_s.dst);
         break;
     case CALL:
