@@ -536,7 +536,7 @@ TACNode *tac_Exp(Node *node, char *place)
     case 21: // INT
         str1 = immediate_number(node);
         tac1 = gen_copy(NONE, place, NONE, str1);
-        TAC_code_gen(tac1,stderr);
+        TAC_code_gen(tac1, stderr);
         return gen_copy(NONE, place, NONE, str1);
         break;
 
@@ -578,7 +578,7 @@ TACNode *tac_Exp(Node *node, char *place)
         return gen_single(READ, place);
         break;
 
-    case 25: //WRITE LP Exp RP
+    case 25: // WRITE LP Exp RP
         t1 = new_place();
         return combine(2, tac_Exp(SON(2), t1), gen_single(WRITE, t1));
         break;

@@ -73,6 +73,7 @@ TACNode *gen_copy(AddrOp op1, const char *result, AddrOp op2, const char *arg)
     tac->copy_s.op2 = op2;
     tac->copy_s.result = result;
 
+    node->tac = tac;
     node->next = node->pre = node;
     return node;
 }
@@ -93,6 +94,7 @@ TACNode *gen_cond_branch(const char *arg1, RelOp op, const char *arg2, const cha
     tac->cond_s.arg2 = arg2;
     tac->cond_s.dst = dest;
     tac->cond_s.op = op;
+    
     node->tac = tac;
     node->next = node->pre = node;
     return node;
