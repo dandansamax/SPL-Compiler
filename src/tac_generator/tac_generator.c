@@ -450,6 +450,7 @@ TACNode *tac_Dec(Node *node, Type *type)
     switch (node->production_no)
     {
     case 0: // VarDec
+        tac_VarDec(SON(0), type);
         return gen_empty();
         break;
     case 1: // VarDec ASSIGN Exp
@@ -673,7 +674,7 @@ TACNode *translate_cond_Exp(Node *node, char *lb_t, char *lb_f)
 
 char *symtab_lookup(Node *node)
 {
-    return SON(0)->attribute_value;
+    return find_alias(SON(0)->attribute_value);
 }
 
 char *immediate_number(Node *node)
