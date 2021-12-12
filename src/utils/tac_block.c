@@ -201,10 +201,11 @@ void TAC_print(TAC *tac, FILE *file)
     case COPY:
         if (tac->copy_s.result == NULL)
             return;
-        fprintf(file,"%s%s := %s%s", tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2, tac->copy_s.arg);
+        fprintf(file,"%s%s := %s%s", tac->copy_s.op1==NULL?"":tac->copy_s.op1, tac->copy_s.result, tac->copy_s.op2==NULL?"": tac->copy_s.op2, tac->copy_s.arg);
         // fprintf("*%s := %s",)
         break;
     case GOTO:
+        fprintf(file,"GOTO %s",tac->operand);
         break;
     case CONB:
         char *relop = relop_symbols[tac->cond_s.op];
