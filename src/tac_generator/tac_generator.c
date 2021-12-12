@@ -294,8 +294,11 @@ TACNode *tac_VarList(Node *node, Function *func)
     switch (node->production_no)
     {
     case 0: // ParamDec COMMA VarList
-        return combine(2,tac_ParamDec(SON(0), func), tac_VarList(SON(2), func));
+    {
+        TACNode *tac1 = tac_ParamDec(SON(0), func);
+        return combine(2, tac1, tac_VarList(SON(2), func));
         break;
+    }
 
     case 1: // ParamDec
         return tac_ParamDec(SON(0), func);
@@ -308,16 +311,17 @@ TACNode *tac_ParamDec(Node *node, Function *func)
     // Specifier VarDec
     Type *type = tac_Specifier(SON(0));
     char *param_name = tac_VarDec(SON(1), type);
-    return gen_single(PARAM, param_name);
+    return gen_single(PARAM, find_alias(param_name));
 }
 
 /* statement */
 TACNode *tac_CompSt(Node *node)
 {
     enter_scope();
-    TACNode *rnt = combine(2, tac_DefList(SON(1)), tac_StmtList(SON(2)));
+    TACNode *tac1 = tac_DefList(SON(1));
+    TACNode *tac2 = tac_StmtList(SON(2));
     exit_scope();
-    return rnt;
+    return combine(2, tac1, tac2);
 }
 
 TACNode *tac_StmtList(Node *node)
@@ -392,7 +396,8 @@ TACNode *tac_DefList(Node *node)
     {
         return gen_empty();
     }
-    return combine(2, tac_Def(SON(0)), tac_DefList(SON(1)));
+    TACNode *tac1 = tac_Def(SON(0));
+    return combine(2, tac1, tac_DefList(SON(1)));
 }
 
 // void tac_DefList_struct(Node *node, Type *struct_type)
@@ -425,8 +430,11 @@ TACNode *tac_DecList(Node *node, Type *type)
         return tac_Dec(SON(0), type);
         break;
     case 1:
-        return combine(2, tac_Dec(SON(0), type), tac_DecList(SON(2), type));
+    {
+        TACNode *tac1 = tac_Dec(SON(0), type);
+        return combine(2, tac1, tac_DecList(SON(2), type));
         break;
+    }
     }
 }
 
@@ -661,13 +669,21 @@ TACNode *translate_cond_Exp(Node *node, char *lb_t, char *lb_f)
             break;
         }
 
-        tac3 = combine(2,tac3,gen_single(GOTO,lb_f));
+        tac3 = combine(2, tac3, gen_single(GOTO, lb_f));
 
         return combine(3, tac1, tac2, tac3);
         break;
 
     case 15: // NOT Exp
         return translate_cond_Exp(SON(1), lb_f, lb_t);
+        break;
+
+    default:
+        t1 = new_place();
+        tac1 = tac_Exp(node, t1);
+        tac2 = gen_cond_branch(t1, NE, "#0", lb_t);
+        tac2 = combine(2, tac2, gen_single(GOTO, lb_f));
+        return combine(2, tac1, tac2);
         break;
     }
 }

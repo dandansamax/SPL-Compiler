@@ -1,17 +1,17 @@
 int mod(int a, int b){
-    return a - (a/b)*b;
+    return a - (a / b) * b;
 }
-int gcd(int c,int d){
-    if (d==0) 
-        return c;
+int gcd(int a, int b){
+    if (b) 
+        return gcd(b, mod(a, b)); 
     else
-        return gcd(d,mod(c,d));
+        return a;
 }
 int main()
 {
-    int n, m;
-    n = read();
-    m = read();
-    write(gcd(n,m));
+    int a, b;
+    a = read();
+    b = read();
+    write(gcd(a, b));
     return 0;
 }
