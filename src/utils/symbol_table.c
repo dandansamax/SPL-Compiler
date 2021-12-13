@@ -60,12 +60,12 @@ const char *find_alias(const char *symbol_name)
     return NULL;
 }
 
-const Type *find_alias_type(const char *symbol_name)
+Type *find_alias_type(const char *symbol_name)
 {
     Scope *cur_scope = current_scope;
     while (cur_scope != NULL_PTR)
     {
-        const Type *alias = get_alias_type(cur_scope->symbol_table, symbol_name);
+        Type *alias = get_alias_type(cur_scope->symbol_table, symbol_name);
         if (alias != NULL_PTR)
             return alias;
         cur_scope = cur_scope->last_scope;

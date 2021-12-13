@@ -1,0 +1,12 @@
+FUNCTION main :
+DEC var_0 [16]
+t9 := &var_0
+t7 := t9 + #12
+var_1 := t7
+t6 := &var_0
+t4 := t6 + #8
+var_1 := t4
+t3 := &var_0
+t1 := t3 + #4
+var_1 := t1
+RETURN #0

@@ -1,0 +1,18 @@
+struct substruct{
+    int a;
+};
+
+struct aa{
+    int a;
+    int b;
+    int c;
+    struct substruct sub;
+};
+
+int main(){
+    struct aa a;
+    struct aa B;
+    B.a=5;
+    a.b=B.a;
+    return 0;
+}
