@@ -1,0 +1,20 @@
+FUNCTION main :
+READ t13
+var_2 := t13
+var_1 := #1
+t11 := #1
+var_0 := t11
+LABEL L0 :
+IF var_2 != #0 GOTO L1
+GOTO L2
+LABEL L1 :
+var_3 := var_1
+t7 := var_0 + var_1
+var_1 := t7
+var_0 := var_3
+t3 := var_2 - #1
+var_2 := t3
+GOTO L0
+LABEL L2 :
+WRITE t1
+RETURN #0

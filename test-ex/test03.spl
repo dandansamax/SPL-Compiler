@@ -1,0 +1,15 @@
+int main()
+{
+    int a, b, x, temp;
+    x = read();
+    a = b = 1;
+    while(x)
+    {
+        temp = b;
+        b = a + b;
+        a = temp;
+        x = x - 1;
+    }
+    write(b);
+    return 0;
+}

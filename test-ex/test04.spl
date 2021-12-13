@@ -1,0 +1,15 @@
+int main()
+{
+    int a, b, c;
+    a = read();
+    c = read();
+    while(c >= a)
+    {
+        int a;
+        a = c;
+        write(a);
+        c = c - 1;
+    }
+    write(a);
+    return 0;
+}

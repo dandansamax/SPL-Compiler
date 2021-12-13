@@ -1,0 +1,13 @@
+int main()
+{
+    int a, b;
+    a = read();
+    b = read();
+    while (a)
+    {
+        a = a-1
+        b = b + 1;
+        write(b);
+    }
+    return 0;
+}
