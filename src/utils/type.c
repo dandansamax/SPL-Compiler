@@ -195,3 +195,52 @@ void to_string(const Type *type, char *result)
         sprintf(result, "struct %s", type->name);
     }
 }
+
+/**
+* @brief calculate the size of type, return integer byte unit
+**/
+int calculate_size(const Type *type){
+    switch (type->category)
+    {
+    case PRIMITIVE:
+        return 4;
+        break;
+    case STRUCTURE:
+        FieldNode *current = type->field_list;
+        int sum_size=0;
+        while (current != NULL_PTR)
+        {
+            sum_size+=calculate_size(current->type);
+            current = current->next;
+        }
+        return sum_size;
+        break;
+    case ARRAY:
+        return calculate_size(type->array_info->base)*type->array_info->size;
+        break;
+    default:
+        return 4;
+        break;
+    }
+}
+
+/**
+ * @brief Get the structure offset object
+ * @param type 
+ * @param name 
+ * @return int 
+ */
+int get_structure_offset(const Type *type, const char* name){
+    if(check_struct(type)==FALSE)return 0;
+    FieldNode *current = type->field_list;
+    int sum_size=0;
+    while (current != NULL_PTR)
+    {
+        if (!strcmp(current->name, name))
+            break;
+        sum_size+=calculate_size(current->type);
+        current = current->next;
+    }
+    return sum_size;
+}
+

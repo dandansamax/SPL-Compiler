@@ -16,7 +16,7 @@ FILE *output_file_tac;
 /* high-level definition */
 TACNode *tac_ExtDefList(Node *node);
 TACNode *tac_ExtDef(Node *node);
-void tac_ExtDecList(Node *node, Type *type);
+TACNode *tac_ExtDecList(Node *node, Type *type);
 
 /* specifier */
 Type *tac_Specifier(Node *node);
@@ -24,7 +24,7 @@ Type *tac_StructSpecifier(Node *node);
 
 /* declarator */
 char *tac_VarDec(Node *node, Type *type);
-// int tac_VarDec_struct(Node *node, Type *type, Type *struct_type);
+TACNode *tac_VarDec_struct(Node *node, Type *struct_type);
 // int tac_VarDec_function(Node *node, Type *type, Function *func);
 TACNode *tac_FunDec(Node *node, Type *type);
 TACNode *tac_VarList(Node *node, Function *func);
@@ -53,6 +53,7 @@ Type *tac_TYPE(Node *node);
 
 TACNode *translate_cond_Exp(Node *node, char *lb_t, char *lb_f);
 char *symtab_lookup(Node *node);
+Type *symtab_lookup_symbol(Node *node);
 char *immediate_number(Node *node);
 
 int tac_generator(Node *root, FILE *file)
@@ -129,12 +130,17 @@ TACNode *tac_ExtDef(Node *node)
     }
 }
 
-void tac_ExtDecList(Node *node, Type *type)
+TACNode *tac_ExtDecList(Node *node, Type *type)
 {
     switch (node->production_no)
     {
     case 0: // VarDec
-        tac_VarDec(SON(0), type);
+        if(type->category==PRIMITIVE){
+            tac_VarDec(SON(0), type);
+            return gen_empty();
+        }else if(type->category==STRUCTURE){
+            return tac_VarDec_struct(SON(0),type);
+        }
         break;
 
     case 1: // VarDec COMMA ExtDecList
@@ -209,32 +215,38 @@ char *tac_VarDec(Node *node, Type *type)
     }
 }
 
-// int tac_VarDec_struct(Node *node, Type *type, Type *struct_type)
-// {
-//     switch (node->production_no)
-//     {
-//     case 0: // ID
-//         name = SON(0)->attribute_value;
-//         if (add_struct_member(struct_type, name, type) == -1)
-//         {
-//             print_error(3, node->lineno, "a variable is redefined in the same scope", name);
-//             return -1;
-//         }
-//         return 0;
-//         break;
+TACNode *tac_VarDec_struct(Node *node, Type *struct_type)
+{
+    switch (node->production_no)
+    {
+    case 0: // ID
+        name = SON(0)->attribute_value;
 
-//     case 1: // VarDec LB INT RB
-//         size = atoi(SON(2)->attribute_value);
-//         Type *new_type = make_array(type, size);
-//         if (tac_VarDec_struct(SON(0), new_type, struct_type) == -1)
-//         {
-//             free(new_type);
-//             return -1;
-//         }
-//         return 0;
-//         break;
-//     }
-// }
+        insert_symbol(name,struct_type);
+
+        // if (add_struct_member(struct_type, name, type) == -1)
+        // {
+        //     print_error(3, node->lineno, "a variable is redefined in the same scope", name);
+        //     return -1;
+        // }
+
+        TACNode* node=gen_dec(name,calculate_size(struct_type));
+
+        return node;
+        break;
+
+    // case 1: // VarDec LB INT RB
+    //     size = atoi(SON(2)->attribute_value);
+    //     Type *new_type = make_array(type, size);
+    //     if (tac_VarDec_struct(SON(0), new_type, struct_type) == -1)
+    //     {
+    //         free(new_type);
+    //         return -1;
+    //     }
+    //     return 0;
+    //     break;
+    }
+}
 
 // int tac_VarDec_function(Node *node, Type *type, Function *func)
 // {
@@ -545,6 +557,22 @@ TACNode *tac_Exp(Node *node, char **place)
         return gen_empty();
         break;
 
+    case 19: // Exp DOT ID
+        //TODO: For now only name.id can be used
+        t1=new_place();
+        t2=new_place();
+        // tac1 = tac_Exp(SON(0),&t1);
+        Type *type = symtab_lookup_symbol(node);
+
+        char* id = SON(2)->attribute_value;
+
+        int offset = get_structure_offset(type,id);
+
+        tac1 =gen_copy(NULL,t1,NULL,immediate_number(offset));
+        rvalue = get_struct_member(lvalue, member_name);
+        return rvalue;
+        break;
+
     case 21: // INT
         *place = immediate_number(node);
         return gen_empty();
@@ -577,12 +605,7 @@ TACNode *tac_Exp(Node *node, char **place)
         //     return lvalue->array_info->base;
         //     break;
 
-        // case 19: // Exp DOT ID
-        //     lvalue = tac_Exp(SON(0));
-        //     member_name = SON(2)->attribute_value;
-        //     rvalue = get_struct_member(lvalue, member_name);
-        //     return rvalue;
-        //     break;
+
 
     case 24: // READ LP RP
         return gen_single(READ, *place);
@@ -695,12 +718,26 @@ char *symtab_lookup(Node *node)
     return find_alias(SON(0)->attribute_value);
 }
 
+Type *symtab_lookup_symbol(Node *node)
+{
+    return find_symbol(SON(0)->attribute_value);
+}
+
 char *immediate_number(Node *node)
 {
     char *value = SON(0)->attribute_value;
     char *rnt = malloc(strlen(value) + 2);
     sprintf(rnt, "#%s", value);
 
+    return rnt;
+}
+
+char *immediate_number(int value)
+{
+    char tmp[65535];
+    sprintf(tmp,"#%d",value);
+    char *rnt = malloc(strlen(tmp));
+    strcpy(rnt,tmp);
     return rnt;
 }
 
