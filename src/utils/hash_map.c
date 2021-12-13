@@ -99,6 +99,32 @@ const char *get_alias(HashMap map, const char *key)
     return NULL_PTR;
 }
 
+/**
+ * @brief Get the alias type by the string of alias, do not confuse with get_alias which is give key and get alias
+ * 
+ * @param map 
+ * @param key 
+ * @return const Type* 
+ */
+const Type *get_alias_type(HashMap map, const char *key)
+{
+    for (int i = 0; i < 0x1003; i++)
+    {
+        HashMapNode *cur_node = map[i];
+
+        if(cur_node==NULL_PTR)continue;
+
+        while (cur_node != NULL_PTR)
+        {
+            if (!strcmp(cur_node->alias, key))
+                return cur_node->value;
+            cur_node = cur_node->next;
+        }
+    }
+    
+    return NULL_PTR;
+}
+
 int remove_pair(HashMap map, const char *key)
 {
     long index = calc_index(key);

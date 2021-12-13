@@ -34,6 +34,8 @@ Type *get_value(HashMap map, const char *key);
 
 const char *get_alias(HashMap map, const char *key);
 
+const Type *get_alias_type(HashMap map, const char *key);
+
 // remove a key-value pair from the table
 // if remove success, return 1, otherwise 0
 int remove_pair(HashMap map, const char *key);
