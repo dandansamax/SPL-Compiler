@@ -590,7 +590,9 @@ TACNode *tac_Exp(Node *node, char **place)
 
     case 25: // WRITE LP Exp RP
         t1 = new_place();
-        return combine(2, tac_Exp(SON(2), &t1), gen_single(WRITE, t1));
+        tac1 = tac_Exp(SON(2), &t1);
+        tac2 = gen_single(WRITE, t1);
+        return combine(2, tac1, tac2);
         break;
 
     case 16: // ID LP Args RP

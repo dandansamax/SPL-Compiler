@@ -253,7 +253,7 @@ int main(int argc, char **argv){
 
     if (output[0]==0){
         char* dot=strrchr(input,'.');
-        strcpy(dot,".out");
+        strcpy(dot,".ir\0");
         strcpy(output,input);
     }
 

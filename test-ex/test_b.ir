@@ -1,13 +1,14 @@
-Error type B at Line 8: Missing semicolon ';'
 FUNCTION main :
-READ t7
-var_0 := t7
-READ t6
-var_1 := t6
+READ t10
+var_0 := t10
+READ t9
+var_1 := t9
 LABEL L0 :
 IF var_0 != #0 GOTO L1
 GOTO L2
 LABEL L1 :
+t6 := var_0 - #1
+var_0 := t6
 t3 := var_1 + #1
 var_1 := t3
 WRITE t2

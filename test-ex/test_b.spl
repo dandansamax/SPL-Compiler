@@ -5,7 +5,7 @@ int main()
     b = read();
     while (a)
     {
-        a = a-1
+        a = a-1;
         b = b + 1;
         write(b);
     }
