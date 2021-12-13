@@ -200,13 +200,14 @@ void to_string(const Type *type, char *result)
 * @brief calculate the size of type, return integer byte unit
 **/
 int calculate_size(const Type *type){
+    FieldNode *current;
     switch (type->category)
     {
     case PRIMITIVE:
         return 4;
         break;
     case STRUCTURE:
-        FieldNode *current = type->field_list;
+        current = type->field_list;
         int sum_size=0;
         while (current != NULL_PTR)
         {
