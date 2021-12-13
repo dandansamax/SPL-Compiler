@@ -1,46 +1,34 @@
 FUNCTION mod :
 PARAM var_4
 PARAM var_5
-t14 := var_4
-t18 := var_4
-t19 := var_5
-t16 := t18 / t19
-t17 := var_5
-t15 := t16 * t17
-t13 := t14 - t15
+t16 := var_4 / var_5
+t15 := t16 * var_5
+t13 := var_4 - t15
 RETURN t13
 FUNCTION gcd :
 PARAM var_2
 PARAM var_3
-t6 := var_3
-IF t6 != #0 GOTO L0
+IF var_3 != #0 GOTO L0
 GOTO L1
 LABEL L0 :
-t8 := var_3
-t10 := var_2
-t11 := var_3
-ARG t11
-ARG t10
+ARG var_3
+ARG var_2
 t9 := CALL mod
 ARG t9
-ARG t8
+ARG var_3
 t7 := CALL gcd
 RETURN t7
 GOTO L2
 LABEL L1 :
-t12 := var_2
-RETURN t12
+RETURN var_2
 LABEL L2 :
 FUNCTION main :
 READ t5
 var_0 := t5
 READ t4
 var_1 := t4
-t2 := var_0
-t3 := var_1
-ARG t3
-ARG t2
+ARG var_1
+ARG var_0
 t1 := CALL gcd
 WRITE t1
-t0 := #0
-RETURN t0
+RETURN #0
