@@ -208,8 +208,8 @@ TACNode *tac_VarDec(Node *node, Type *type)
                 char *size = malloc(64);
                 sprintf(size, "%d", calculate_size(type));
 
-                TACNode *node = gen_dec(name, size);
-                return node;
+                TACNode *rnt = gen_dec(symtab_lookup(node), size);
+                return rnt;
             }
             // return SON(0)->attribute_value;
             break;
@@ -561,19 +561,19 @@ TACNode *tac_Exp(Node *node, char **place)
         break;
 
     case 19: // Exp DOT ID
-        //TODO: For now only name.id can be used
+        //TODO: can not access to nest struct
         t1 = new_place();
         tac_Exp(SON(0), &t1);
+        t2=new_place();
         
         Type *type = find_alias_type(t1);
-
         char *id = SON(2)->attribute_value;
-
         int offset = get_structure_offset(type, id);
-        // tac1=gen_assign(t1,)
-        tac1 = gen_copy(NONE, t1, NONE, immediate_number_int(offset));
-        // rvalue = get_struct_member(lvalue, member_name);
-        return tac1;
+
+        tac1 = gen_copy(NONE,t2,ADD_OF,t1);
+        tac2 = gen_assign(*place,t2,ADD,immediate_number_int(offset));
+        // tac1 = gen_copy(NONE, *place, NONE, immediate_number_int(offset));
+        return combine(2,tac1,tac2);
         break;
 
     case 21: // INT

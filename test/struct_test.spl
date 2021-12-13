@@ -11,6 +11,7 @@ struct aa{
 
 int main(){
     struct aa a;
+
     int c;
     c=a.a;
     c=a.b;
