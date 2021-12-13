@@ -4,7 +4,10 @@ PARAM var_5
 t14 := var_4
 t18 := var_4
 t19 := var_5
+t16 := t18 / t19
 t17 := var_5
+t15 := t16 * t17
+t13 := t14 - t15
 RETURN t13
 FUNCTION gcd :
 PARAM var_2
