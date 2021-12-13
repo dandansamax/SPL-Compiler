@@ -4,41 +4,26 @@
 #include <string.h>
 #include <stdio.h>
 
-typedef enum AlgOp AlgOp;
-typedef enum AddrOp AddrOp;
-typedef enum RelOp RelOp;
+typedef enum Operator Operator;
 typedef enum TACType TACType;
 typedef struct TAC TAC;
 typedef struct TACNode TACNode;
-typedef struct AssignStruct AssignStruct;
-typedef struct CondStruct CondStruct;
-typedef struct CopyStruct CopyStruct;
-typedef struct DecStruct DecStruct;
-typedef struct CallStruct CallStruct;
 
-enum AlgOp
+enum Operator
 {
-    ADD = '+',
-    SUB = '-',
-    MUL = '*',
-    DIV = '/'
-};
-
-enum AddrOp
-{
-    ADD_OF = '&',
-    DEREF = '*',
-    NONE = 0
-};
-
-enum RelOp
-{
+    ADD,
+    SUB,
+    MUL,
+    DIV,
+    ADD_OF,
+    DEREF,
     EQ,
     LT,
     GT,
     LE,
     GE,
-    NE
+    NE,
+    NONE
 };
 
 enum TACType
@@ -59,7 +44,6 @@ enum TACType
     EMPTY = -7
 };
 
-
 struct TACNode
 {
     TAC *tac;
@@ -67,69 +51,29 @@ struct TACNode
     TACNode *next;
 };
 
-struct AssignStruct
-{
-    AlgOp op;
-    const char *arg1;
-    const char *arg2;
-    const char *result;
-};
-
-struct CondStruct
-{
-    RelOp op;
-    const char *arg1;
-    const char *arg2;
-    const char *dst;
-};
-
-struct CopyStruct
-{
-    AddrOp op1;
-    AddrOp op2;
-    const char *result;
-    const char *arg;
-};
-
-struct DecStruct
-{
-    const char *arg;
-    int size;
-};
-
-struct CallStruct
-{
-    const char *result;
-    const char *func;
-};
-
 struct TAC
 {
     TACType type;
-    union
-    {
-        const char *operand;
-        AssignStruct assign_s;
-        CondStruct cond_s;
-        CopyStruct copy_s;
-        DecStruct dec_s;
-        CallStruct call_s;
-    };
+    Operator operator1;
+    const char *result;
+    const char *operand1;
+    Operator operator2;
+    const char *operand2;
 };
 
 TACNode *gen_empty();
 
-TACNode *gen_assign(const char *result, const char *arg1, AlgOp op, const char *arg2);
+TACNode *gen_assign(const char *result, const char *arg1, Operator op, const char *arg2);
 
 TACNode *gen_single(TACType type, const char *arg);
 
-TACNode *gen_copy(AddrOp op1, const char *result, AddrOp op2, const char *arg);
+TACNode *gen_copy(Operator operator1, const char *result, Operator operator2, const char *arg);
 
-TACNode *gen_cond_branch(const char *arg1, RelOp op, const char *arg2, const char *dest);
+TACNode *gen_cond_branch(const char *arg1, Operator op, const char *arg2, const char *dest);
 
 TACNode *gen_call(const char *arg, const char *func);
 
-TACNode *gen_dec(const char *arg, int size);
+TACNode *gen_dec(const char *arg, const char *size);
 
 void TAC_free(TACNode *head);
 
