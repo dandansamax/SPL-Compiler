@@ -20,7 +20,7 @@ void tac_ExtDecList(Node *node, Type *type);
 
 /* specifier */
 Type *tac_Specifier(Node *node);
-// Type *tac_StructSpecifier(Node *node);
+Type *tac_StructSpecifier(Node *node);
 
 /* declarator */
 char *tac_VarDec(Node *node, Type *type);
@@ -153,37 +153,37 @@ Type *tac_Specifier(Node *node)
         return tac_TYPE(SON(0));
         break;
 
-        // case 1: // StructSpecifier
-        //     return tac_StructSpecifier(SON(0));
-        //     break;
+    case 1: // StructSpecifier
+        return tac_StructSpecifier(SON(0));
+        break;
     }
 }
 
-// Type *tac_StructSpecifier(Node *node)
-// {
-//     char *struct_name;
-//     Type *struct_type;
-//     switch (node->production_no)
-//     {
-//     case 0: // STRUCT ID LC DefList RC
-//         struct_name = SON(1)->attribute_value;
-//         struct_type = get_struct_prototype(struct_name);
+Type *tac_StructSpecifier(Node *node)
+{
+    char *struct_name;
+    Type *struct_type;
+    switch (node->production_no)
+    {
+    case 0: // STRUCT ID LC DefList RC
+        struct_name = SON(1)->attribute_value;
+        struct_type = get_struct_prototype(struct_name);
 
-//         struct_type = new_struct();
-//         tac_DefList_struct(SON(3), struct_type);
-//         insert_struct_prototype(struct_type, struct_name);
+        struct_type = new_struct();
+        tac_DefList_struct(SON(3), struct_type);
+        insert_struct_prototype(struct_type, struct_name);
 
-//         return struct_type;
-//         break;
+        return struct_type;
+        break;
 
-//     case 1: // STRUCT ID
-//         struct_name = SON(1)->attribute_value;
-//         struct_type = get_struct_prototype(struct_name);
+    case 1: // STRUCT ID
+        struct_name = SON(1)->attribute_value;
+        struct_type = get_struct_prototype(struct_name);
 
-//         return struct_type;
-//         break;
-//     }
-// }
+        return struct_type;
+        break;
+    }
+}
 
 /* declarator */
 char *tac_VarDec(Node *node, Type *type)
