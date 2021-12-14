@@ -11,7 +11,7 @@ t6 := var_0 - #1
 var_0 := t6
 t3 := var_1 + #1
 var_1 := t3
-WRITE t2
+WRITE var_1
 GOTO L0
 LABEL L2 :
 RETURN #0

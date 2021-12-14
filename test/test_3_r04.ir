@@ -1,0 +1,22 @@
+FUNCTION sqr :
+PARAM var_3
+t14 := var_3 * var_3
+RETURN t14
+FUNCTION cbc :
+PARAM var_2
+t10 := var_2 * var_2
+t9 := t10 * var_2
+RETURN t9
+FUNCTION main :
+READ t8
+var_0 := t8
+WRITE var_0
+ARG var_0
+t5 := CALL sqr
+var_1 := t5
+WRITE var_1
+ARG var_0
+t2 := CALL cbc
+var_1 := t2
+WRITE var_1
+RETURN #0
