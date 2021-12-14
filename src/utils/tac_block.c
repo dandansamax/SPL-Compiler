@@ -239,7 +239,7 @@ void TAC_print(TAC *tac, FILE *file)
         fprintf(file, "%s := CALL %s\n", tac->result, tac->operand1);
         break;
     case DEC:
-        fprintf(file, "DEC %s %s\n", tac->operand1, tac->operand2);
+        fprintf(file, "DEC %s [%s]\n", tac->operand1, tac->operand2);
         break;
     default:
         break;

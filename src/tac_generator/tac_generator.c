@@ -343,11 +343,9 @@ TACNode *tac_StmtList(Node *node)
     {
         return gen_empty();
     }
-    TACNode* tac1=tac_Stmt(SON(0));
-    TACNode* tac2=tac_StmtList(SON(1));
+
     // Stmt StmtList
-    return combine(2, tac1, tac2);
-    // return combine(2, tac_Stmt(SON(0)), tac_StmtList(SON(1)));
+    return combine(2, tac_Stmt(SON(0)), tac_StmtList(SON(1)));
 }
 
 TACNode *tac_Stmt(Node *node)
@@ -509,40 +507,19 @@ void tac_Dec_struct(Node *node, Type *type, Type *struct_type)
 
 TACNode *tac_Exp(Node *node, char **place)
 {
-    char *str1, *t1, *t2, *t3;
-    TACNode *tac0, *tac1, *tac2, *tac3;
+    char *str1, *t1, *t2;
+    TACNode *tac1, *tac2, *tac3;
     char *name;
     Function *func;
-    Type* lval, * rval;
     switch (node->production_no)
     {
     case 0: //  Exp ASSIGN Exp
         str1 = symtab_lookup(SON(0));
-        if(str1!=NULL){
-            t1 = new_place();
-            tac1 = tac_Exp(SON(2), &t1);
-            tac2 = gen_copy(NONE, str1, NONE, t1);
-            tac3 = gen_copy(NONE, *place, NONE, t1);
-            return combine(3, tac1, tac2, tac3);
-        }else
-        {   
-            t1=new_place();
-            t2=new_place();
-            tac1 = tac_Exp(SON(0), &t1);
-            tac2 = tac_Exp(SON(2), &t2);
-            rval = find_alias_type(t2);
-            if(rval!=NULL && rval!=NULL_PTR && rval->category==STRUCTURE){
-                tac3 = gen_copy(DEREF, t1, DEREF, t2);
-
-            }else{
-                tac3 = gen_copy(DEREF, t1, NONE, t2);
-            }
-            // tac2 = gen_copy(NONE, str1, NONE, t2);
-            return combine(3,tac1,tac2,tac3);
-           
-        }
-        
-        
+        t1 = new_place();
+        tac1 = tac_Exp(SON(2), &t1);
+        tac2 = gen_copy(NONE, str1, NONE, t1);
+        tac3 = gen_copy(NONE, *place, NONE, t1);
+        return combine(3, tac1, tac2, tac3);
         break;
 
     case 9:  // Exp PLUS Exp
@@ -595,7 +572,6 @@ TACNode *tac_Exp(Node *node, char **place)
 
         tac1 = gen_copy(NONE,t2,ADD_OF,t1);
         tac2 = gen_assign(*place,t2,ADD,immediate_number_int(offset));
-        
         // tac1 = gen_copy(NONE, *place, NONE, immediate_number_int(offset));
         return combine(2,tac1,tac2);
         break;

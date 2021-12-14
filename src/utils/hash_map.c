@@ -106,18 +106,17 @@ const char *get_alias(HashMap map, const char *key)
  * @param key 
  * @return const Type* 
  */
-Type *get_alias_type(HashMap map, const char *key)
+const Type *get_alias_type(HashMap map, const char *key)
 {
-    if(key==NULL)return NULL_PTR;
     for (int i = 0; i < 0x1003; i++)
     {
         HashMapNode *cur_node = map[i];
 
         if(cur_node==NULL_PTR)continue;
 
-        while (cur_node != NULL_PTR && cur_node!=NULL)
+        while (cur_node != NULL_PTR)
         {
-            if (cur_node->alias!=NULL && !strcmp(cur_node->alias, key))
+            if (!strcmp(cur_node->alias, key))
                 return cur_node->value;
             cur_node = cur_node->next;
         }
