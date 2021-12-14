@@ -89,8 +89,4 @@ void free_structure(Type *structure_type);
 
 void to_string(const Type *type, char *result);
 
-int calculate_size(const Type *type);
-
-int get_structure_offset(const Type *type, const char* name);
-
 #endif

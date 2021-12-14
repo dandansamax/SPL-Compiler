@@ -22,8 +22,6 @@ Type *find_symbol(const char *symbol_name);
 
 const char *find_alias(const char *symbol_name);
 
-const Type *find_alias_type(const char *symbol_name);
-
 int insert_symbol(const char *symbol_name, Type *type);
 
 Function *new_function(const char *function_name, Type *return_type);
