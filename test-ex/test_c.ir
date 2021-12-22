@@ -16,5 +16,5 @@ t3 := var_2 - #1
 var_2 := t3
 GOTO L0
 LABEL L2 :
-WRITE t1
+WRITE var_1
 RETURN #0

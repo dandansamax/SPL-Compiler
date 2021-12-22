@@ -1,0 +1,5 @@
+FUNCTION main :
+t0 := #1 + #1
+var_0 := t0
+t3 := #1 + #1
+var_0 := t3
