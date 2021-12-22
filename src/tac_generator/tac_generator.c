@@ -455,7 +455,8 @@ TACNode *tac_DecList(Node *node, Type *type)
 
 TACNode *tac_Dec(Node *node, Type *type)
 {
-    char *t1;
+    char *t1, *t2;
+    TACNode *tac1, *tac2;
     switch (node->production_no)
     {
     case 0: // VarDec
@@ -463,8 +464,11 @@ TACNode *tac_Dec(Node *node, Type *type)
         return gen_empty();
         break;
     case 1: // VarDec ASSIGN Exp
-        t1 = tac_VarDec(SON(0), type);
-        return tac_Exp(SON(2), &t1);
+        t1 = find_alias(tac_VarDec(SON(0), type));
+        t2 = new_place();
+        tac1 = tac_Exp(SON(2), &t2);
+        tac2 = gen_copy(NONE, t1, NONE, t2);
+        return combine(2, tac1, tac2);
 
         break;
     }
