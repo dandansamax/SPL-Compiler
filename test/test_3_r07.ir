@@ -1,20 +1,20 @@
 FUNCTION gcd1 :
 PARAM var_5
 PARAM var_6
-t51 := var_5 / var_6
-t50 := t51 * var_6
-t48 := var_5 - t50
-var_8 := t48
+t54 := var_5 / var_6
+t53 := t54 * var_6
+t51 := var_5 - t53
+var_8 := t51
 LABEL L9 :
 IF var_8 != #0 GOTO L10
 GOTO L11
 LABEL L10 :
 var_5 := var_6
 var_6 := var_8
-t42 := var_5 / var_6
-t41 := t42 * var_6
-t39 := var_5 - t41
-var_8 := t39
+t45 := var_5 / var_6
+t44 := t45 * var_6
+t42 := var_5 - t44
+var_8 := t42
 GOTO L9
 LABEL L11 :
 var_7 := var_6
@@ -22,13 +22,14 @@ RETURN var_7
 FUNCTION gcd2 :
 PARAM var_2
 PARAM var_3
+var_4 := #0
 IF var_2 > var_3 GOTO L0
 GOTO L1
 LABEL L0 :
-t18 := var_2 / var_3
-t17 := t18 * var_3
-t15 := var_2 - t17
-var_4 := t15
+t21 := var_2 / var_3
+t20 := t21 * var_3
+t18 := var_2 - t20
+var_4 := t18
 IF var_4 == #0 GOTO L3
 GOTO L4
 LABEL L3 :
@@ -37,15 +38,15 @@ GOTO L5
 LABEL L4 :
 ARG var_4
 ARG var_3
-t12 := CALL gcd2
-RETURN t12
+t15 := CALL gcd2
+RETURN t15
 LABEL L5 :
 GOTO L2
 LABEL L1 :
-t31 := var_3 / var_2
-t30 := t31 * var_2
-t28 := var_3 - t30
-var_4 := t28
+t34 := var_3 / var_2
+t33 := t34 * var_2
+t31 := var_3 - t33
+var_4 := t31
 IF var_4 == #0 GOTO L6
 GOTO L7
 LABEL L6 :
@@ -54,19 +55,21 @@ GOTO L8
 LABEL L7 :
 ARG var_4
 ARG var_2
-t25 := CALL gcd2
-RETURN t25
+t28 := CALL gcd2
+RETURN t28
 LABEL L8 :
 LABEL L2 :
 FUNCTION main :
-READ m
-READ n
+READ t0
+var_0 := t0
+READ t1
+var_1 := t1
 ARG var_1
 ARG var_0
-t4 := CALL gcd1
-WRITE t4
+t6 := CALL gcd1
+WRITE t6
 ARG var_1
 ARG var_0
-t1 := CALL gcd2
-WRITE t1
+t3 := CALL gcd2
+WRITE t3
 RETURN #0

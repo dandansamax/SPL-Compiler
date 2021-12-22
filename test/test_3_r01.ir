@@ -1,20 +1,21 @@
 FUNCTION main :
+var_3 := #0
 var_0 := #5
-t23 := var_0 * var_0
-t24 := var_0 + #2
-t22 := t23 * t24
-var_1 := t22
+t24 := var_0 * var_0
+t25 := var_0 + #2
+t23 := t24 * t25
+var_1 := t23
 WRITE var_1
-t17 := var_1 / var_0
-t16 := t17 + #1
-var_2 := t16
+t18 := var_1 / var_0
+t17 := t18 + #1
+var_2 := t17
 WRITE var_2
-t5 := var_0 + var_1
-t6 := var_2 * #3
-t3 := t5 - t6
-t11 := var_1 / var_0
-t4 := t11 - #4
-t2 := t3 + t4
-var_3 := t2
+t6 := var_0 + var_1
+t7 := var_2 * #3
+t4 := t6 - t7
+t12 := var_1 / var_0
+t5 := t12 - #4
+t3 := t4 + t5
+var_3 := t3
 WRITE var_3
 RETURN #0

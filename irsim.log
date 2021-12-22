@@ -64,3 +64,30 @@ int main()
 [INFO] 2021-12-22 07:22:08,554 (irsim.py 567): Program has exited gracefully
 [INFO] 2021-12-22 07:22:08,554 (irsim.py 567): Total instructions = 4291
 [INFO] 2021-12-22 07:22:37,754 (irsim.py 567): KeyboardInterrupt raised, quit program
+[DEBUG] 2021-12-22 15:56:26,107 (irsim.py 620): Parsed arguments: {'irpath': 'test/test_3_r01.ir', 'inputs': '', 'logpath': 'irsim.log'}
+[INFO] 2021-12-22 15:56:26,107 (irsim.py 567): File loaded successfully
+[INFO] 2021-12-22 15:56:29,036 (irsim.py 567): Program has exited gracefully
+[INFO] 2021-12-22 15:56:29,036 (irsim.py 567): Total instructions = 21
+[INFO] 2021-12-22 15:56:34,678 (irsim.py 567): KeyboardInterrupt raised, quit program
+[DEBUG] 2021-12-22 15:56:36,591 (irsim.py 620): Parsed arguments: {'irpath': 'test/test_3_r02.ir', 'inputs': '', 'logpath': 'irsim.log'}
+[INFO] 2021-12-22 15:56:36,592 (irsim.py 567): File loaded successfully
+[ERROR] 2021-12-22 15:56:38,292 (irsim.py 581): An error occurred at line 2: Illegal memory access
+[INFO] 2021-12-22 15:58:33,113 (irsim.py 567): KeyboardInterrupt raised, quit program
+[DEBUG] 2021-12-22 15:58:36,090 (irsim.py 620): Parsed arguments: {'irpath': 'test/test_3_r02.ir', 'inputs': '', 'logpath': 'irsim.log'}
+[INFO] 2021-12-22 15:58:36,091 (irsim.py 567): File loaded successfully
+[ERROR] 2021-12-22 15:58:37,005 (irsim.py 581): An error occurred at line 2: Illegal memory access
+[INFO] 2021-12-22 15:58:53,371 (irsim.py 567): KeyboardInterrupt raised, quit program
+[DEBUG] 2021-12-22 15:59:03,700 (irsim.py 620): Parsed arguments: {'irpath': 'test/test_3_r06.ir', 'inputs': '', 'logpath': 'irsim.log'}
+[INFO] 2021-12-22 15:59:03,701 (irsim.py 567): File loaded successfully
+[INFO] 2021-12-22 15:59:04,945 (irsim.py 567): Program has exited gracefully
+[INFO] 2021-12-22 15:59:04,946 (irsim.py 567): Total instructions = 7
+[INFO] 2021-12-22 15:59:09,528 (irsim.py 567): KeyboardInterrupt raised, quit program
+[DEBUG] 2021-12-22 15:59:16,330 (irsim.py 620): Parsed arguments: {'irpath': 'test/test_3_r06.ir', 'inputs': '', 'logpath': 'irsim.log'}
+[INFO] 2021-12-22 15:59:16,330 (irsim.py 567): File loaded successfully
+[INFO] 2021-12-22 15:59:18,265 (irsim.py 567): Program has exited gracefully
+[INFO] 2021-12-22 15:59:18,265 (irsim.py 567): Total instructions = 7
+[INFO] 2021-12-22 15:59:21,744 (irsim.py 567): KeyboardInterrupt raised, quit program
+[DEBUG] 2021-12-22 15:59:24,122 (irsim.py 620): Parsed arguments: {'irpath': 'test/test_3_r07.ir', 'inputs': '', 'logpath': 'irsim.log'}
+[INFO] 2021-12-22 15:59:24,122 (irsim.py 567): File loaded successfully
+[ERROR] 2021-12-22 15:59:25,357 (irsim.py 581): An error occurred at line 63: Illegal memory access
+[INFO] 2021-12-22 15:59:29,095 (irsim.py 567): KeyboardInterrupt raised, quit program

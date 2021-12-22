@@ -212,34 +212,40 @@ void TAC_print(TAC *tac, FILE *file)
         break;
     case LBL:
     case FUNC:
-        fprintf(file, "%s %s :\n", keywords[type], tac->operand1);
+        if (tac->operand1 != NULL)
+            fprintf(file, "%s %s :\n", keywords[type], tac->operand1);
         break;
     case RET:
     case PARAM:
     case ARG:
     case READ:
     case WRITE:
-        fprintf(file, "%s %s\n", keywords[type], tac->operand1);
+        if (tac->operand1 != NULL)
+            fprintf(file, "%s %s\n", keywords[type], tac->operand1);
         break;
     case ASSIGN:
-        fprintf(file, "%s := %s %s %s\n", tac->result, tac->operand1, operators[tac->operator2], tac->operand2);
+        if (tac->result != NULL && tac->operand1 != NULL && tac->operand2 != NULL)
+            fprintf(file, "%s := %s %s %s\n", tac->result, tac->operand1, operators[tac->operator2], tac->operand2);
         break;
     case COPY:
-        if (tac->result == NULL)
-            break;
-        fprintf(file, "%s%s := %s%s\n", operators[tac->operator1], tac->result, operators[tac->operator2], tac->operand1);
+        if (tac->result != NULL && tac->operand1 != NULL)
+            fprintf(file, "%s%s := %s%s\n", operators[tac->operator1], tac->result, operators[tac->operator2], tac->operand1);
         break;
     case GOTO:
-        fprintf(file, "GOTO %s\n", tac->operand1);
+        if (tac->operand1 != NULL)
+            fprintf(file, "GOTO %s\n", tac->operand1);
         break;
     case CONB:
-        fprintf(file, "IF %s %s %s GOTO %s\n", tac->operand1, operators[tac->operator2], tac->operand2, tac->result);
+        if (tac->result != NULL && tac->operand1 != NULL && tac->operand2 != NULL)
+            fprintf(file, "IF %s %s %s GOTO %s\n", tac->operand1, operators[tac->operator2], tac->operand2, tac->result);
         break;
     case CALL:
-        fprintf(file, "%s := CALL %s\n", tac->result, tac->operand1);
+        if (tac->result != NULL && tac->operand1 != NULL)
+            fprintf(file, "%s := CALL %s\n", tac->result, tac->operand1);
         break;
     case DEC:
-        fprintf(file, "DEC %s [%s]\n", tac->operand1, tac->operand2);
+        if (tac->operand1 != NULL && tac->operand2 != NULL)
+            fprintf(file, "DEC %s [%s]\n", tac->operand1, tac->operand2);
         break;
     default:
         break;
