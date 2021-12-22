@@ -1,0 +1,107 @@
+FUNCTION mod :
+PARAM var_12
+PARAM var_13
+t90 := var_12 / var_13
+t89 := t90 * var_13
+result := var_12 - t89
+RETURN var_14
+FUNCTION power :
+PARAM var_9
+PARAM var_10
+t57 := #1 + var_10
+ret1 := t57 - var_10
+LABEL L16 :
+t70 := var_11 - var_11
+t68 := t70 + #90
+t66 := t68 - #89
+t64 := t66 + #1
+t63 := t64 - #2
+IF var_10 > t63 GOTO L17
+GOTO L18
+LABEL L17 :
+t85 := var_11 * var_9
+var_11 := t85
+t79 := #2 * #1
+t77 := t79 * var_10
+t78 := #1 * var_10
+t75 := t77 - t78
+t74 := t75 - #1
+var_10 := t74
+GOTO L16
+LABEL L18 :
+RETURN var_11
+FUNCTION getNumDigits :
+PARAM var_7
+IF var_7 < #0 GOTO L14
+GOTO L15
+LABEL L14 :
+t55 := #0 - #1
+RETURN t55
+LABEL L15 :
+LABEL L11 :
+IF var_7 > #0 GOTO L12
+GOTO L13
+LABEL L12 :
+t50 := var_7 / #10
+var_7 := t50
+t47 := var_8 + #2
+var_8 := t47
+t44 := var_8 + #2
+var_8 := t44
+t41 := var_8 - #3
+var_8 := t41
+GOTO L11
+LABEL L13 :
+RETURN var_8
+FUNCTION isNarcissistic :
+PARAM var_2
+t15 := #1 + var_2
+t14 := t15 - #1
+ARG t14
+numDigits4 := CALL getNumDigits
+LABEL L8 :
+IF var_5 > #0 GOTO L9
+GOTO L10
+LABEL L9 :
+ARG #10
+ARG var_5
+t35 := CALL mod
+var_6 := t35
+t31 := var_5 - var_6
+t30 := t31 / #10
+var_5 := t30
+ARG var_3
+ARG var_6
+t27 := CALL power
+t25 := var_4 + t27
+var_4 := t25
+GOTO L8
+LABEL L10 :
+IF var_4 == var_2 GOTO L5
+GOTO L6
+LABEL L5 :
+RETURN #1
+GOTO L7
+LABEL L6 :
+RETURN #0
+LABEL L7 :
+FUNCTION main :
+LABEL L0 :
+IF var_1 < #500 GOTO L1
+GOTO L2
+LABEL L1 :
+ARG var_1
+t7 := CALL isNarcissistic
+IF t7 == #1 GOTO L3
+GOTO L4
+LABEL L3 :
+WRITE var_1
+t10 := var_0 + #1
+var_0 := t10
+LABEL L4 :
+t4 := var_1 + #1
+var_1 := t4
+GOTO L0
+LABEL L2 :
+WRITE var_0
+RETURN var_0

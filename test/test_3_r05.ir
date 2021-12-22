@@ -1,0 +1,44 @@
+FUNCTION main :
+var_5 := #1
+var_6 := #2
+var_7 := #3
+var_1 := #1
+var_2 := #1
+READ t23
+var_4 := t23
+IF var_4 < #1 GOTO L0
+GOTO L1
+LABEL L0 :
+WRITE #0
+GOTO L2
+LABEL L1 :
+IF var_4 == #1 GOTO L3
+GOTO L6
+LABEL L6 :
+IF var_4 == #2 GOTO L3
+GOTO L4
+LABEL L3 :
+WRITE #1
+GOTO L5
+LABEL L4 :
+IF var_4 > #2 GOTO L7
+GOTO L8
+LABEL L7 :
+var_0 := #3
+LABEL L9 :
+IF var_0 <= var_4 GOTO L10
+GOTO L11
+LABEL L10 :
+t19 := var_1 + var_2
+var_3 := t19
+var_1 := var_2
+var_2 := var_3
+t14 := var_0 + #1
+var_0 := t14
+GOTO L9
+LABEL L11 :
+WRITE var_3
+LABEL L8 :
+LABEL L5 :
+LABEL L2 :
+RETURN #0
