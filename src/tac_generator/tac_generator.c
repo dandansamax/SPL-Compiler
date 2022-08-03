@@ -152,38 +152,8 @@ Type *tac_Specifier(Node *node)
     case 0: // TYPE
         return tac_TYPE(SON(0));
         break;
-
-        // case 1: // StructSpecifier
-        //     return tac_StructSpecifier(SON(0));
-        //     break;
     }
 }
-
-// Type *tac_StructSpecifier(Node *node)
-// {
-//     char *struct_name;
-//     Type *struct_type;
-//     switch (node->production_no)
-//     {
-//     case 0: // STRUCT ID LC DefList RC
-//         struct_name = SON(1)->attribute_value;
-//         struct_type = get_struct_prototype(struct_name);
-
-//         struct_type = new_struct();
-//         tac_DefList_struct(SON(3), struct_type);
-//         insert_struct_prototype(struct_type, struct_name);
-
-//         return struct_type;
-//         break;
-
-//     case 1: // STRUCT ID
-//         struct_name = SON(1)->attribute_value;
-//         struct_type = get_struct_prototype(struct_name);
-
-//         return struct_type;
-//         break;
-//     }
-// }
 
 /* declarator */
 char *tac_VarDec(Node *node, Type *type)
@@ -195,74 +165,8 @@ char *tac_VarDec(Node *node, Type *type)
         insert_symbol(SON(0)->attribute_value, type);
         return SON(0)->attribute_value;
         break;
-
-        // case 1: // VarDec LB INT RB
-        //     size = atoi(SON(2)->attribute_value);
-        //     Type *new_type = make_array(type, size);
-        //     if (tac_VarDec(SON(0), new_type) == -1)
-        //     {
-        //         free(new_type);
-        //         return -1;
-        //     }
-        //     return 0;
-        //     break;
     }
 }
-
-// int tac_VarDec_struct(Node *node, Type *type, Type *struct_type)
-// {
-//     switch (node->production_no)
-//     {
-//     case 0: // ID
-//         name = SON(0)->attribute_value;
-//         if (add_struct_member(struct_type, name, type) == -1)
-//         {
-//             print_error(3, node->lineno, "a variable is redefined in the same scope", name);
-//             return -1;
-//         }
-//         return 0;
-//         break;
-
-//     case 1: // VarDec LB INT RB
-//         size = atoi(SON(2)->attribute_value);
-//         Type *new_type = make_array(type, size);
-//         if (tac_VarDec_struct(SON(0), new_type, struct_type) == -1)
-//         {
-//             free(new_type);
-//             return -1;
-//         }
-//         return 0;
-//         break;
-//     }
-// }
-
-// int tac_VarDec_function(Node *node, Type *type, Function *func)
-// {
-//     switch (node->production_no)
-//     {
-//     case 0: // ID
-//         name = SON(0)->attribute_value;
-//         if (insert_symbol(name, type) == -1)
-//         {
-//             print_error(3, node->lineno, "a variable is redefined in the same scope", name);
-//             return -1;
-//         }
-//         add_function_argument(func, type);
-//         return 0;
-//         break;
-
-//     case 1: // VarDec LB INT RB
-//         size = atoi(SON(2)->attribute_value);
-//         Type *new_type = make_array(type, size);
-//         if (tac_VarDec_function(SON(0), new_type, func) == -1)
-//         {
-//             free(new_type);
-//             return -1;
-//         }
-//         return 0;
-//         break;
-//     }
-// }
 
 TACNode *tac_FunDec(Node *node, Type *type)
 {
@@ -401,27 +305,11 @@ TACNode *tac_DefList(Node *node)
     return combine(2, tac1, tac_DefList(SON(1)));
 }
 
-// void tac_DefList_struct(Node *node, Type *struct_type)
-// {
-//     if (node->production_no == 1)
-//     {
-//         return;
-//     }
-//     tac_Def_struct(SON(0), struct_type);
-//     tac_DefList_struct(SON(1), struct_type);
-// }
-
 TACNode *tac_Def(Node *node)
 {
     Type *type = tac_Specifier(SON(0));
     return tac_DecList(SON(1), type);
 }
-
-// void tac_Def_struct(Node *node, Type *struct_type)
-// {
-//     Type *type = tac_Specifier(SON(0));
-//     tac_DecList_struct(SON(1), type, struct_type);
-// }
 
 TACNode *tac_DecList(Node *node, Type *type)
 {
@@ -438,20 +326,6 @@ TACNode *tac_DecList(Node *node, Type *type)
     }
     }
 }
-
-// void tac_DecList_struct(Node *node, Type *type, Type *struct_type)
-// {
-//     switch (node->production_no)
-//     {
-//     case 0:
-//         tac_Dec_struct(SON(0), type, struct_type);
-//         break;
-//     case 1:
-//         tac_Dec_struct(SON(0), type, struct_type);
-//         tac_DecList_struct(SON(2), type, struct_type);
-//         break;
-//     }
-// }
 
 TACNode *tac_Dec(Node *node, Type *type)
 {
@@ -473,21 +347,6 @@ TACNode *tac_Dec(Node *node, Type *type)
         break;
     }
 }
-
-// void tac_Dec_struct(Node *node, Type *type, Type *struct_type)
-// {
-//     switch (node->production_no)
-//     {
-//     case 0:
-//         tac_VarDec_struct(SON(0), type, struct_type);
-//         break;
-//     case 1:
-//         tac_VarDec_struct(SON(0), type, struct_type);
-//         Type *extac_type = tac_Exp(SON(2));
-
-//         break;
-//     }
-// }
 
 /* Expression */
 
@@ -574,19 +433,6 @@ TACNode *tac_Exp(Node *node, char **place)
     case 13: // LP Exp RP
         return tac_Exp(SON(1), place);
         break;
-
-        // case 18: // Exp LB Exp RB
-        //     lvalue = tac_Exp(SON(0));
-        //     rvalue = tac_Exp(SON(2));
-        //     return lvalue->array_info->base;
-        //     break;
-
-        // case 19: // Exp DOT ID
-        //     lvalue = tac_Exp(SON(0));
-        //     member_name = SON(2)->attribute_value;
-        //     rvalue = get_struct_member(lvalue, member_name);
-        //     return rvalue;
-        //     break;
 
     case 24: // READ LP RP
         return gen_single(READ, *place);

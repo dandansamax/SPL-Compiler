@@ -57,9 +57,7 @@ dkms.conf
 *.tab.h
 
 .vscode/
-bin/splc
-bin/preprocess
-bin/preprocess_pure
+bin/
 how_to_use.txt
 *.output
 *.py

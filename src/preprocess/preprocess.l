@@ -84,7 +84,8 @@ id {letter_}({letter_}|{digit})*
 }
 
 %%
-char* preprocess(char *file_path){
+char* preprocess(char *file_path)
+{
         char lnk[5] = ".lnk";
         char lnk_file[1024];
         sprintf(lnk_file, "%s%s", file_path, lnk);
@@ -100,7 +101,8 @@ char* preprocess(char *file_path){
         fclose(fp);
         clear_included(included_set);
         included_set = NULL;
-        if(!(yyin = fopen(lnk_file, "r"))){
+        if(!(yyin = fopen(lnk_file, "r")))
+        {
             perror(lnk_file);
             return NULL;
         }

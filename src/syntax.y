@@ -1,8 +1,10 @@
 %{
     #include "utils/tokentree.h"
+    #include "utils/tac.h"
     #include "preprocess/preprocess.h"
     #include "semantic/semantic.h"
     #include "tac_generator/tac_generator.h"
+    #include "mips_generator/mips32.h"
     #include <unistd.h>
 
     #include "lex.yy.c"
@@ -225,95 +227,120 @@ Args: Exp COMMA Args {$$=new_node("Exp","",$1->lineno,NONTERMINAL,0); link_nodes
     | Exp {$$=new_node("Exp","",$1->lineno,NONTERMINAL,1); link_nodes($$,1,$1);}
     ;
 %%
-void yyerror(const char *s) {
+void yyerror(const char *s)
+{
     // fprintf(stderr, "%s ---%d\n", s, yylineno);
-    error_flag=1;
+    error_flag = 1;
 }
-int main(int argc, char **argv){
+
+#define BUF_SIZE 0x10000
+char buf[BUF_SIZE];
+
+int main(int argc, char **argv)
+{
     char *file_path;
     // -o output file
     // -i intermdeia file
 
-    char intermdedia[128]={},output[128]={},input[128]={},c;
-    int tree_flag=0;
+    char intermdedia[128] = {}, output[128] = {}, input[128] = {}, c;
+    int tree_flag = 0;
 
-    while ((c=getopt(argc,argv,"i:o:t"))!=-1){
-        switch (c){
+    while ((c = getopt(argc, argv, "h:i:o:t")) != -1)
+    {
+        switch (c)
+        {
+            case 'h':
+                printf("-i input file\n-o output file\n-t generate tree\n");
+                return 0;
             case 'i':
-                strcpy(intermdedia,optarg);
+                strcpy(intermdedia, optarg);
                 break;
             case 'o':
-                strcpy(output,optarg);
+                strcpy(output, optarg);
                 break;
             case 't':
                 tree_flag = 1;
+                break;
         }
     }
-    strcpy(input,argv[optind]);
+    strcpy(input, argv[optind]);
 
-    if (output[0]==0){
-        char* dot=strrchr(input,'.');
-        strcpy(dot,".ir\0");
-        strcpy(output,input);
+    if (output[0] == 0)
+    {
+        strcpy(output, input);
+        char *dot = strrchr(output, '.');
+        strcpy(dot, ".ir\0");
     }
 
     int remain_arg = argc-optind;
 
-    if(remain_arg < 1){
+    if (remain_arg < 1)
+    {
         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
         return EXIT_FAIL;
-    } else if(remain_arg == 1){
-
+    }
+    else if (remain_arg == 1)
+    {
 
         file_path = argv[optind];
-        if(!(yyin = fopen(file_path, "r"))){
+        if (!(yyin = fopen(file_path, "r")))
+        {
             perror(argv[optind]);
             return EXIT_FAIL;
         }
 
-        char *processed=preprocess(file_path);
+        char *processed = preprocess(file_path);
 
-        if (processed==NULL){
-            fprintf(stderr,"error on preprocess\n");
+        if (processed == NULL)
+        {
+            fprintf(stderr, "error on preprocess\n");
 	    	return EXIT_FAIL;
         }
 
-        if (intermdedia[0]!=0){
-            FILE *f=fopen(intermdedia,"w");
-            fputs(processed,f);
+        if (intermdedia[0] != 0)
+        {
+            FILE *f = fopen(intermdedia, "w");
+            fputs(processed, f);
             fclose(f);
         }
 
         YY_BUFFER_STATE bp = yy_scan_string(processed);
     
-        //分配失败
-        if (bp == NULL) {
-	    	fprintf(stderr,"error on creating YY_BUFFER_STATE\n");
+        // 分配失败
+        if (bp == NULL)
+        {
+	    	fprintf(stderr, "error on creating YY_BUFFER_STATE\n");
 	    	return EXIT_FAIL;
 	    }
         
-	    //将输入源转为指定内存
+	    // 将输入源转为指定内存
 	    yy_switch_to_buffer(bp);
 
-        output_file=fopen(output,"w");
-        // output_file=stdout;
+        output_file = fopen(output, "w");
+        // output_file = stdout;
 
-        int val=yyparse();
-        /* if (error_flag==0) {
-            if (tree_flag==0){
-                int flag=semantic_analysis(root,output_file);
-                if (flag==-1){
+        int val = yyparse();
+        /* if (error_flag == 0)
+        {
+            if (tree_flag == 0)
+            {
+                int flag = semantic_analysis(root, output_file);
+                if (flag == -1)
+                {
                     printf("[Error] Invalid parsing!\n");
                 }
-                else if (flag == 1){
+                else if (flag == 1)
+                {
                     printf("[Error] Error occurs at semantic analysis!\n");
                 }
-                else {
+                else
+                {
                     printf("[Info] The semantic analysis successed!\n");
                 }
             }
-            else if (tree_flag==1){
-                print_tree(root,0,output_file); 
+            else if (tree_flag == 1)
+            {
+                print_tree(root, 0, output_file);
             }
         }
         else
@@ -321,15 +348,40 @@ int main(int argc, char **argv){
             printf("[Error] Error occurs at parsing!\n");
         } */
         
-        tac_generator(root,output_file);
+        tac_generator(root, output_file);
 
         fclose(output_file);
         
         yy_delete_buffer(bp);
 	    yylex_destroy();
+
+     //   FILE *fp;
+     //   tac *head;
+     //   char c;
+     //   int size, len;
+
+     //   // read the IR code
+     //   size = 0;
+     //   fp = fopen(output, "r");
+     //   while ((c = getc(fp)) != EOF)
+     //       buf[size++] = c;
+     //   buf[size] = '\x7f';
+     //   fclose(fp);
+
+     //   // write the target code
+     //   len = strlen(output);
+     //   output[len - 2] = 's';
+     //   output[len - 1] = '\0';
+     //   fp = stdout; // fopen(output, "w");
+     //   head = tac_from_buffer(buf);
+     //   mips32_gen(head, fp);
+        // fclose(fp);
+
         return EXIT_OK;
-    } else{
-        fputs("Too many arguments! Expected: 1.\n", stderr);
+    }
+    else
+    {
+        fputs("Too many arguments!\n", stderr);
         return EXIT_FAIL;
     }
 }

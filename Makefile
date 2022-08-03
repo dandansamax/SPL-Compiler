@@ -1,6 +1,7 @@
 CC=gcc
 FLEX=flex
 BISON=bison
+SRC=src/syntax.tab.c src/utils/tokentree.c src/preprocess/preprocess.yy.c src/preprocess/preprocess.c src/utils/hash_map.c src/utils/symbol_table.c src/utils/type.c src/tac_generator/tac_generator.c src/mips_generator/mips32.c src/utils/tac_block.c src/utils/arg_stack.c src/utils/tac.c
 
 .lex: src/lex.l 
 	$(FLEX) -o src/lex.yy.c src/lex.l
@@ -14,22 +15,14 @@ BISON=bison
 .lex_preprocess: src/preprocess/preprocess.l
 	$(FLEX) -o src/preprocess/preprocess.yy.c -P PREPROCESS_ src/preprocess/preprocess.l
 
-splc: .lex .syntax .lex_preprocess
-	$(CC) -g -std=gnu99 src/syntax.tab.c src/utils/tokentree.c src/preprocess/preprocess.yy.c src/preprocess/preprocess.c src/utils/hash_map.c src/utils/symbol_table.c src/utils/type.c src/tac_generator/tac_generator.c src/utils/tac_block.c src/utils/arg_stack.c -o bin/splc
+splc: clean .lex .syntax .lex_preprocess
+	@mkdir -p bin
+	@$(CC) -g -std=gnu99 -fcommon $(SRC) -o bin/splc 2>/dev/null
 
 sym_test:
 	cd src/utils/ && $(CC) test_symbol_table.c symbol_table.c hash_map.c type.c -o test_symbol_table && ./test_symbol_table && rm -f test_symbol_table
 
-# preprocess: .lex_preprocess
-# 	$(CC) -o bin/preprocess src/preprocess.yy.c src/preprocess.c
-
-
-# splc:
-# 	@mkdir bin
-# 	touch bin/splc
-# 	@chmod +x bin/splc
-
 clean:
-	@rm -rf bin/* src/lex.yy.c src/syntax.tab.c src/syntax.tab.h src/syntax.output src/preprocess/preprocess.yy.c
+	@rm -rf bin src/lex.yy.c src/syntax.tab.c src/syntax.tab.h src/syntax.output src/preprocess/preprocess.yy.c
 
 .PHONY: splc
