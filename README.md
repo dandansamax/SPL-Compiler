@@ -1,3 +1,3 @@
-# CS323-Project1
+# SPL compiler
 
-懒得写了
+A simple compiler for compiling SUSTech Programming Language (SPL) to MIP32 instructions.
